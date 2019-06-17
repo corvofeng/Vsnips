@@ -2,6 +2,7 @@
 	"name": "Vsnips",
 	"displayName": "Vsnips",
 	"description": "Ultisnips for vscode",
+	"publisher": "corvo",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.35.0"
@@ -9,6 +10,7 @@
 	"categories": [
 		"Other"
 	],
+	"repository": "https://github.com/corvofeng/Vsnips",
 	"activationEvents": [
 		"*"
 	],
