@@ -2,10 +2,22 @@ import { Logger } from "./logger";
 
 const VIM_SNIPPET = /^snippet ([^\s]*)\s*(?:"(.*?)".*)?\n((?:.|\n)*?)\nendsnippet$/gm;
 
-function parse(rawSnippets: string): Object {
+class Snippet {
+  prefix: string;
+  body: string;
+  descriptsion: string;
+
+  constructor() {
+    this.prefix = '';
+    this.body = '';
+    this.descriptsion = '';
+  }
+}
+
+function parse(rawSnippets: string):  Array<Snippet> {
   let res = null;
-  let snippets = {};
   Logger.debug(rawSnippets);
+  let snips: Array<Snippet> = [];
   while ((res = VIM_SNIPPET.exec(rawSnippets)) !== null) {
     //eslint-disable-next-line no-unused-vars
     const [_, prefix, description, body] = res;
@@ -14,26 +26,25 @@ function parse(rawSnippets: string): Object {
     Logger.debug("body: ", body);
     // Logger.debug("body after normalize: ", normalizePlaceholders(body));
 
-    // snippets[prefix] = {
-    //   prefix,
-    //   body: normalizePlaceholders(body)
-    // };
-    // if (description) {
-    //   snippets[prefix].description = description;
-    // }
+    let snip = new Snippet();
+    snip.prefix  = prefix;
+    snip.body = normalizePlaceholders(body)
+    snip.descriptsion = description;
+    snips.push(snip)
   }
-  return snippets;
+  return snips;
 }
 
-// function normalizePlaceholders(str) {
-//   const visualPlaceholder = /\${(\d):\${VISUAL}}/;
-//   if (visualPlaceholder.test(str)) {
-//     const n = visualPlaceholder.exec(str)[1];
-//     return str.replace(visualPlaceholder, `$${n}`);
-//   } else {
-//     return str;
-//   }
-// }
+function normalizePlaceholders(str: string) {
+  const visualPlaceholder = /\${(\d):\${VISUAL}}/;
+  if (visualPlaceholder.test(str)) {
+    let data = visualPlaceholder.exec(str) as RegExpExecArray;
+    const n = data[1];
+    return str.replace(visualPlaceholder, `$${n}`);
+  } else {
+    return str;
+  }
+}
 
 // module.exports = {
 //   parse
