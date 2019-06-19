@@ -6,7 +6,8 @@ import { parse } from './parse';
 import * as vscode from "vscode";
 
 let search_dirs = [
-  '/home/corvo/.vim/UltiSnips'
+  '/home/corvo/.vim/UltiSnips',
+  '/home/corvo/.vim/plugged/vim-snippets/UltiSnips',
 ];
 
 function ultisnipsToJSON(ultisnips: string) {
@@ -14,19 +15,6 @@ function ultisnipsToJSON(ultisnips: string) {
   Logger.debug(snippets);
   return snippets;
 }
-
-// function toUltisnips(snippet: object) {
-//   // prettier-ignore
-//   return `
-// snippet ${snippet.prefix} ${snippet.description ? `"${snippet.description}"` : ''}
-// ${snippet.body}
-// endsnippet`
-// }
-
-// function jsonToUltisnips(json: string) {
-//   const snippets = Object.values(JSON.parse(json))
-//   return snippets.map(toUltisnips).join('\n')
-// }
 
 function generate(context: vscode.ExtensionContext) {
   search_dirs.forEach((dirname) => {
@@ -61,18 +49,15 @@ function generate(context: vscode.ExtensionContext) {
         const completItems: Array<vscode.Disposable> = [];
 
         let item = vscode.languages.registerCompletionItemProvider(
-          // {"scheme": "file"},
           sel,
           {
             provideCompletionItems(document, position, token) {
-              // console.log(document, position, token);
-
               let compleItems: Array<vscode.CompletionItem> = []
               snippets.forEach((snip) => {
                 const snippetCompletion = new vscode.CompletionItem(snip.prefix);
                 snippetCompletion.insertText = snip.body;
                 snippetCompletion.documentation = snip.descriptsion;
-                snippetCompletion.label = `Vsnips: ${snip.descriptsion}`;
+                snippetCompletion.label = `Vsnips-${snip.prefix}: ${snip.descriptsion}`;
                 compleItems.push(snippetCompletion);
               });
               return compleItems;
