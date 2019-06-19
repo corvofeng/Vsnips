@@ -2,7 +2,7 @@
 	"name": "Vsnips",
 	"displayName": "Vsnips",
 	"description": "Ultisnips for vscode",
-	"publisher": "corvo",
+	"publisher": "corvofeng",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.35.0"
@@ -39,5 +39,10 @@
 	},
 	"dependencies": {
 		"js-logger": "^1.6.0"
+	},
+	"__metadata": {
+		"id": "a42f9b10-ee80-433b-9043-fc3a48ac1b2e",
+		"publisherDisplayName": "corvofeng",
+		"publisherId": "a645e3ba-2d9a-4490-bad1-6b6ef6c089af"
 	}
 }

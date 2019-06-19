@@ -34,16 +34,19 @@ function ObjectToString(input: object | string): string {
   }
 }
 
-myLogger.setLevel(jsLogger.DEBUG);
-jsLogger.setHandler(function(messages, context) {
+// myLogger.setLevel(jsLogger.DEBUG);
+myLogger.setLevel(jsLogger.INFO);
+jsLogger.setHandler(function (messages, context) {
   const msg: string = Array.prototype.slice
     .call(messages, 0)
     .map(ObjectToString)
     .join(" ");
 
-  const formatLog = `[${context.level.name[0]}] ${msg}\n`;
+  let today = new Date();
+  let date = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + today.getDate();
+  let time = ('0' + today.getHours()).slice(-2) + ":" + ('0' + today.getMinutes()).slice(-2) + ":" + ('0' + today.getSeconds()).slice(-2);
 
-//   console.log(formatLog);
+  const formatLog = `${date} ${time}: [${context.level.name[0]}] ${msg}\n`;
   VsnipsStream.write(formatLog);
 });
 

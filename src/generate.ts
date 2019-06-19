@@ -11,7 +11,7 @@ let search_dirs = [
 
 function ultisnipsToJSON(ultisnips: string) {
   const snippets = parse(ultisnips)
-  Logger.info(snippets);
+  Logger.debug(snippets);
   return snippets;
 }
 
@@ -36,39 +36,45 @@ function generate(context: vscode.ExtensionContext) {
         return;
       }
       files.forEach((file, index) => {
-        if (file != 'python.snippets') return;
+        Logger.info("In snippets ", file);
 
-        Logger.debug("In snippets ", file);
-        const isUltisnips = /.snippets$/.test(file);
-        var f_name = path.join(dirname, file);
-
-        // Logger.debug(source);
-        if (!isUltisnips) {
-          Logger.warn(file, " is not a snippet");
+        let res =  /([^\s]*)\.snippets$/.exec(file);
+        if (res === null) {
+          Logger.warn("Can't parse ", file)
           return;
+        } 
+        Logger.debug(res);
+        const [_, file_type] = res;
+        let f_name = path.join(dirname, file);
+        let sel: vscode.DocumentFilter;
+        if (file_type === 'all') {
+          sel = { scheme: 'file'};
+        } else {
+          sel = { scheme: 'file', language: file_type };
         }
+
+        // Logger.debug(sel);
+        // if (file != 'python.snippets') return;
         const data = fs.readFileSync(f_name, 'utf8');
-        Logger.debug(data);
+        // Logger.debug(data);
         let snippets = ultisnipsToJSON(data);
         const completItems: Array<vscode.Disposable> = [];
 
         let item = vscode.languages.registerCompletionItemProvider(
-          "python",
+          // {"scheme": "file"},
+          sel,
           {
             provideCompletionItems(document, position, token) {
               // console.log(document, position, token);
 
               let compleItems: Array<vscode.CompletionItem> = []
               snippets.forEach((snip) => {
-                const snippetCompletion = new vscode.CompletionItem(
-                  snip.prefix
-                );
+                const snippetCompletion = new vscode.CompletionItem(snip.prefix);
                 snippetCompletion.insertText = snip.body;
                 snippetCompletion.documentation = snip.descriptsion;
+                snippetCompletion.label = `Vsnips: ${snip.descriptsion}`;
                 compleItems.push(snippetCompletion);
               });
-
-
               return compleItems;
             }
           },

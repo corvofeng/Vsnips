@@ -23,7 +23,7 @@ function parse(rawSnippets: string):  Array<Snippet> {
     const [_, prefix, description, body] = res;
     Logger.debug("prefix: ", prefix);
     Logger.debug("description: ", description);
-    Logger.debug("body: ", body);
+    Logger.debug("body: ", normalizePlaceholders(body));
     // Logger.debug("body after normalize: ", normalizePlaceholders(body));
 
     let snip = new Snippet();
