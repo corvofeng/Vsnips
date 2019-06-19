@@ -2,6 +2,7 @@
 	"name": "Vsnips",
 	"displayName": "Vsnips",
 	"description": "Ultisnips for vscode",
+	"icon": "images/icon.png",
 	"publisher": "corvofeng",
 	"version": "0.0.2",
 	"engines": {
