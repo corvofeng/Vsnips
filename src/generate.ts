@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 
 let search_dirs = [
   '/home/corvo/.vim/UltiSnips',
-  '/home/corvo/.vim/plugged/vim-snippets/UltiSnips',
+  // '/home/corvo/.vim/plugged/vim-snippets/UltiSnips',
 ];
 
 function ultisnipsToJSON(ultisnips: string) {
@@ -42,7 +42,7 @@ function generate(context: vscode.ExtensionContext) {
         }
 
         // Logger.debug(sel);
-        // if (file != 'python.snippets') return;
+        if (file != 'python.snippets') return;
         const data = fs.readFileSync(f_name, 'utf8');
         // Logger.debug(data);
         let snippets = ultisnipsToJSON(data);
@@ -52,10 +52,11 @@ function generate(context: vscode.ExtensionContext) {
           sel,
           {
             provideCompletionItems(document, position, token) {
+              Logger.debug("Get completion item", document, position, token);
               let compleItems: Array<vscode.CompletionItem> = []
               snippets.forEach((snip) => {
                 const snippetCompletion = new vscode.CompletionItem(snip.prefix);
-                snippetCompletion.insertText = snip.body;
+                snippetCompletion.insertText = new vscode.SnippetString(snip.body); 
                 snippetCompletion.documentation = snip.descriptsion;
                 snippetCompletion.label = `Vsnips-${snip.prefix}: ${snip.descriptsion}`;
                 compleItems.push(snippetCompletion);
