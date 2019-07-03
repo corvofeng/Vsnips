@@ -24,12 +24,12 @@ function parse(rawSnippets: string): Array<Snippet> {
     let snip = new Snippet();
     snip.prefix = prefix;
     snip.body = normalizePlaceholders(body)
+    snip.body = lexParser(snip.body);
     snip.descriptsion = description;
 
     Logger.debug("prefix: ", snip.prefix);
     Logger.debug("description: ", snip.descriptsion);
     Logger.debug("body: ", snip.body);
-    lexParser(snip.body);
     snips.push(snip);
   }
   return snips;
@@ -42,13 +42,14 @@ function lexParser(str: string) {
   const snipScript = /`([^\`]*)`/g;
   // const innerStmt = /\`(.*)\`/;
 
-  const FT_UNKNOW= 0x0;
+  const FT_UNKNOW = 0x0;
   const FT_VIM = 0x1;
   const FT_PYTHON = 0x2;
   const FT_JAVASCRIPT = 0x3;
 
   Logger.info("Before parse", str);
   let stmt = null;
+  let rlt = '';
   while ((stmt = snipScript.exec(str)) !== null) {
     Logger.debug("Get parser", stmt);
     let func_type = FT_PYTHON;
@@ -58,30 +59,25 @@ function lexParser(str: string) {
       func_type = FT_VIM;
     } else if (stmt[1].startsWith('!js')) {
       func_type = FT_JAVASCRIPT;
-    }else {
+    } else {
       func_type = FT_UNKNOW;
     }
 
-    let rlt = '';
     switch (func_type) {
       case FT_PYTHON:
-        pythonRewrite(stmt[1]);
+        rlt = pythonRewrite(stmt[1]);
+        str = str.replace(snipScript, rlt);
         break;
 
       case FT_VIM:
         break;
-    
+
       case FT_JAVASCRIPT:
         break;
 
       default:
         break;
     }
-
-    // data.forEach((stmt) => {
-    //   let data = innerStmt.exec(stmt) as RegExpExecArray;
-    //   Logger.info("Get visual data", data);
-    // })
 
     Logger.info(stmt);
   }
@@ -91,8 +87,25 @@ function lexParser(str: string) {
 
 function pythonRewrite(stmt: string) {
   // 用于处理这一类字符串: `!p snip.rv = get_quoting_style(snip)`
-  Logger.info("Wanna rewrite", stmt);
-  Logger.info("Get quota style: ", ScriptFunc['get_quoting_style']());
+  Logger.debug("Wanna rewrite", stmt);
+
+  let func_name_pattern = /(\w+)\(snip\)/
+
+  if(func_name_pattern.test(stmt)) {
+    let [_, func_name] = func_name_pattern.exec(stmt) as RegExpExecArray
+    // Logger.info("Get quota style: ", ScriptFunc['get_quoting_style']());
+    Logger.info("Get func name", func_name);
+    let func = null;
+    try {
+      func = (ScriptFunc as any)[func_name as string];
+      Logger.info(func);
+      return func();
+    } catch(e) {
+      Logger.error(e);
+      return '';
+    }
+    
+  }
 
   return stmt;
 }
@@ -136,19 +149,19 @@ if __name__ == \`!p snip.rv = get_quoting_style(snip)\`__main__\`!p snip.rv = ge
 endsnippet`,
 
     // snippets with vim script
-//     `snippet full_title "Python title fully"
-// #!/usr/bin/env python
-// # -*- coding: utf-8 -*-
-// # vim: ts=4 sw=4 tw=99 et:
+    //     `snippet full_title "Python title fully"
+    // #!/usr/bin/env python
+    // # -*- coding: utf-8 -*-
+    // # vim: ts=4 sw=4 tw=99 et:
 
-// """
-// @Date   : \`!v strftime("%B %d, %Y")\`
-// @Author : \`!v g:snips_author\`
+    // """
+    // @Date   : \`!v strftime("%B %d, %Y")\`
+    // @Author : \`!v g:snips_author\`
 
-// """
+    // """
 
-// endsnippet
-// `,
+    // endsnippet
+    // `,
 
   ];
   TEST_CASE.forEach((txt: string) => {
