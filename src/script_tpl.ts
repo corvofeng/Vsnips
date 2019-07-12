@@ -26,6 +26,12 @@ function get_quoting_style() {
     return SINGLE_QUOTES;
 }
 
+function triple_quotes() {
+    return get_quoting_style().repeat(3);
+}
+
+
+
 export {
    get_quoting_style,
 }

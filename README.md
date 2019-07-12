@@ -2,6 +2,9 @@
 
 Allow user use Ultisnips in vscode.
 
+### VSCode插件示例
+
+https://github.com/Microsoft/vscode-extension-samples
 
 ### VSCode 动态添加code snippets
 

@@ -12,6 +12,9 @@ export function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   Logger.info('Congratulations, your extension "Vsnips" is now active!');
 
+  const VsnipDirs = vscode.workspace.getConfiguration().get('Vsnips.snipdir');
+  Logger.info("Get Vsnip dirs ", VsnipDirs);
+
   generate(context);
 
   // The command has been defined in the package.json file
