@@ -11,7 +11,7 @@ let search_dirs = [
 ];
 
 function ultisnipsToJSON(ultisnips: string) {
-  const snippets = parse(ultisnips)
+  const snippets = parse(ultisnips);
   Logger.debug(snippets);
   return snippets;
 }
@@ -42,7 +42,7 @@ function generate(context: vscode.ExtensionContext) {
         }
 
         // Logger.debug(sel);
-        if (file != 'python.snippets') return;
+        // if (file != 'python.snippets') return;
         const data = fs.readFileSync(f_name, 'utf8');
         // Logger.debug(data);
         let snippets = ultisnipsToJSON(data);

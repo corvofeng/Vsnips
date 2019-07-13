@@ -3,7 +3,12 @@
 import * as vscode from "vscode";
 import { Logger } from "./logger";
 import { generate } from "./generate";
+import { init_vim_var } from "./script_tpl";
 
+let DEFAULT_VARS_FILES = [
+  '/home/corvo/.vimrc',
+  '/home/corvo/.vim/common.vim',
+];
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -14,6 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const VsnipDirs = vscode.workspace.getConfiguration().get('Vsnips.snipdir');
   Logger.info("Get Vsnip dirs ", VsnipDirs);
+  init_vim_var(DEFAULT_VARS_FILES);
 
   generate(context);
 

@@ -47,6 +47,7 @@ jsLogger.setHandler(function (messages, context) {
   let time = ('0' + today.getHours()).slice(-2) + ":" + ('0' + today.getMinutes()).slice(-2) + ":" + ('0' + today.getSeconds()).slice(-2);
 
   const formatLog = `${date} ${time}: [${context.level.name[0]}] ${msg}\n`;
+  console.log(formatLog);
   VsnipsStream.write(formatLog);
 });
 
