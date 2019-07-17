@@ -26,3 +26,7 @@ https://stackoverflow.com/questions/55647803/set-cursor-location-in-completionit
 ### snippets语法
 
 https://code.visualstudio.com/docs/editor/userdefinedsnippets#_creating-your-own-snippets
+
+### 查看当前活动的编辑器
+
+https://vscode-docs.readthedocs.io/en/stable/extensions/example-word-count/
