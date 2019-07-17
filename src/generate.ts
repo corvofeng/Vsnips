@@ -16,14 +16,14 @@ function ultisnipsToJSON(ultisnips: string) {
   return snippets;
 }
 
-function generate(context: vscode.ExtensionContext) {
-  search_dirs.forEach((dirname) => {
+async function generate(context: vscode.ExtensionContext) {
+  search_dirs.forEach(async (dirname) => {
     fs.readdir(dirname, function (err, files) {
       if (err) {
         Logger.error(err);
         return;
       }
-      files.forEach((file, index) => {
+      files.forEach(async (file, index) => {
         Logger.info("In snippets ", file);
 
         let res =  /([^\s]*)\.snippets$/.exec(file);
@@ -45,7 +45,7 @@ function generate(context: vscode.ExtensionContext) {
         // if (file != 'python.snippets') return;
         const data = fs.readFileSync(f_name, 'utf8');
         // Logger.debug(data);
-        let snippets = ultisnipsToJSON(data);
+        let snippets = await ultisnipsToJSON(data);
         const completItems: Array<vscode.Disposable> = [];
 
         let item = vscode.languages.registerCompletionItemProvider(
@@ -68,8 +68,7 @@ function generate(context: vscode.ExtensionContext) {
         completItems.push(item);
         completItems.forEach((item) => {
           context.subscriptions.push(item);
-        })
-
+        });
       });
     });
   });
