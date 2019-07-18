@@ -31,7 +31,7 @@ async function generate(context: vscode.ExtensionContext) {
           Logger.warn("Can't parse ", file)
           return;
         } 
-        Logger.debug(res);
+
         const [_, file_type] = res;
         let f_name = path.join(dirname, file);
         let sel: vscode.DocumentFilter;
@@ -44,12 +44,11 @@ async function generate(context: vscode.ExtensionContext) {
         // Logger.debug(sel);
         // if (file != 'python.snippets') return;
         const data = fs.readFileSync(f_name, 'utf8');
-        // Logger.debug(data);
         let snippets = await ultisnipsToJSON(data);
         const completItems: Array<vscode.Disposable> = [];
 
         let item = vscode.languages.registerCompletionItemProvider(
-          sel,
+          sel,  // 指定代码语言
           {
             provideCompletionItems(document, position, token) {
               // Logger.debug("Get completion item", document, position, token);
@@ -65,12 +64,15 @@ async function generate(context: vscode.ExtensionContext) {
             }
           },
         );
-        completItems.push(item);
-        completItems.forEach((item) => {
-          context.subscriptions.push(item);
-        });
+        await context.subscriptions.push(item);
+        // completItems.push(item);
+        // completItems.forEach((item) => {
+        //   context.subscriptions.push(item);
+        // });
       });
+
     });
+
   });
 }
 export { generate };

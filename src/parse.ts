@@ -8,10 +8,15 @@ class Snippet {
   body: string;
   descriptsion: string;
 
+  // 标记snip中是否有js函数, 如果有js占位函数的, 需要在补全时再进行一次求值操作
+  // 将body体中的js函数进行求值处理.
+  hasJSScript: boolean;
+
   constructor() {
     this.prefix = '';
     this.body = '';
     this.descriptsion = '';
+    this.hasJSScript = false;
   }
 }
 
@@ -23,13 +28,14 @@ function parse(rawSnippets: string): Array<Snippet> {
 
     let snip = new Snippet();
     snip.prefix = prefix;
-    snip.body = normalizePlaceholders(body)
-    snip.body = lexParser(snip.body);
+    snip.body = normalizePlaceholders(body);
+    [snip.body, snip.hasJSScript] = lexParser(snip.body);
     snip.descriptsion = description;
 
     Logger.debug("prefix: ", snip.prefix);
     Logger.debug("description: ", snip.descriptsion);
     Logger.debug("body: ", snip.body);
+    Logger.debug("hasJSScript: ", snip.hasJSScript);
     snips.push(snip);
   }
   return snips;
@@ -37,7 +43,7 @@ function parse(rawSnippets: string): Array<Snippet> {
 
 // 这部分代码用于实现从vim 或是 python函数 => js函数的转换
 // 主要应用了正则替换.
-function lexParser(str: string) {
+function lexParser(str: string): [string, boolean]{
   // 检查所有(``)包裹的部分, 并确保里面没有嵌套(`)
   // 不允许多行包含多行
   const SNIP_FUNC_PATTERN = /`([^\`]+)\`/g;
@@ -48,9 +54,10 @@ function lexParser(str: string) {
   const FT_JAVASCRIPT = 0x3;
 
   Logger.debug("Before parse", str);
-  let res = null;
   let rlt = '';
+  let hasJSScript = false;
   // 记录需要替换的值, 最后统一替换
+  let res = null;
   let replaceArray = [];
 
   while ((res = SNIP_FUNC_PATTERN.exec(str)) !== null) {
@@ -65,6 +72,7 @@ function lexParser(str: string) {
     } else if (func.startsWith('!js')) {
       // TODO: make my own func
       func_type = FT_JAVASCRIPT;
+      hasJSScript = true;
     } else {
       func_type = FT_UNKNOW;
     }
@@ -90,10 +98,13 @@ function lexParser(str: string) {
   }
   replaceArray.forEach((pair) => {
     let [stmt, rlt] = pair;
+    if(rlt.startsWith(`!js`)) {
+      hasJSScript = true;
+    }
     str = str.replace(stmt, rlt);
   });
 
-  return str;
+  return [str, hasJSScript];
 }
 
 function pythonRewrite(stmt: string) {

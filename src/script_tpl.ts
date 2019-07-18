@@ -13,7 +13,10 @@
 
 import * as fs from 'fs';
 import { Logger } from './logger';
+import * as vscode from "vscode";
 import * as path from 'path';
+
+let JS_FUNC_FMT = `!js`;
 
 // For python.snippets
 let SINGLE_QUOTES = "'";
@@ -27,12 +30,33 @@ let NUMPY = 0x5;
 let JEDI = 0x6;
 let VIM_VARS_MAP: Map<string, string> = new Map();
 
+function jsFuncDecorator(funcName: string) {
+    return `\`!js ${funcName}\``;
+}
+
+function jsFuncEval(snip: string,
+    document: vscode.TextDocument, position: vscode.Position, token:vscode.CancellationToken) {
+  const JS_SNIP_FUNC_PATTERN = /`!js (\w+)\`/g;
+  if(!JS_SNIP_FUNC_PATTERN.test(snip)) {
+      Logger.warn("The snip" +snip + " don't have any js function");
+
+  }
+  let [pattern, func_name] = JS_SNIP_FUNC_PATTERN.exec(snip) as RegExpExecArray;
+  Logger.debug("Get ", pattern, func_name);
+}
+
+
 function get_quoting_style() {
     return SINGLE_QUOTES;
 }
 
 function get_markdown_title() {
-    return '';
+    return jsFuncDecorator('js_markdown_title');
+}
+
+function js_markdown_title(
+    document: vscode.TextDocument, position: vscode.Position, token:vscode.CancellationToken) {
+    
 }
 
 function triple_quotes() {
@@ -66,7 +90,7 @@ function init_vim_var(var_files: Array<string>) {
 
 // 通过变量名获取vim中的变量
 function get_vim_var(name: string) {
-    if(VIM_VARS_MAP === null) {
+    if (VIM_VARS_MAP === null) {
         Logger.warn("There is no varilables in map");
         return '';
     }
@@ -76,10 +100,10 @@ function get_vim_var(name: string) {
 
 
 export {
-   get_quoting_style,
-   get_markdown_title,
-   init_vim_var,
-   get_vim_var,
+    get_quoting_style,
+    get_markdown_title,
+    init_vim_var,
+    get_vim_var,
 };
 
 // for unittest
@@ -108,5 +132,5 @@ function main() {
 
 
 if (require.main === module) {
-  main();
+    main();
 }
