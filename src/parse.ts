@@ -98,7 +98,7 @@ function lexParser(str: string): [string, boolean]{
   }
   replaceArray.forEach((pair) => {
     let [stmt, rlt] = pair;
-    if(rlt.startsWith(`!js`)) {
+    if(rlt.startsWith(`\`!js`)) {
       hasJSScript = true;
     }
     str = str.replace(stmt, rlt);
