@@ -30,20 +30,13 @@ let NUMPY = 0x5;
 let JEDI = 0x6;
 let VIM_VARS_MAP: Map<string, string> = new Map();
 
+// jsFuncDecorator 与jsFuncEval配合使用
+// jsFuncDecorator将函数指针转换为字符串装载
 function jsFuncDecorator(funcName: string) {
     return `\`!js ${funcName}\``;
 }
 
-function jsFuncEval(snip: string,
-    document: vscode.TextDocument, position: vscode.Position, token:vscode.CancellationToken) {
-  const JS_SNIP_FUNC_PATTERN = /`!js (\w+)\`/g;
-  if(!JS_SNIP_FUNC_PATTERN.test(snip)) {
-      Logger.warn("The snip" +snip + " don't have any js function");
 
-  }
-  let [pattern, func_name] = JS_SNIP_FUNC_PATTERN.exec(snip) as RegExpExecArray;
-  Logger.debug("Get ", pattern, func_name);
-}
 
 
 function get_quoting_style() {
@@ -56,7 +49,7 @@ function get_markdown_title() {
 
 function js_markdown_title(
     document: vscode.TextDocument, position: vscode.Position, token:vscode.CancellationToken) {
-    
+    return "测试标题"
 }
 
 function triple_quotes() {
@@ -104,6 +97,8 @@ export {
     get_markdown_title,
     init_vim_var,
     get_vim_var,
+    jsFuncDecorator,
+    js_markdown_title,
 };
 
 // for unittest

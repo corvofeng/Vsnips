@@ -34,8 +34,8 @@ function ObjectToString(input: object | string): string {
   }
 }
 
-myLogger.setLevel(jsLogger.DEBUG);
-// myLogger.setLevel(jsLogger.INFO);
+// myLogger.setLevel(jsLogger.DEBUG);
+myLogger.setLevel(jsLogger.INFO);
 jsLogger.setHandler(function (messages, context) {
   const msg: string = Array.prototype.slice
     .call(messages, 0)

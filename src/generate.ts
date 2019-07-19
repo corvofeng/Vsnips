@@ -26,43 +26,45 @@ async function generate(context: vscode.ExtensionContext) {
       files.forEach(async (file, index) => {
         Logger.info("In snippets ", file);
 
-        let res =  /([^\s]*)\.snippets$/.exec(file);
+        let res = /([^\s]*)\.snippets$/.exec(file);
         if (res === null) {
           Logger.warn("Can't parse ", file)
           return;
-        } 
+        }
 
         const [_, file_type] = res;
         let f_name = path.join(dirname, file);
         let sel: vscode.DocumentFilter;
         if (file_type === 'all') {
-          sel = { scheme: 'file'};
+          sel = { scheme: 'file' };
         } else {
           sel = { scheme: 'file', language: file_type };
         }
 
-        // Logger.debug(sel);
         // if (file != 'python.snippets') return;
         const data = fs.readFileSync(f_name, 'utf8');
         let snippets = await ultisnipsToJSON(data);
-        const completItems: Array<vscode.Disposable> = [];
 
         let item = vscode.languages.registerCompletionItemProvider(
           sel,  // 指定代码语言
           {
             provideCompletionItems(document, position, token) {
-              // Logger.debug("Get completion item", document, position, token);
+              Logger.debug("Get completion item", document, position, token);
               let compleItems: Array<vscode.CompletionItem> = []
               snippets.forEach((snip) => {
+
                 const snippetCompletion = new vscode.CompletionItem(snip.prefix);
-                snippetCompletion.insertText = new vscode.SnippetString(snip.body); 
                 snippetCompletion.documentation = snip.descriptsion + '\n' + snip.body;
                 snippetCompletion.label = `Vsnips-${snip.prefix}: ${snip.descriptsion}`;
+                snippetCompletion.insertText = new vscode.SnippetString(
+                  snip.get_snip_body(document, position, token)
+                );
                 compleItems.push(snippetCompletion);
               });
               return compleItems;
             }
           },
+          "V", "v",
         );
         await context.subscriptions.push(item);
         // completItems.push(item);

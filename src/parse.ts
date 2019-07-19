@@ -1,5 +1,6 @@
 import { Logger } from "./logger";
 import * as ScriptFunc from "./script_tpl";
+import * as vscode from "vscode";
 
 const VIM_SNIPPET = /^snippet ([^\s]*)\s*(?:"(.*?)".*)?\n((?:.|\n)*?)\nendsnippet$/gm;
 
@@ -17,6 +18,17 @@ class Snippet {
     this.body = '';
     this.descriptsion = '';
     this.hasJSScript = false;
+  }
+
+  get_snip_body(
+    document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+    let rlt = '';
+    if (this.hasJSScript) {
+      rlt = jsFuncEval(this.body, document, position, token);
+    } else {
+      rlt = this.body;
+    }
+    return rlt;
   }
 }
 
@@ -43,7 +55,7 @@ function parse(rawSnippets: string): Array<Snippet> {
 
 // 这部分代码用于实现从vim 或是 python函数 => js函数的转换
 // 主要应用了正则替换.
-function lexParser(str: string): [string, boolean]{
+function lexParser(str: string): [string, boolean] {
   // 检查所有(``)包裹的部分, 并确保里面没有嵌套(`)
   // 不允许多行包含多行
   const SNIP_FUNC_PATTERN = /`([^\`]+)\`/g;
@@ -82,7 +94,6 @@ function lexParser(str: string): [string, boolean]{
         rlt = pythonRewrite(func);
         replaceArray.push([stmt, rlt]);
         break;
-
       case FT_VIM:
         rlt = vimRewrite(func);
         replaceArray.push([stmt, rlt]);
@@ -94,11 +105,11 @@ function lexParser(str: string): [string, boolean]{
         break;
     }
 
-    Logger.info("After replace stmt", stmt, "we got: ", str);
+    Logger.debug("After replace stmt", stmt, "we got: ", str);
   }
   replaceArray.forEach((pair) => {
     let [stmt, rlt] = pair;
-    if(rlt.startsWith(`\`!js`)) {
+    if (rlt.startsWith(`\`!js`)) {
       hasJSScript = true;
     }
     str = str.replace(stmt, rlt);
@@ -113,14 +124,14 @@ function pythonRewrite(stmt: string) {
 
   let func_name_pattern = /(\w+)\(snip\)/;
 
-  if(func_name_pattern.test(stmt)) {
+  if (func_name_pattern.test(stmt)) {
     let [_, func_name] = func_name_pattern.exec(stmt) as RegExpExecArray;
-    Logger.info("Get func name", func_name);
+    Logger.debug("Get func name", func_name);
     let func = null;
     try {
       func = (ScriptFunc as any)[func_name as string];
       return func();
-    } catch(e) {
+    } catch (e) {
       Logger.error("In python func", e);
       return '';
     }
@@ -128,6 +139,7 @@ function pythonRewrite(stmt: string) {
 
   return stmt;
 }
+
 
 function vimRewrite(stmt: string) {
   // 用于处理这一类字符串: `!v g:snips_author`
@@ -137,7 +149,7 @@ function vimRewrite(stmt: string) {
   let time_func_pattern = /strftime\("(.+)"\)/;
   let variable_pattern = /g:(\w*)/;
 
-  if(time_func_pattern.test(stmt)) {
+  if (time_func_pattern.test(stmt)) {
     let [_, time_fmt] = time_func_pattern.exec(stmt) as RegExpExecArray;
     Logger.debug("Get time fmt", time_fmt);
     // Please refer to:
@@ -156,7 +168,7 @@ function vimRewrite(stmt: string) {
       time_fmt = time_fmt.replace(vim_time_func, vscode_time_func);
     });
     stmt = time_fmt;
-  } else if(variable_pattern.test(stmt)) {
+  } else if (variable_pattern.test(stmt)) {
     let [_, variable_name] = variable_pattern.exec(stmt) as RegExpExecArray;
     Logger.debug("Get var", variable_name);
     stmt = ScriptFunc.get_vim_var(variable_name);
@@ -170,11 +182,38 @@ function normalizePlaceholders(str: string) {
   if (visualPlaceholder.test(str)) {
     let data = visualPlaceholder.exec(str) as RegExpExecArray;
     const n = data[1];
-    Logger.info("Get visual data", data, n);
+    Logger.debug("Get visual data", data, n);
     return str.replace(visualPlaceholder, `$${n}`);
   } else {
     return str;
   }
+}
+
+// 获得snip中的js函数, 并调用该函数名对应的函数指针.
+function jsFuncEval(snip: string,
+  document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+  Logger.info("In js Func eval");
+
+  let res = null;
+  const JS_SNIP_FUNC_PATTERN = /`!js (\w+)\`/g;
+  while ((res = JS_SNIP_FUNC_PATTERN.exec(snip)) !== null) {
+    let [pattern, func_name] = res as RegExpExecArray;
+    Logger.info("Get js func", pattern, func_name);
+    let func = (ScriptFunc as any)[func_name as string];
+    if (func === null) {
+      Logger.warn("Can't get js function", func_name, "please check");
+      return snip;
+    }
+    let funcRlt = '';
+    try {
+      funcRlt = func(document, position, token);
+    } catch (e) {
+      Logger.error("In js func", e);
+      return snip;
+    }
+    snip = snip.replace(pattern, funcRlt);
+  }
+  return snip;
 }
 
 export { parse };
@@ -212,7 +251,7 @@ endsnippet`,
 
 endsnippet`,
 
-  `snippet title "Hexo post header" b
+    `snippet title "Hexo post header" b
 ---
 layout: post
 title: \`!p snip.rv = get_markdown_title(snip)\`
