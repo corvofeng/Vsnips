@@ -1,4 +1,5 @@
 import { Logger } from "./logger";
+import { VSnipContext } from "./vsnip_context";
 import * as ScriptFunc from "./script_tpl";
 import * as vscode from "vscode";
 
@@ -14,17 +15,17 @@ class Snippet {
   hasJSScript: boolean;
 
   constructor() {
-    this.prefix = '';
-    this.body = '';
-    this.descriptsion = '';
+    this.prefix = "";
+    this.body = "";
+    this.descriptsion = "";
     this.hasJSScript = false;
   }
 
-  get_snip_body(
-    document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
-    let rlt = '';
+  get_snip_body(vsContext: VSnipContext) {
+    // document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+    let rlt = "";
     if (this.hasJSScript) {
-      rlt = jsFuncEval(this.body, document, position, token);
+      rlt = jsFuncEval(this.body, vsContext);
     } else {
       rlt = this.body;
     }
@@ -66,7 +67,7 @@ function lexParser(str: string): [string, boolean] {
   const FT_JAVASCRIPT = 0x3;
 
   Logger.debug("Before parse", str);
-  let rlt = '';
+  let rlt = "";
   let hasJSScript = false;
   // 记录需要替换的值, 最后统一替换
   let res = null;
@@ -77,11 +78,11 @@ function lexParser(str: string): [string, boolean] {
     Logger.debug("Get parser", stmt);
 
     let func_type = FT_PYTHON;
-    if (func.startsWith('!p')) {
+    if (func.startsWith("!p")) {
       func_type = FT_PYTHON;
-    } else if (func.startsWith('!v')) {
+    } else if (func.startsWith("!v")) {
       func_type = FT_VIM;
-    } else if (func.startsWith('!js')) {
+    } else if (func.startsWith("!js")) {
       // TODO: make my own func
       func_type = FT_JAVASCRIPT;
       hasJSScript = true;
@@ -107,7 +108,7 @@ function lexParser(str: string): [string, boolean] {
 
     Logger.debug("After replace stmt", stmt, "we got: ", str);
   }
-  replaceArray.forEach((pair) => {
+  replaceArray.forEach(pair => {
     let [stmt, rlt] = pair;
     if (rlt.startsWith(`\`!js`)) {
       hasJSScript = true;
@@ -133,13 +134,12 @@ function pythonRewrite(stmt: string) {
       return func();
     } catch (e) {
       Logger.error("In python func", e);
-      return '';
+      return "";
     }
   }
 
   return stmt;
 }
-
 
 function vimRewrite(stmt: string) {
   // 用于处理这一类字符串: `!v g:snips_author`
@@ -155,15 +155,15 @@ function vimRewrite(stmt: string) {
     // Please refer to:
     //   https://code.visualstudio.com/docs/editor/userdefinedsnippets#_variables
     let replace_table = [
-      ['%Y', '$CURRENT_YEAR'],
-      ['%B', '$CURRENT_MONTH_NAME'],
-      ['%m', '$CURRENT_MONTH'],
-      ['%d', '$CURRENT_DATE'],
-      ['%H', '$CURRENT_HOUR'],
-      ['%M', '$CURRENT_MINUTE'],
-      ['%S', '$CURRENT_SECOND'],
+      ["%Y", "$CURRENT_YEAR"],
+      ["%B", "$CURRENT_MONTH_NAME"],
+      ["%m", "$CURRENT_MONTH"],
+      ["%d", "$CURRENT_DATE"],
+      ["%H", "$CURRENT_HOUR"],
+      ["%M", "$CURRENT_MINUTE"],
+      ["%S", "$CURRENT_SECOND"]
     ];
-    replace_table.forEach((time_func) => {
+    replace_table.forEach(time_func => {
       let [vim_time_func, vscode_time_func] = time_func;
       time_fmt = time_fmt.replace(vim_time_func, vscode_time_func);
     });
@@ -190,8 +190,7 @@ function normalizePlaceholders(str: string) {
 }
 
 // 获得snip中的js函数, 并调用该函数名对应的函数指针.
-function jsFuncEval(snip: string,
-  document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+function jsFuncEval(snip: string, vsContext: VSnipContext) {
   Logger.info("In js Func eval");
 
   let res = null;
@@ -204,9 +203,9 @@ function jsFuncEval(snip: string,
       Logger.warn("Can't get js function", func_name, "please check");
       return snip;
     }
-    let funcRlt = '';
+    let funcRlt = "";
     try {
-      funcRlt = func(document, position, token);
+      funcRlt = func(vsContext);
     } catch (e) {
       Logger.error("In js func", e);
       return snip;
@@ -217,69 +216,3 @@ function jsFuncEval(snip: string,
 }
 
 export { parse };
-
-
-// This is for unittest.
-
-function main() {
-  let TEST_CASE = [
-    // simple snippets
-    `snippet gitig "Git add will ignore this"
-####### XXX: Can't GIT add [START] #########
-$1
-####### XXX: Can't GIT add  [END]  #########
-endsnippet
-`,
-    // snippets with python
-    `snippet ifmain "ifmain" b
-if __name__ == \`!p snip.rv = get_quoting_style(snip)\`__main__\`!p snip.rv = get_quoting_style(snip)\`:
-	\${1:\${VISUAL:main()}}
-	\${2:\${VISUAL}}
-endsnippet`,
-
-    // snippets with vim script
-    `snippet full_title "Python title fully"
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# vim: ts=4 sw=4 tw=99 et:
-
-"""
-@Date   : \`!v strftime("%B %d, %Y")\`
-@Author : \`!v g:snips_author\`
-
-"""
-
-endsnippet`,
-
-    `snippet title "Hexo post header" b
----
-layout: post
-title: \`!p snip.rv = get_markdown_title(snip)\`
-date: \`!v strftime("%Y-%m-%d %H:%M:%S")\`
-author: \`!v g:snips_author\`
-tags: 
-description: ${3}
-categories: Docs
-photos:  
-toc: true
-
----
-
-${0}
-endsnippet`
-  ];
-
-  let TEST_VAR_FILES = [
-    '/home/corvo/.vim/common.vim',
-  ];
-  ScriptFunc.init_vim_var(TEST_VAR_FILES);
-
-  TEST_CASE.forEach((txt: string) => {
-    // Logger.debug(parse(txt));
-    parse(txt);
-  });
-}
-
-if (require.main === module) {
-  main();
-}

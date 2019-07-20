@@ -4,6 +4,7 @@ import * as path from 'path';
 import { Logger } from "./logger";
 import { parse } from './parse';
 import * as vscode from "vscode";
+import { VSnipContext } from './vsnip_context';
 
 let search_dirs = [
   '/home/corvo/.vim/UltiSnips',
@@ -48,16 +49,16 @@ async function generate(context: vscode.ExtensionContext) {
         let item = vscode.languages.registerCompletionItemProvider(
           sel,  // 指定代码语言
           {
-            provideCompletionItems(document, position, token) {
-              Logger.debug("Get completion item", document, position, token);
-              let compleItems: Array<vscode.CompletionItem> = []
+            provideCompletionItems(document, position, token, context) {
+              Logger.debug("Get completion item", document, position, token, context);
+              let compleItems: Array<vscode.CompletionItem> = [];
+              let vSnipContext = new VSnipContext(document, position, token, context);
               snippets.forEach((snip) => {
-
                 const snippetCompletion = new vscode.CompletionItem(snip.prefix);
                 snippetCompletion.documentation = snip.descriptsion + '\n' + snip.body;
                 snippetCompletion.label = `Vsnips-${snip.prefix}: ${snip.descriptsion}`;
                 snippetCompletion.insertText = new vscode.SnippetString(
-                  snip.get_snip_body(document, position, token)
+                  snip.get_snip_body(vSnipContext)
                 );
                 compleItems.push(snippetCompletion);
               });
