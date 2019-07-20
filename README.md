@@ -2,15 +2,17 @@
 
 Allow user use Ultisnips in vscode.
 
+> It is under development, although I can't guarantee that
+> all ultisnips functions can be used in vscode, I will try my best.
+> Please feel free to give an issue or pull requests.
+
 ### VSCode插件示例
 
 https://github.com/Microsoft/vscode-extension-samples
 
 ### VSCode 动态添加code snippets
 
-
 https://code.visualstudio.com/api/references/vscode-api#CompletionItemProvider
-
 https://github.com/Microsoft/vscode/issues/3210
 
 
