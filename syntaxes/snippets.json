@@ -1,0 +1,47 @@
+{
+    "scopeName": "source.snippets",
+    "injectionSelector": "L:comment.line.number-sign",
+    "foldingStartMarker": "^snippet",
+    "foldingStopMarker": "^endsnippet$",
+    "patterns": [
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#snip-head"
+        }
+    ],
+    "repository": {
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.control",
+                    "match": "\\b(?i)(snippet|endsnippet|priority|global|endglobal)\\b"
+                }
+            ]
+        },
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.line.number-sign",
+                    "begin": "#",
+                    "end": "\n"
+                }
+            ]
+        },
+        "snip-head": {
+            "match": "\\s*(.*)\\s*(\".*\")",
+            "captures": {
+                "1": {
+                    "name": "entity.name.function"
+                },
+                "2": {
+                    "name": "markup.quote"
+                }
+            }
+        }
+    }
+}

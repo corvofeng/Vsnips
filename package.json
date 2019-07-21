@@ -43,6 +43,13 @@
 					"snippets"
 				]
 			}
+		],
+		"grammars": [
+			{
+				"language": "snippets",
+				"scopeName": "source.snippets",
+				"path": "./syntaxes/snippets.json"
+			}
 		]
 	},
 	"scripts": {
