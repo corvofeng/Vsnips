@@ -11,6 +11,10 @@ let DEFAULT_VARS_FILES = [
   '/home/corvo/.vim/common.vim',
 ];
 
+// 用户当前的可以放置配置文件的位置
+// Copy from: https://stackoverflow.com/a/26227660
+let USER_DIR = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + 'Library/Preferences' : process.env.HOME + "/.local/share")
+
 let DEFAULT_ENABLE_SYNTAX = [
   '*'
 ];
