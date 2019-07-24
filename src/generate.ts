@@ -5,6 +5,7 @@ import { Logger } from "./logger";
 import { parse } from './parse';
 import * as vscode from "vscode";
 import { VSnipContext } from './vsnip_context';
+import { VsnipDir } from './kv_store';
 
 let search_dirs = [
   '/home/corvo/.vim/UltiSnips',
@@ -18,7 +19,20 @@ function ultisnipsToJSON(ultisnips: string) {
 }
 
 async function generate(context: vscode.ExtensionContext) {
+  let has_repush = false;
+  function repush() {
+    if (!has_repush) {
+      Logger.warn("Repush the user local dir");
+      has_repush = true;
+      inner_generate(VsnipDir);
+    }
+  }
+
   search_dirs.forEach(async (dirname) => {
+    inner_generate(dirname);
+  });
+
+  async function inner_generate(dirname: string) {
     fs.readdir(dirname, function (err, files) {
       if (err) {
         Logger.error(err);
@@ -51,6 +65,7 @@ async function generate(context: vscode.ExtensionContext) {
           {
             provideCompletionItems(document, position, token, context) {
               Logger.debug("Get completion item", document, position, token, context);
+              repush();
               let compleItems: Array<vscode.CompletionItem> = [];
               let vSnipContext = new VSnipContext(document, position, token, context);
               snippets.forEach((snip) => {
@@ -76,6 +91,6 @@ async function generate(context: vscode.ExtensionContext) {
 
     });
 
-  });
+  }
 }
 export { generate };

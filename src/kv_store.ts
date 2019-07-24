@@ -34,15 +34,19 @@ let DEFAULT_LANG = [
   'cpp',
   'all',
   'js',
+  'python',
 ];
 
+// Download snippets from: https://github.com/honza/vim-snippets
 DEFAULT_LANG.forEach((lang: string) => {
   let snipfile = path.join(VsnipDir, lang + '.snippets');
-  Logger.debug("Create file: ", snipfile);
-  const file = fs.createWriteStream(snipfile);
-  const req = request.get(
-    `https://raw.githubusercontent.com/honza/vim-snippets/master/UltiSnips/${lang}.snippets`
-  ).pipe(file);
+  if (!fs.existsSync(snipfile)) {
+    Logger.debug("Create file: ", snipfile);
+    const file = fs.createWriteStream(snipfile);
+    const req = request.get(
+      `https://raw.githubusercontent.com/honza/vim-snippets/master/UltiSnips/${lang}.snippets`
+    ).pipe(file);
+  }
 });
 
 
@@ -52,3 +56,5 @@ const req = request.get(
   "https://github.com/honza/vim-snippets/archive/master.zip").pipe(file);
 console.log("create ", file)
 */
+
+export {VsnipDir};
