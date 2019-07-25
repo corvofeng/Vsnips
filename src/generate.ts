@@ -7,11 +7,6 @@ import * as vscode from "vscode";
 import { VSnipContext } from './vsnip_context';
 import { VsnipDir } from './kv_store';
 
-let search_dirs = [
-  '/home/corvo/.vim/UltiSnips',
-  // '/home/corvo/.vim/plugged/vim-snippets/UltiSnips',
-];
-
 function ultisnipsToJSON(ultisnips: string) {
   const snippets = parse(ultisnips);
   Logger.debug(snippets);
@@ -19,20 +14,45 @@ function ultisnipsToJSON(ultisnips: string) {
 }
 
 async function generate(context: vscode.ExtensionContext) {
-  let has_repush = false;
-  function repush() {
-    if (!has_repush) {
-      Logger.warn("Repush the user local dir");
-      has_repush = true;
-      inner_generate(VsnipDir);
+
+  // 记录哪些类型的语言已经增加过snippets, 已经增加过的不再重复.
+  let has_repush: Map<string, boolean>= new Map();
+
+  // 如果从一开始就解析所有的snippet文件, 势必会造成vscode启动卡顿的问题
+  // 这里采取一种替换方案, 初始时, 只是注册一个`registerCompletionItemProvider`
+  // 当用户真正触发补全操作时, 才会解析对应的snippets文件,
+  // 将解析放在了用户第一次触发的阶段.
+
+  // 1. 注册默认的completionItemProiver
+  let defaultItem = vscode.languages.registerCompletionItemProvider(
+    "*",
+    {
+      async provideCompletionItems(document, position, token, context) {
+        await repush(document.languageId);
+        return null;
+      }
+    },
+    '*',
+  );
+  context.subscriptions.push(defaultItem);
+
+  return;  // 插件初始化操作已经结束, 直接return
+
+
+  // 2. 用户触发了补全事件, 此时依照文件类型, 查找对应的snippets文件
+  async function repush(fileType: string) {
+    if (!has_repush.get(fileType)) {
+      Logger.info("Repush the " + fileType + "from local dir");
+      has_repush.set(fileType, true);
+      await inner_generate(VsnipDir, fileType);
     }
   }
+  // search_dirs.forEach(async (dirname) => {
+  //   inner_generate(dirname);
+  // });
 
-  search_dirs.forEach(async (dirname) => {
-    inner_generate(dirname);
-  });
-
-  async function inner_generate(dirname: string) {
+  // 主生成函数, 
+  async function inner_generate(dirname: string, fileType: string) {
     fs.readdir(dirname, function (err, files) {
       if (err) {
         Logger.error(err);
@@ -56,7 +76,7 @@ async function generate(context: vscode.ExtensionContext) {
           sel = { scheme: 'file', language: file_type };
         }
 
-        // if (file != 'python.snippets') return;
+        if (file != `${file_type}.snippets`) return;
         const data = fs.readFileSync(f_name, 'utf8');
         let snippets = await ultisnipsToJSON(data);
 
@@ -65,7 +85,7 @@ async function generate(context: vscode.ExtensionContext) {
           {
             provideCompletionItems(document, position, token, context) {
               Logger.debug("Get completion item", document, position, token, context);
-              repush();
+              // repush();
               let compleItems: Array<vscode.CompletionItem> = [];
               let vSnipContext = new VSnipContext(document, position, token, context);
               snippets.forEach((snip) => {
@@ -88,9 +108,7 @@ async function generate(context: vscode.ExtensionContext) {
         //   context.subscriptions.push(item);
         // });
       });
-
     });
-
   }
 }
 export { generate };
