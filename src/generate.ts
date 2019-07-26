@@ -32,7 +32,7 @@ async function generate(context: vscode.ExtensionContext) {
         return null;
       }
     },
-    'v', 'V',
+    "*",
   );
   context.subscriptions.push(defaultItem);
 
