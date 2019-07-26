@@ -4,7 +4,7 @@
 	"description": "Ultisnips for vscode",
 	"icon": "images/icon.png",
 	"publisher": "corvofeng",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"engines": {
 		"vscode": "^1.35.0"
 	},
@@ -30,6 +30,11 @@
 					"type": "array",
 					"description": "dir array for snippets",
 					"default": []
+				},
+				"Vsnips.LogLevel": {
+					"type": "string",
+					"description": "The Vsnip's LogLevel",
+					"default": "NO"
 				}
 			}
 		},
