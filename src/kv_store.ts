@@ -14,22 +14,30 @@
 // 此文件用于保存各种信息
 
 
-import { Logger } from "./logger";
-import * as zlib from "zlib";
-import * as https from 'https';
+// import { Logger } from "./logger";
+import * as jsLogger from "js-logger";
 import * as request from "request";
 import * as fs from "fs";
 import * as path from "path";
 
+// 用户当前的可以放置配置文件的位置
+// Copy from: https://stackoverflow.com/a/26227660
 const USER_DIR = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + 'Library/Preferences' : process.env.HOME + "/.local/share")
-Logger.debug("Get usre dir", USER_DIR);
+console.log("Get usre dir", USER_DIR);
 
 // In linux, the default vsnips dir is in:
-//     ~/.local/share/Vsnips/Ultisnips/
-const VsnipDir = path.join(USER_DIR, 'Vsnips', 'Ultisnips');
+//     ~/.local/share/Vsnips/
+const VsnipDir = path.join(USER_DIR, 'Vsnips');
+
+
+const UltiSnipsDir = path.join(VsnipDir,  'Ultisnips');
 
 if (!fs.existsSync(VsnipDir)) {
   fs.mkdirSync(VsnipDir);
+}
+
+if (!fs.existsSync(UltiSnipsDir)) {
+  fs.mkdirSync(UltiSnipsDir);
 }
 
 
@@ -44,7 +52,7 @@ let DEFAULT_LANG = [
 
 
 const search_dirs = [
-  VsnipDir,
+  UltiSnipsDir,
   // path.join(process.env.HOME, '.vim', 'UltiSnips'),
   // '/home/corvo/.vim/UltiSnips',
   // '/home/corvo/.vim/plugged/vim-snippets/UltiSnips',
@@ -53,9 +61,9 @@ const search_dirs = [
 function DownloadSnips() {
   // Download snippets from: https://github.com/honza/vim-snippets
   DEFAULT_LANG.forEach((lang: string) => {
-    let snipfile = path.join(VsnipDir, lang + '.snippets');
+    let snipfile = path.join(UltiSnipsDir, lang + '.snippets');
     if (!fs.existsSync(snipfile)) {
-      Logger.debug("Create file: ", snipfile);
+      console.log("Create file: ", snipfile);
       const file = fs.createWriteStream(snipfile);
       const req = request.get(
         `https://raw.githubusercontent.com/honza/vim-snippets/master/UltiSnips/${lang}.snippets`
@@ -65,4 +73,44 @@ function DownloadSnips() {
 }
 DownloadSnips();
 
-export { VsnipDir };
+// 日志级别, NO表示不打印日志
+let LOG_LVL = 'NO'
+function setLogLevel(level: string) {
+  LOG_LVL = level;
+}
+
+function getLogLevel() {
+  let lvl = undefined;
+  switch (LOG_LVL) {
+    case 'NO':
+      break;
+    case 'DEBUG':
+      lvl = jsLogger.DEBUG;
+      break;
+    case 'DEBUG':
+      lvl = jsLogger.INFO;
+      break;
+    default:
+      lvl = jsLogger.ERROR;
+      break;
+  }
+  return lvl;
+}
+
+function getLogFile() {
+  return path.join(VsnipDir, 'vsnips.log');
+}
+
+function getSnipsDirs() {
+  return search_dirs;
+}
+
+
+export {
+  // VsnipDir,
+  // UltiSnipsDir,
+  setLogLevel,
+  getLogLevel,
+  getLogFile,
+  getSnipsDirs,
+};

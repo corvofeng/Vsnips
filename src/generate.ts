@@ -5,7 +5,7 @@ import { Logger } from "./logger";
 import { parse } from './parse';
 import * as vscode from "vscode";
 import { VSnipContext } from './vsnip_context';
-import { VsnipDir } from './kv_store';
+import { getSnipsDirs } from './kv_store';
 
 function ultisnipsToJSON(ultisnips: string) {
   const snippets = parse(ultisnips);
@@ -16,7 +16,7 @@ function ultisnipsToJSON(ultisnips: string) {
 async function generate(context: vscode.ExtensionContext) {
 
   // 记录哪些类型的语言已经增加过snippets, 已经增加过的不再重复.
-  let has_repush: Map<string, boolean>= new Map();
+  let has_repush: Map<string, boolean> = new Map();
 
   // 如果从一开始就解析所有的snippet文件, 势必会造成vscode启动卡顿的问题
   // 这里采取一种替换方案, 初始时, 只是注册一个`registerCompletionItemProvider`
@@ -32,7 +32,7 @@ async function generate(context: vscode.ExtensionContext) {
         return null;
       }
     },
-    '*',
+    'v', 'V',
   );
   context.subscriptions.push(defaultItem);
 
@@ -44,7 +44,9 @@ async function generate(context: vscode.ExtensionContext) {
     if (!has_repush.get(fileType)) {
       Logger.info("Repush the " + fileType + "from local dir");
       has_repush.set(fileType, true);
-      await inner_generate(VsnipDir, fileType);
+      getSnipsDirs().forEach(async (snipDir) => {
+        await inner_generate(snipDir, fileType);
+      })
     }
   }
   // search_dirs.forEach(async (dirname) => {

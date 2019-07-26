@@ -17,6 +17,8 @@
 //      master  => test-src/typescript-consumer/index.ts
 import * as jsLogger from "js-logger";
 import { ILogger } from "js-logger/src/types";
+import { getLogFile, getLogLevel } from "./kv_store";
+import * as path from "path";
 
 import * as fs from "fs";
 
@@ -24,7 +26,6 @@ jsLogger.useDefaults();
 
 const myLogger: ILogger = jsLogger.get("Vsnips");
 
-var VsnipsStream = fs.createWriteStream("/tmp/vsnips.log", { flags: "a" });
 
 function ObjectToString(input: object | string): string {
   if (input instanceof Object) {
@@ -34,21 +35,30 @@ function ObjectToString(input: object | string): string {
   }
 }
 
-myLogger.setLevel(jsLogger.DEBUG);
-// myLogger.setLevel(jsLogger.INFO);
-jsLogger.setHandler(function (messages, context) {
-  const msg: string = Array.prototype.slice
-    .call(messages, 0)
-    .map(ObjectToString)
-    .join(" ");
+function InitLogger() {
+  let VsnipsStream = fs.createWriteStream(getLogFile(), { flags: "a" });
 
-  let today = new Date();
-  let date = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + today.getDate();
-  let time = ('0' + today.getHours()).slice(-2) + ":" + ('0' + today.getMinutes()).slice(-2) + ":" + ('0' + today.getSeconds()).slice(-2);
+  let lvl = getLogLevel();
 
-  const formatLog = `${date} ${time}: [${context.level.name[0]}] ${msg}\n`;
-  console.log(formatLog);
-  VsnipsStream.write(formatLog);
-});
+  if (lvl !== undefined) {
+    myLogger.setLevel(lvl);
+    // myLogger.setLevel(jsLogger.DEBUG);
+    // myLogger.setLevel(jsLogger.INFO);
+    jsLogger.setHandler(function (messages, context) {
+      const msg: string = Array.prototype.slice
+        .call(messages, 0)
+        .map(ObjectToString)
+        .join(" ");
 
-export { myLogger as Logger };
+      let today = new Date();
+      let date = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + today.getDate();
+      let time = ('0' + today.getHours()).slice(-2) + ":" + ('0' + today.getMinutes()).slice(-2) + ":" + ('0' + today.getSeconds()).slice(-2);
+
+      const formatLog = `${date} ${time}: [${context.level.name[0]}] ${msg}\n`;
+      console.log(formatLog);
+      VsnipsStream.write(formatLog);
+    });
+  }
+}
+
+export { myLogger as Logger, InitLogger};
