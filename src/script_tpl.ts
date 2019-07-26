@@ -77,8 +77,12 @@ function var_parser(data: string) {
 function init_vim_var(var_files: Array<string>) {
   var_files.forEach(file => {
     console.log("Get file", file);
-    const data = fs.readFileSync(file, "utf8");
-    var_parser(data);
+    try {
+      const data = fs.readFileSync(file, "utf8");
+      var_parser(data);
+    } catch (error) {
+      Logger.error("Can't parse the var file: ", file);
+    }
   });
 }
 
