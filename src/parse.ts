@@ -22,7 +22,6 @@ class Snippet {
   }
 
   get_snip_body(vsContext: VSnipContext) {
-    // document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
     let rlt = "";
     if (this.hasJSScript) {
       rlt = jsFuncEval(this.body, vsContext);

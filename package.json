@@ -26,9 +26,14 @@
 		"configuration": {
 			"title": "Vsnips",
 			"properties": {
-				"Vsnips.snipdir": {
+				"Vsnips.SnipsDir": {
 					"type": "array",
-					"description": "dir array for snippets",
+					"description": "Directories for snippets",
+					"default": []
+				},
+				"Vsnips.VarFiles": {
+					"type": "array",
+					"description": "Files for snippets variables, we call it vimrc.",
 					"default": []
 				},
 				"Vsnips.LogLevel": {

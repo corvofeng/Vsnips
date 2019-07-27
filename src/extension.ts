@@ -3,14 +3,8 @@
 import * as vscode from "vscode";
 import { Logger, InitLogger } from "./logger";
 import { generate } from "./generate";
-import {setLogLevel} from "./kv_store";
+import {setLogLevel, addSnipsDir, getVarfiles, addVarfiles} from "./kv_store";
 import { init_vim_var } from "./script_tpl";
-
-// 记录
-let DEFAULT_VARS_FILES = [
-  '/home/corvo/.vimrc',
-  '/home/corvo/.vim/common.vim',
-];
 
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -20,9 +14,16 @@ export async function activate(context: vscode.ExtensionContext) {
 
   Logger.info('Congratulations, your extension "Vsnips" is now active!');
 
-  const VsnipDirs = vscode.workspace.getConfiguration().get('Vsnips.snipdir');
-  Logger.info("Get Vsnip dirs ", VsnipDirs, "now we start create snippets");
-  init_vim_var(DEFAULT_VARS_FILES);
+  // 添加snips文件夹
+  const vsnipDirs = vscode.workspace.getConfiguration().get('Vsnips.SnipsDir', []);
+  Logger.info("Get Vsnip dirs ", vsnipDirs, "now we start create snippets");
+  addSnipsDir(vsnipDirs);
+
+  // 添加vim变量
+  const vimFiles = vscode.workspace.getConfiguration().get('Vsnips.VarFiles', []);
+  Logger.info("Get Vimfiles ", vimFiles, "now we start create snippets");
+  addVarfiles(vimFiles);
+  init_vim_var(getVarfiles());
 
   await generate(context);
 }
