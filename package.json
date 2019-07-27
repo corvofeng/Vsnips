@@ -4,7 +4,7 @@
 	"description": "Ultisnips for vscode",
 	"icon": "images/icon.png",
 	"publisher": "corvofeng",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"engines": {
 		"vscode": "^1.35.0"
 	},
@@ -68,12 +68,12 @@
 		"@types/mocha": "^2.2.42",
 		"@types/node": "^10.12.21",
 		"@types/request": "^2.48.2",
-		"request": "^2.88.0",
 		"tslint": "^5.12.1",
 		"typescript": "^3.3.1",
 		"vscode": "^1.1.28"
 	},
 	"dependencies": {
+		"request": "^2.88.0",
 		"js-logger": "^1.6.0"
 	},
 	"__metadata": {
