@@ -80,14 +80,7 @@ async function generate(context: vscode.ExtensionContext) {
           sel, // 指定代码语言
           {
             provideCompletionItems(document, position, token, context) {
-              Logger.debug(
-                "Get completion item",
-                document,
-                position,
-                token,
-                context
-              );
-              // repush();
+              Logger.debug(`Get completion item ${document}, ${position}`);
               let compleItems: Array<vscode.CompletionItem> = [];
               let vSnipContext = new VSnipContext(
                 document,

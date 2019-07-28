@@ -11,9 +11,11 @@
  *=======================================================================
  */
 
-// 此文件用于保存各种信息
+// 此文件用于保存各种信息.
 
+// 由于Logger还未初始化, 所以此文件中打印只能使用console.log, 不能使用Logger
 // import { Logger } from "./logger";
+
 import * as jsLogger from "js-logger";
 import * as request from "request";
 import * as fs from "fs";
@@ -21,16 +23,16 @@ import * as path from "path";
 
 // 用户当前的可以放置配置文件的位置
 // Copy from: https://stackoverflow.com/a/26227660
-const USER_DIR =
+const UserLocalDir =
   process.env.APPDATA ||
   (process.platform === "darwin"
     ? process.env.HOME + "Library/Preferences"
     : process.env.HOME + "/.local/share");
-console.log("Get usre dir", USER_DIR);
+console.log("Get usre dir", UserLocalDir);
 
 // In linux, the default vsnips dir is in:
 //     ~/.local/share/Vsnips/
-const VsnipDir = path.join(USER_DIR, "Vsnips");
+const VsnipDir = path.join(UserLocalDir, "Vsnips");
 
 const UltiSnipsDir = path.join(VsnipDir, "Ultisnips");
 
@@ -42,23 +44,27 @@ if (!fs.existsSync(UltiSnipsDir)) {
   fs.mkdirSync(UltiSnipsDir);
 }
 
-let DEFAULT_LANG = ["lua", "c", "cpp", "all", "javascript", "python"];
+let DeafultLang = ["lua", "c", "cpp", "all", "javascript", "python"];
 
-let search_dirs = [
-  UltiSnipsDir
+/**
+ * 存放snippet片段的文件夹
+ */
+let SearchDirs = [
+  UltiSnipsDir,
   // path.join(process.env.HOME, '.vim', 'UltiSnips'),
   // '/home/corvo/.vim/UltiSnips',
   // '/home/corvo/.vim/plugged/vim-snippets/UltiSnips',
 ];
-// 记录
-let var_files: string[] = [
+
+// 记录变量的文件, 用户可以指定vimrc
+let VarFiles: string[] = [
   // '/home/corvo/.vimrc',
   // '/home/corvo/.vim/common.vim',
 ];
 
 function DownloadSnips() {
   // Download snippets from: https://github.com/honza/vim-snippets
-  DEFAULT_LANG.forEach((lang: string) => {
+  DeafultLang.forEach((lang: string) => {
     let snipfile = path.join(UltiSnipsDir, lang + ".snippets");
     if (!fs.existsSync(snipfile)) {
       console.log("Create file: ", snipfile);
@@ -74,14 +80,14 @@ function DownloadSnips() {
 DownloadSnips();
 
 // 日志级别, NO表示不打印日志
-let LOG_LVL = "NO";
+let LogLevel = "NO";
 function setLogLevel(level: string) {
-  LOG_LVL = level;
+  LogLevel = level;
 }
 
 function getLogLevel() {
   let lvl = undefined;
-  switch (LOG_LVL) {
+  switch (LogLevel) {
     case "NO":
       break;
     case "DEBUG":
@@ -102,19 +108,19 @@ function getLogFile() {
 }
 
 function getSnipsDirs() {
-  return search_dirs;
+  return SearchDirs;
 }
 
 function addSnipsDir(dirNames: string[]) {
-  search_dirs = search_dirs.concat(dirNames);
+  SearchDirs = SearchDirs.concat(dirNames);
 }
 
 function getVarfiles(): string[] {
-  return var_files;
+  return VarFiles;
 }
 
 function addVarfiles(files: string[]) {
-  var_files = var_files.concat(files);
+  VarFiles = VarFiles.concat(files);
 }
 
 export {
