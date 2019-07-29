@@ -15,7 +15,7 @@ function ultisnipsToJSON(ultisnips: string) {
 async function generate(context: vscode.ExtensionContext) {
   // 记录哪些类型的语言已经增加过snippets, 已经增加过的不再重复.
   let has_repush: Map<string, boolean> = new Map();
-  Logger.info("Start generate vsnips");
+  Logger.info("Start register vsnips");
 
   // 如果从一开始就解析所有的snippet文件, 势必会造成vscode启动卡顿的问题
   // 这里采取一种替换方案, 初始时, 只是注册一个`registerCompletionItemProvider`
@@ -24,17 +24,19 @@ async function generate(context: vscode.ExtensionContext) {
 
   // 1. 注册默认的completionItemProiver
   let defaultItem = vscode.languages.registerCompletionItemProvider(
-    "*",
+    { scheme: 'file'},
     {
-      async provideCompletionItems(document, position, token, context) {
-        await repush(document.languageId);
+      provideCompletionItems(document, position, token, context) {
+        Logger.debug("Get completion item", document, position);
+        repush(document.languageId);
         return null;
       }
     },
-    "*"
+    "v", "V"
   );
   context.subscriptions.push(defaultItem);
 
+  Logger.info("Register vsnips success!!");
   return; // 插件初始化操作已经结束, 直接return
 
   // 2. 用户触发了补全事件, 此时依照文件类型, 查找对应的snippets文件
@@ -80,7 +82,7 @@ async function generate(context: vscode.ExtensionContext) {
           sel, // 指定代码语言
           {
             provideCompletionItems(document, position, token, context) {
-              Logger.debug(`Get completion item ${document}, ${position}`);
+              Logger.debug("Get completion item", document, position);
               let compleItems: Array<vscode.CompletionItem> = [];
               let vSnipContext = new VSnipContext(
                 document,
