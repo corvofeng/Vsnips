@@ -76,7 +76,7 @@ function var_parser(data: string) {
 // 读取给定文件中的vim变量
 function init_vim_var(var_files: Array<string>) {
   var_files.forEach(file => {
-    console.log("Get file", file);
+    Logger.debug("Get file", file);
     try {
       const data = fs.readFileSync(file, "utf8");
       var_parser(data);
@@ -101,6 +101,7 @@ export {
   get_markdown_title,
   init_vim_var,
   get_vim_var,
+  triple_quotes,
   jsFuncDecorator,
   js_markdown_title,
   var_parser

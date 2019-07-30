@@ -1,6 +1,8 @@
 import * as assert from "assert";
 import * as ScriptFunc from "../script_tpl";
 import { parse } from "../parse";
+import {setLogLevel, addSnipsDir, getVarfiles, addVarfiles} from "../kv_store";
+import { Logger, InitLogger } from "../logger";
 
 // suite("Parser Tests", function() {
 //   test("Somethins 1", function() {
@@ -22,8 +24,8 @@ endsnippet
     // snippets with python
     `snippet ifmain "ifmain" b
 if __name__ == \`!p snip.rv = get_quoting_style(snip)\`__main__\`!p snip.rv = get_quoting_style(snip)\`:
-	\${1:\${VISUAL:main()}}
-	\${2:\${VISUAL}}
+  \${1:\${VISUAL:main()}}
+  \${2:\${VISUAL}}
 endsnippet`,
 
     // snippets with vim script
@@ -55,18 +57,44 @@ toc: true
 ---
 
 ${0}
+endsnippet`,
+
+    `snippet class "class with docstrings" b
+class \${1:MyClass}(\${2:object}):
+
+  \`!p snip.rv = triple_quotes(snip)\`\${3:Docstring for $1. }\`!p snip.rv = triple_quotes(snip)\`
+
+  def __init__(self$4):
+    \`!p snip.rv = triple_quotes(snip)\`\${5:TODO: to be defined.}\`!p
+snip.rv = ""
+snip >> 2
+
+args = get_args(t[4])
+
+write_docstring_args(args, snip)
+if args:
+  snip.rv += '\n' + snip.mkline('', indent='')
+  snip += '{0}'.format(triple_quotes(snip))
+
+write_init_body(args, t[2], snip)
+\`
+    $0
 endsnippet`
+
   ];
 
   let TEST_VAR_FILES = [
     '/home/corvo/.vim/common.vim',
   ];
   ScriptFunc.init_vim_var(TEST_VAR_FILES);
+  setLogLevel('DEBUG')
+  InitLogger()
 
-  TEST_CASE.forEach((txt: string) => {
-    // Logger.debug(parse(txt));
-    parse(txt);
-  });
+  // TEST_CASE.forEach((txt: string) => {
+  //   // Logger.debug(parse(txt));
+  //   parse(txt);
+  // });
+  parse(TEST_CASE[TEST_CASE.length - 1]);
 }
 
 if (require.main === module) {
