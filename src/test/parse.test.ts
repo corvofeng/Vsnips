@@ -87,14 +87,13 @@ endsnippet`
     '/home/corvo/.vim/common.vim',
   ];
   ScriptFunc.init_vim_var(TEST_VAR_FILES);
-  setLogLevel('DEBUG')
-  InitLogger()
+  setLogLevel('DEBUG');
+  InitLogger();
 
-  // TEST_CASE.forEach((txt: string) => {
-  //   // Logger.debug(parse(txt));
-  //   parse(txt);
-  // });
-  parse(TEST_CASE[TEST_CASE.length - 1]);
+  TEST_CASE.forEach((txt: string) => {
+    parse(txt);
+  });
+  // parse(TEST_CASE[TEST_CASE.length - 1]);
 }
 
 if (require.main === module) {
