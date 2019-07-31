@@ -32,3 +32,11 @@ https://code.visualstudio.com/docs/editor/userdefinedsnippets#_creating-your-own
 ### 查看当前活动的编辑器
 
 https://vscode-docs.readthedocs.io/en/stable/extensions/example-word-count/
+
+### autoDocstring(现有的doc补全工具)
+
+https://github.com/NilsJPWerner/autoDocstring
+
+### eval时保留模块信息
+
+https://stackoverflow.com/a/43578552
