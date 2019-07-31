@@ -6,11 +6,11 @@ import * as vscode from "vscode";
 import { VSnipContext } from "./vsnip_context";
 import { getSnipsDirs } from "./kv_store";
 
-function ultisnipsToJSON(ultisnips: string) {
-  const snippets = parse(ultisnips);
-  Logger.debug(snippets);
-  return snippets;
-}
+// function ultisnipsToJSON(ultisnips: string) {
+//   const snippets = parse(ultisnips);
+//   Logger.debug(snippets);
+//   return snippets;
+// }
 
 async function generate(context: vscode.ExtensionContext) {
   // 记录哪些类型的语言已经增加过snippets, 已经增加过的不再重复.
@@ -65,7 +65,7 @@ async function generate(context: vscode.ExtensionContext) {
 
     const sel: vscode.DocumentFilter = { scheme: "file", language: needFileType };
     const data = fs.readFileSync(f_name, "utf8");
-    let snippets = await ultisnipsToJSON(data);
+    let snippets = await parse(data);
 
     let item = vscode.languages.registerCompletionItemProvider(
       sel, // 指定代码语言
