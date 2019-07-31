@@ -18,8 +18,6 @@
 import * as jsLogger from "js-logger";
 import { ILogger } from "js-logger/src/types";
 import { getLogFile, getLogLevel } from "./kv_store";
-import * as path from "path";
-
 import * as fs from "fs";
 
 jsLogger.useDefaults();
@@ -35,6 +33,14 @@ function ObjectToString(input: object | string): string {
   }
 }
 
+/**
+ * 测试时我一般开DEBUG日志, 想要过滤可以使用下面的语句, grep + 正则可以过滤其他级别的日志
+ *  `tail -F ~/.local/share/Vsnips/vsnips.log | grep '\[[IW]\]'`
+ * 
+ * 具体的日志样式如下:
+ *  2019-07-31 08:21:32: [I] Repush the pip-requirementsfrom local dir
+ * 
+ */
 function InitLogger() {
   let VsnipsStream = fs.createWriteStream(getLogFile(), { flags: "a" });
 
@@ -42,8 +48,6 @@ function InitLogger() {
 
   if (lvl !== undefined) {
     myLogger.setLevel(lvl);
-    // myLogger.setLevel(jsLogger.DEBUG);
-    // myLogger.setLevel(jsLogger.INFO);
     jsLogger.setHandler(function (messages, context) {
       const msg: string = Array.prototype.slice
         .call(messages, 0)
