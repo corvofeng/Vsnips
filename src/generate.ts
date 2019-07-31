@@ -24,7 +24,7 @@ async function generate(context: vscode.ExtensionContext) {
 
   // 1. 注册默认的completionItemProiver
   let defaultItem = vscode.languages.registerCompletionItemProvider(
-    { scheme: 'file'},
+    { scheme: 'file' },
     {
       provideCompletionItems(document, position, token, context) {
         Logger.debug("Get completion item", document, position);
@@ -54,69 +54,52 @@ async function generate(context: vscode.ExtensionContext) {
 
   // 主生成函数,
   async function inner_generate(dirname: string, needFileType: string) {
-    fs.readdir(dirname, function(err, files) {
-      if (err) {
-        Logger.error(err);
-        return;
-      }
-      files.forEach(async (file, index) => {
-        Logger.info("In snippets ", file);
 
-        let res = /([^\s]*)\.snippets$/.exec(file);
-        if (res === null) {
-          Logger.warn("Can't parse ", file);
-          return;
+    let snipFile = path.join(dirname, `${needFileType}.snippets`);
+    Logger.info("Currently want search:", snipFile);
+    if (!fs.existsSync(snipFile)) {
+      Logger.warn("The " + snipFile, " not exists!!");
+      return
+    }
+    let f_name = snipFile;
+
+    const sel: vscode.DocumentFilter = { scheme: "file", language: needFileType };
+    const data = fs.readFileSync(f_name, "utf8");
+    let snippets = await ultisnipsToJSON(data);
+
+    let item = vscode.languages.registerCompletionItemProvider(
+      sel, // 指定代码语言
+      {
+        provideCompletionItems(document, position, token, context) {
+          Logger.debug("Get completion item", document, position);
+          let compleItems: Array<vscode.CompletionItem> = [];
+          let vSnipContext = new VSnipContext(
+            document,
+            position,
+            token,
+            context
+          );
+          snippets.forEach(snip => {
+            const snippetCompletion = new vscode.CompletionItem(
+              snip.prefix
+            );
+            snippetCompletion.documentation =
+              snip.descriptsion + "\n" + snip.body;
+            snippetCompletion.label = `Vsnips-${snip.prefix}: ${
+              snip.descriptsion
+              }`;
+            snippetCompletion.insertText = new vscode.SnippetString(
+              snip.get_snip_body(vSnipContext)
+            );
+            compleItems.push(snippetCompletion);
+          });
+          return compleItems;
         }
-
-        const [_, fileNameType] = res;
-        let f_name = path.join(dirname, file);
-        if (fileNameType !== "all" && fileNameType !== needFileType) {
-          Logger.info(`We need ${needFileType} but get ${fileNameType} stop parse!!`);
-          return;
-        }
-        const sel: vscode.DocumentFilter = { scheme: "file", language: fileNameType};
-        const data = fs.readFileSync(f_name, "utf8");
-        let snippets = await ultisnipsToJSON(data);
-
-        let item = vscode.languages.registerCompletionItemProvider(
-          sel, // 指定代码语言
-          {
-            provideCompletionItems(document, position, token, context) {
-              Logger.debug("Get completion item", document, position);
-              let compleItems: Array<vscode.CompletionItem> = [];
-              let vSnipContext = new VSnipContext(
-                document,
-                position,
-                token,
-                context
-              );
-              snippets.forEach(snip => {
-                const snippetCompletion = new vscode.CompletionItem(
-                  snip.prefix
-                );
-                snippetCompletion.documentation =
-                  snip.descriptsion + "\n" + snip.body;
-                snippetCompletion.label = `Vsnips-${snip.prefix}: ${
-                  snip.descriptsion
-                }`;
-                snippetCompletion.insertText = new vscode.SnippetString(
-                  snip.get_snip_body(vSnipContext)
-                );
-                compleItems.push(snippetCompletion);
-              });
-              return compleItems;
-            }
-          },
-          "V",
-          "v"
-        );
-        await context.subscriptions.push(item);
-        // completItems.push(item);
-        // completItems.forEach((item) => {
-        //   context.subscriptions.push(item);
-        // });
-      });
-    });
+      },
+      "V",
+      "v"
+    );
+    await context.subscriptions.push(item);
   }
 }
 export { generate };
