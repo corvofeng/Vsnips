@@ -1,6 +1,6 @@
 import { Logger, InitLogger } from "../logger";
 import * as fs from "fs";
-import {setLogLevel, addSnipsDir, getVarfiles, addVarfiles} from "../kv_store";
+import { setLogLevel, addSnipsDir, getVarfiles, addVarfiles } from "../kv_store";
 
 function main() {
   setLogLevel('DEBUG');
@@ -13,10 +13,10 @@ function main() {
   Logger.info("hello world");
   const data = fs.readFileSync(example_file, "utf8");
   Logger.info(data);
-  let l = Logger;
-//   eval(data);
-  let func = new Function('x', 'y', 'l.info("hello from func");return x+y;');
-  Logger.info(func());
+  const LOG = Logger;
+  eval('LOG.info("hello from func");LOG.debug("debug from func");');
+
+  eval(data);
   TEST_CASE.forEach((content: string) => {
     //   Logger.info(content);
     //   eval(data);
