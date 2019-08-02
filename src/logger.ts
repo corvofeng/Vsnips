@@ -27,10 +27,24 @@ const myLogger: ILogger = jsLogger.get("Vsnips");
 
 function ObjectToString(input: object | string): string {
   if (input instanceof Object) {
-    return JSON.stringify(input);
-  } else {
-    return input;
+    let ret = JSON.stringify(input);
+    if (ret != '{}') {
+      return JSON.stringify(input);
+    }
+
+    let nextTry = new Map();
+    Object.keys(input).forEach((key: string) => {
+      let val = (input as any)[key];
+      // 如果val的类型是函数
+      if (typeof val === 'function') {
+        nextTry.set(key, val.name);
+      } else {
+        console.log("Now we get ", val, "But can't parse");
+      }
+    });
+    return JSON.stringify([...nextTry]);
   }
+  return input as string;
 }
 
 /**
@@ -65,4 +79,4 @@ function InitLogger() {
   }
 }
 
-export { myLogger as Logger, InitLogger};
+export { myLogger as Logger, InitLogger };

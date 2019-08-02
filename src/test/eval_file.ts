@@ -16,8 +16,8 @@ function main() {
   const LOG = Logger;
   eval('LOG.info("hello from func");LOG.debug("debug from func");');
 
-  let d = eval(data);
-  console.log(d);
+  let d = eval(data) as object;
+  Logger.info(d);
   TEST_CASE.forEach((content: string) => {
     //   Logger.info(content);
     //   eval(data);
