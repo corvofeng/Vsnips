@@ -40,3 +40,10 @@ https://github.com/NilsJPWerner/autoDocstring
 ### eval时保留模块信息
 
 https://stackoverflow.com/a/43578552
+
+
+### 如何编写语法高亮插件
+
+https://github.com/budparr/language-hugo-vscode/blob/master/src/syntaxes/hugo.tmLanguage.json
+https://macromates.com/manual/en/language_grammars
+https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
