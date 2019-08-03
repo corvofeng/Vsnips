@@ -111,6 +111,10 @@ function getSnipsDirs() {
   return SearchDirs;
 }
 
+function clearSnipsDir() {
+  SearchDirs = [];
+}
+
 function addSnipsDir(dirNames: string[]) {
   SearchDirs = SearchDirs.concat(dirNames);
 }
@@ -133,4 +137,5 @@ export {
   addSnipsDir,
   getVarfiles,
   addVarfiles,
+  clearSnipsDir,
 };

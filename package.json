@@ -36,6 +36,11 @@
 					"description": "Files for snippets variables, we call it vimrc.",
 					"default": []
 				},
+				"Vsnips.UseDefaultSnips": {
+					"type": "boolean",
+					"description": "Wheather to use the default snippets from github",
+					"default": true
+				},
 				"Vsnips.LogLevel": {
 					"type": "string",
 					"description": "The Vsnip's LogLevel",
