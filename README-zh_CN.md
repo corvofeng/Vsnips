@@ -66,7 +66,7 @@ endsnippet
 }
 ```
 
-当你在vimrc中给出了如下变量`let g:snips_author="corvo"`, 在代码片段中, 可以使用如下的形式引用.
+当你在vimrc中给出了如下变量`let g:snips_author="corvo"`, 在代码片段中, 可以使用如下的形式引用,基本可以在, 无论是在vim还是在vscode中均可正常使用.
 
 ```snippets
 snippet full_title "Python title fully"
@@ -82,9 +82,6 @@ snippet full_title "Python title fully"
 
 endsnippet
 ```
-
-对于非vim用户, 你也可以尝试安装这个插件,
-
 
 ### 已经完善的功能
 
@@ -108,9 +105,7 @@ endsnippet
 
 可能各位也注意到了, vim中的UltiSnips可以直接根据Python函数中的参数来调整
 注释信息. 而Vsnips是基于VScode原生的片段, 若是直接支持可能很困难.
-退而求其次, 在写完函数参数后, 用户需要注释的时候, 我们给出就可以了.
-所以会考虑参考`autoDocstrings`的功能, 能够添加注释即可.
-
+退而求其次, 在写完函数参数后, 如果用户需要注释, 我们给出就可以了(具体实现打算参考`autoDocstrings`).
 
 [1]: https://github.com/SirVer/ultisnips
 [2]: https://camo.githubusercontent.com/296aecf30e1607233814196db6bd3f5f47e70c73/68747470733a2f2f7261772e6769746875622e636f6d2f5369725665722f756c7469736e6970732f6d61737465722f646f632f64656d6f2e676966
