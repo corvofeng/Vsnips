@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.6] - 2019-08-03
+
+- Start allow user add costume javascript script.
+- Add support for print module.
+- Allow user disable the default snippets dir.
+- Allow user use the all.snippets.
 
 ## [0.1.3] - 2019-07-29
 
