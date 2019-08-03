@@ -7,6 +7,11 @@
 >
 > 有任何想法欢迎开issue或是pull requests.
 
+
+```
+ext install corvofeng.Vsnips
+```
+
 ![Vsnips][7]
 
 ## UltiSnips
@@ -66,7 +71,7 @@ endsnippet
 }
 ```
 
-当你在vimrc中给出了如下变量`let g:snips_author="corvo"`, 在代码片段中, 可以使用如下的形式引用,基本可以在, 无论是在vim还是在vscode中均可正常使用.
+当你在vimrc中给出了如下变量`let g:snips_author="corvo"`, 在代码片段中, 可以使用如下的形式引用, 无论是在vim还是在vscode中均可正常使用.
 
 ```snippets
 snippet full_title "Python title fully"
