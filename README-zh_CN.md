@@ -88,7 +88,7 @@ snippet full_title "Python title fully"
 endsnippet
 ```
 
-### 已经完善的功能
+## 已经完善的功能
 
 - [x] 自动下载一些常用UltiSnips
 - [x] 多种语言补全的支持
@@ -100,13 +100,13 @@ endsnippet
 - [x] snippets语法高亮
 
 
-### 正在开发的功能
+## 正在开发的功能
 
 - [ ] 对于用户自定义Javascript函数的支持
 - [ ] 支持类似`autoDocstring`的功能, 允许增加各种形式的Python注释
 - [ ] 支持`extends`与`priority`语句
 
-### 一些可能无法支持的功能
+## 一些可能无法支持的功能
 
 可能各位也注意到了, vim中的UltiSnips可以直接根据Python函数中的参数来调整
 注释信息. 而Vsnips是基于VScode原生的片段, 若是直接支持可能很困难.

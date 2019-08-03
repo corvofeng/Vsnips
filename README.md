@@ -97,18 +97,18 @@ snippet full_title "Python title fully"
 endsnippet
 ```
 
-### Have done
+## Have done
 
-- [ ] Auto download the Ultisnips
-- [ ] Multi languate completions support
-- [ ] Allow user add their own Ultisnips.
-    - [ ] From Ultisnips to VScode snippets.
-    - [ ] Support strftime
-    - [ ] Allow user define variables
-    - [ ] Allow some functions(Rewrite by javascript)
-- [ ] Syntax highlight for snippets
+- [x] Auto download the Ultisnips
+- [x] Multi languate completions support
+- [x] Allow user add their own Ultisnips.
+    - [x] From Ultisnips to VScode snippets.
+    - [x] Support strftime
+    - [x] Allow user define variables
+    - [x] Allow some functions(Rewrite by javascript)
+- [x] Syntax highlight for snippets
 
-### Doing
+## Doing
 
 - [ ] Allow user define their own functions
 - [ ] Support autoDocstring for python
