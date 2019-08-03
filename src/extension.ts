@@ -17,7 +17,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const useDefaultSnips = vscode.workspace
     .getConfiguration()
-    .get("Vsnips.UseDefaultSnips");
+    .get("Vsnips.UseDefaultSnips", true);
   if (!useDefaultSnips) {
     Logger.warn("Currently we don't use the default snips dir.");
     clearSnipsDir();
