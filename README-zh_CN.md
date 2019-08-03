@@ -1,6 +1,6 @@
 # Vsnips
 
-Vsnips允许用户在vscode中使用vim中UltiSnips语法代码片段.
+允许用户在vscode中使用vim中UltiSnips语法代码片段.
 
 > 程序依然在开发中, 虽然我不能保证所有的UltiSnips片段都可以在vscode中使用,
 > 但我会尽最大的努力去兼容UltiSnips, 并且允许用户自定义一些功能函数.
@@ -44,12 +44,15 @@ endsnippet
 并不是说每种语言有自己的代码片段插件不好, 只是当你想要改动或是增加自己的语言片段时,
 极大可能是要完整的学习一遍插件的制作, 以及代码片段的书写. 而且更为重要的一点是,
 如果你同时也是Vim用户, 你就不得不为两个编辑器各写一套代码片段了, 这样的折磨我受了很久,
-于是有了这个插件.
+于是便有了这个插件.
 
 ## Vsnips使用
 
-> 如果你是vim+vscode用户, 那么我已经将部分的UltiSnips进行了适配, 你可以选择
-> 对应的文件夹来添加自己的代码片段, 并且你可以引用在vimrc中定义的变量.
+> 该插件基于VScode原生的[代码补全功能][8], 无论你先前是否有过vim或是UltiSnips的使用经历,
+> 都可直接使用此插件. 我已经将部分的UltiSnips进行了适配, 并且默认给所有用户使用.
+
+当然如果你先前已经使用过了UltiSnips, 有了自己的代码片段,
+那么你可以直接在配置中添加自己的片段文件目录, 并且你可以引用在vimrc中定义的变量.
 
 ```json
 {
@@ -79,6 +82,9 @@ snippet full_title "Python title fully"
 
 endsnippet
 ```
+
+对于非vim用户, 你也可以尝试安装这个插件,
+
 
 ### 已经完善的功能
 
@@ -113,3 +119,4 @@ endsnippet
 [5]: https://marketplace.visualstudio.com/items?itemName=hars.CppSnippets
 [6]: https://marketplace.visualstudio.com/items?itemName=wcwhitehead.bootstrap-3-snippets
 [7]: https://user-images.githubusercontent.com/12025071/62412552-19928500-b637-11e9-8335-dfe3f0ca0688.gif
+[8]: https://code.visualstudio.com/api/references/vscode-api#CompletionItemProvider
