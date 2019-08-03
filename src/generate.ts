@@ -24,7 +24,7 @@ async function generate(context: vscode.ExtensionContext) {
 
   // 1. 注册默认的completionItemProiver
   let defaultItem = vscode.languages.registerCompletionItemProvider(
-    { scheme: 'file' },
+    { scheme: "file" },
     {
       provideCompletionItems(document, position, token, context) {
         Logger.debug("Get completion item", document, position);
@@ -32,7 +32,8 @@ async function generate(context: vscode.ExtensionContext) {
         return null;
       }
     },
-    "v", "V"
+    "v",
+    "V"
   );
   context.subscriptions.push(defaultItem);
 
@@ -40,31 +41,38 @@ async function generate(context: vscode.ExtensionContext) {
   return; // 插件初始化操作已经结束, 直接return
 
   // 2. 用户触发了补全事件, 此时依照文件类型, 查找对应的snippets文件
+  //   查找snippets文件时, 需要注意两点:
+  //    1. 注意all.snippets可以被所有语言使用(已经支持)
+  //    2. 如果snippet中有extends语句, 说明可以继承其他语言的snippet(暂不支持)
   async function repush(fileType: string) {
     if (!has_repush.get(fileType)) {
       Logger.info("Repush the " + fileType + "from local dir");
       has_repush.set(fileType, true);
       getSnipsDirs().forEach(async snipDir => {
-        await inner_generate(snipDir, fileType);
+        let snipFileNames = ["all.snippets", `${fileType}.snippets`];
+
+        for (let i = 0; i < snipFileNames.length; i++) {
+          let snipFile = path.join(snipDir, snipFileNames[i]);
+          Logger.info("Currently want search:", snipFile);
+          if (!fs.existsSync(snipFile)) {
+            Logger.warn(`The ${snipFile} not exists!!`);
+            continue;
+          }
+          await inner_generate(snipFile, fileType);
+        }
       });
     } else {
-      Logger.debug(fileType, " has been added");
+      Logger.debug(fileType, "has been added");
     }
   }
 
-  // 主生成函数,
-  async function inner_generate(dirname: string, needFileType: string) {
-
-    let snipFile = path.join(dirname, `${needFileType}.snippets`);
-    Logger.info("Currently want search:", snipFile);
-    if (!fs.existsSync(snipFile)) {
-      Logger.warn("The " + snipFile, " not exists!!");
-      return
-    }
-    let f_name = snipFile;
-
-    const sel: vscode.DocumentFilter = { scheme: "file", language: needFileType };
-    const data = fs.readFileSync(f_name, "utf8");
+  // 主生成函数
+  async function inner_generate(fName: string, needFileType: string) {
+    const sel: vscode.DocumentFilter = {
+      scheme: "file",
+      language: needFileType
+    };
+    const data = fs.readFileSync(fName, "utf8");
     let snippets = await parse(data);
 
     let item = vscode.languages.registerCompletionItemProvider(
@@ -80,14 +88,12 @@ async function generate(context: vscode.ExtensionContext) {
             context
           );
           snippets.forEach(snip => {
-            const snippetCompletion = new vscode.CompletionItem(
-              snip.prefix
-            );
+            const snippetCompletion = new vscode.CompletionItem(snip.prefix);
             snippetCompletion.documentation =
               snip.descriptsion + "\n" + snip.body;
             snippetCompletion.label = `Vsnips-${snip.prefix}: ${
               snip.descriptsion
-              }`;
+            }`;
             snippetCompletion.insertText = new vscode.SnippetString(
               snip.get_snip_body(vSnipContext)
             );
