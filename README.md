@@ -1,5 +1,6 @@
 # Vsnips
 
+![](./images/icon.png)
 
 [中文文档](./README-zh_CN.md)
 
