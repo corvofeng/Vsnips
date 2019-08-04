@@ -50,7 +50,7 @@ let DeafultLang = ["lua", "c", "cpp", "all", "javascript", "python"];
  * 存放snippet片段的文件夹
  */
 let SearchDirs = [
-  UltiSnipsDir,
+  UltiSnipsDir
   // path.join(process.env.HOME, '.vim', 'UltiSnips'),
   // '/home/corvo/.vim/UltiSnips',
   // '/home/corvo/.vim/plugged/vim-snippets/UltiSnips',
@@ -127,6 +127,42 @@ function addVarfiles(files: string[]) {
   VarFiles = VarFiles.concat(files);
 }
 
+/**
+ * 创建如下的配置文件, 使得VScode打开时为 Multi-root Workspaces
+ * {
+ *  "folders": [
+ *    {
+ *      "path": "Ultisnips"
+ *    },
+ *    {
+ *      "path": "... UltiSnips"
+ *    }
+ *  ],
+ *  "settings": {}
+ * }
+ */
+function updateMultiWorkspaceSetting() {
+  const myWorkspaceConfig = path.join(VsnipDir, 'snips.code-workspace');
+  let writeJSON = {
+    folders: [
+      {
+        path: "/home/corvo/.local/share/Vsnips/Ultisnips"
+      },
+      {
+        path: "/home/corvo/.vim/UltiSnips"
+      }
+    ],
+    settings: {}
+  };
+  getSnipsDirs().forEach(snipDir => {
+    writeJSON["folders"].push({ path: snipDir });
+  });
+  fs.writeFile(myWorkspaceConfig, JSON.stringify(writeJSON), (err) => {
+    console.log("Can't write workspace config", err);
+  });
+  return myWorkspaceConfig;
+}
+
 export {
   // VsnipDir,
   // UltiSnipsDir,
@@ -138,4 +174,5 @@ export {
   getVarfiles,
   addVarfiles,
   clearSnipsDir,
+  updateMultiWorkspaceSetting,
 };

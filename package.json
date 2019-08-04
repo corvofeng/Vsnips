@@ -19,8 +19,8 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
+				"command": "extension.edit_vsnips",
+				"title": "Vsnips: Edit snippets"
 			}
 		],
 		"configuration": {

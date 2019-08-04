@@ -3,7 +3,14 @@
 import * as vscode from "vscode";
 import { Logger, InitLogger } from "./logger";
 import { generate } from "./generate";
-import { setLogLevel, addSnipsDir, getVarfiles, addVarfiles, clearSnipsDir } from "./kv_store";
+import {
+  setLogLevel,
+  addSnipsDir,
+  getVarfiles,
+  addVarfiles,
+  clearSnipsDir,
+  updateMultiWorkspaceSetting
+} from "./kv_store";
 import { init_vim_var } from "./script_tpl";
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -39,6 +46,15 @@ export async function activate(context: vscode.ExtensionContext) {
   init_vim_var(getVarfiles());
 
   await generate(context);
+
+  //  允许用户编辑snippets, 此操作将会打开新的window.
+  context.subscriptions.push(
+    vscode.commands.registerCommand("extension.edit_vsnips", () => {
+      let settingFile = updateMultiWorkspaceSetting()
+      let uri = vscode.Uri.file(settingFile);
+      vscode.commands.executeCommand("vscode.openFolder", uri, true);
+    })
+  );
 }
 
 // this method is called when your extension is deactivated
