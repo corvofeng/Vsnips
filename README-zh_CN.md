@@ -2,7 +2,7 @@
 
 ![](./images/icon.png)
 
-允许用户在vscode中使用vim中UltiSnips语法代码片段.
+允许用户在VScode中使用UltiSnips语法的代码片段.
 
 > 程序依然在开发中, 虽然我不能保证所有的UltiSnips片段都可以在vscode中使用,
 > 但我会尽最大的努力去兼容UltiSnips, 并且允许用户自定义一些功能函数.
