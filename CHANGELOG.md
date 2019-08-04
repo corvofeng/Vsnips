@@ -1,5 +1,11 @@
 # Change Log
 
+
+## [0.1.8] - 2019-08-04
+
+- Update the readme, add zh_CN doc.
+- Allow user modify the snippets in new window.
+
 ## [0.1.6] - 2019-08-03
 
 - Start allow user add costume javascript script.
@@ -11,7 +17,6 @@
 
 - Unify the kv_store variable name.
 - Fix the document selector.
-
 
 ## [0.1.2] - 2019-07-27
 
