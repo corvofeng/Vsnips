@@ -11,7 +11,7 @@ import {
   clearSnipsDir,
   updateMultiWorkspaceSetting
 } from "./kv_store";
-import { init_vim_var } from "./script_tpl";
+import { init_vim_var, initTemplateFunc } from "./script_tpl";
 
 export async function activate(context: vscode.ExtensionContext) {
   const VsnipLogLvl = vscode.workspace
@@ -44,6 +44,8 @@ export async function activate(context: vscode.ExtensionContext) {
   Logger.info("Get Vimfiles ", vimFiles, "now we start create snippets");
   addVarfiles(vimFiles);
   init_vim_var(getVarfiles());
+
+  initTemplateFunc();
 
   await generate(context);
 

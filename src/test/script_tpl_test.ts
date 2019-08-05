@@ -12,7 +12,7 @@
  */
 
 import { VSnipContext } from "../vsnip_context";
-import { js_markdown_title } from "../script_tpl";
+import { initTemplateFunc, getTemplateFunc } from "../script_tpl";
 import { Logger } from "../logger";
 import * as vscode from "vscode";
 
@@ -37,7 +37,9 @@ let example_vs_context = new VSnipContext(
 );
 
 function test_js_markdown() {
-  Logger.info("Get title: ", js_markdown_title(example_vs_context));
+  initTemplateFunc();
+  let func = getTemplateFunc('js_markdown_title');
+  Logger.info("Get title: ", func(example_vs_context));
 }
 
 export { test_js_markdown };

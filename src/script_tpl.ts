@@ -15,6 +15,9 @@ import * as fs from "fs";
 import { Logger } from "./logger";
 import * as path from "path";
 import { VSnipContext } from "./vsnip_context";
+import { USER_MODULE, jsParser } from "./user_script";
+
+let BUILDIN_MODULE = new Map();
 
 let JS_FUNC_FMT = `!js`;
 
@@ -96,15 +99,39 @@ function get_vim_var(name: string) {
   return VIM_VARS_MAP.get(name) || "";
 }
 
+function initTemplateFunc() {
+  // jsParser();
+  BUILDIN_MODULE.set('get_quoting_style', get_quoting_style);
+  BUILDIN_MODULE.set('get_markdown_title', get_markdown_title);
+  BUILDIN_MODULE.set('triple_quotes', triple_quotes);
+  BUILDIN_MODULE.set('js_markdown_title', js_markdown_title);
+}
+
+/**
+ * 获取模板函数, 模板函数分为两部分:
+ *  1. 在此文件中的部分函数
+ *  2. 用户自定义函数
+ */
+function getTemplateFunc(name: string) {
+  Logger.info("This time we wanna func: ", name);
+
+  // 优先搜索此文件中定义的函数
+  let func = BUILDIN_MODULE.get(name);
+  if (func !== undefined) {
+    return func;
+  }
+
+  func = USER_MODULE.get(name);
+  return func
+}
+
 export {
-  get_quoting_style,
-  get_markdown_title,
   init_vim_var,
   get_vim_var,
-  triple_quotes,
   jsFuncDecorator,
-  js_markdown_title,
-  var_parser
+  var_parser,
+  initTemplateFunc,
+  getTemplateFunc,
 };
 
 // 测试VIM配置的读取

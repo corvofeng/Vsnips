@@ -34,14 +34,23 @@ function jsParser() {
       const LOG = Logger;
       userJSFunc = eval(data) as object;
     })();
+    Logger.debug("Get user js func: ", userJSFunc);
 
     // 将用户的函数记录在我们的模块中, 以供调用
     Object.keys(userJSFunc).forEach((funcName: string) => {
       USER_MODULE.set(funcName, (userJSFunc as any)[funcName])
     });
-
   })
 }
 
+function main() {
+  jsParser();
+}
 
-export { USER_MODULE };
+if (require.main === module) {
+  main();
+}
+
+
+
+export { jsParser, USER_MODULE };

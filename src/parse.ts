@@ -127,12 +127,16 @@ function pythonRewrite(stmt: string) {
   if (func_name_pattern.test(stmt)) {
     let [_, func_name] = func_name_pattern.exec(stmt) as RegExpExecArray;
     Logger.debug("Get func name", func_name);
-    let func = null;
+    let func = ScriptFunc.getTemplateFunc(func_name);
+    if (func === undefined) {
+      Logger.warn("Can't get js function", func_name, "please check");
+      return "";
+    }
+
     try {
-      func = (ScriptFunc as any)[func_name as string];
       return func();
     } catch (e) {
-      Logger.error("In python func", e);
+      Logger.error("In python func:", func_name, ", has error", e);
       return "";
     }
   }
@@ -197,7 +201,8 @@ function jsFuncEval(snip: string, vsContext: VSnipContext) {
   while ((res = JS_SNIP_FUNC_PATTERN.exec(snip)) !== null) {
     let [pattern, func_name] = res as RegExpExecArray;
     Logger.info("Get js func", pattern, func_name);
-    let func = (ScriptFunc as any)[func_name as string];
+    // let func = (ScriptFunc as any)[func_name as string];
+    let func = ScriptFunc.getTemplateFunc(func_name);
     if (func === null) {
       Logger.warn("Can't get js function", func_name, "please check");
       return snip;
