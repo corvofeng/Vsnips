@@ -40,7 +40,24 @@ function jsFuncDecorator(funcName: string) {
 }
 
 function get_quoting_style() {
-  return SINGLE_QUOTES;
+  let style =  VIM_VARS_MAP.get('ultisnips_python_quoting_style')|| 'double';
+  if (style === 'single') {
+    return SINGLE_QUOTES;
+  }
+
+  return DOUBLE_QUOTES;
+}
+
+function triple_quotes() {
+  let style =  VIM_VARS_MAP.get('ultisnips_python_triple_quoting_style');
+  if(!style) {
+    return get_quoting_style().repeat(3);
+  }
+  if (style === 'double') {
+    return DOUBLE_QUOTES.repeat(3);
+  } else {
+    return SINGLE_QUOTES.repeat(3);
+  }
 }
 
 function get_markdown_title() {
@@ -57,9 +74,6 @@ function js_markdown_title(vsContext: VSnipContext) {
   return path.basename(fn, path.extname(fn));
 }
 
-function triple_quotes() {
-  return get_quoting_style().repeat(3);
-}
 
 function var_parser(data: string) {
   // 只匹配let开头的语句, 并且要求只能是数字或是字符串
