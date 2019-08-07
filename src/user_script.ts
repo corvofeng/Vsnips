@@ -24,6 +24,12 @@ let USER_MODULE = new Map();
 
 function jsParser() {
   USER_SCRIPT_FILE.forEach((jsFile) => {
+
+    if (!fs.existsSync(jsFile)) {
+      Logger.warn(`The ${jsFile} not exists, stop parse js file!!`);
+      return;
+    }
+
     const data = fs.readFileSync(jsFile, "utf8");
     Logger.debug(data);
 

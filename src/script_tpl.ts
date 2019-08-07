@@ -114,7 +114,7 @@ function get_vim_var(name: string) {
 }
 
 function initTemplateFunc() {
-  // jsParser();
+  jsParser();
   BUILDIN_MODULE.set('get_quoting_style', get_quoting_style);
   BUILDIN_MODULE.set('get_markdown_title', get_markdown_title);
   BUILDIN_MODULE.set('triple_quotes', triple_quotes);

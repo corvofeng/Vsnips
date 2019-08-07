@@ -68,13 +68,20 @@ function lexParser(str: string): [string, boolean] {
   Logger.debug("Before parse", str);
   let rlt = "";
   let hasJSScript = false;
-  // 记录需要替换的值, 最后统一替换
+
+  // 记录需要替换的值, 最后统一替换, 这里一定要注意, 不要exec之后马上替换,
+  // js的实现有问题, 直接替换会导致之后的匹配出现问题, 需要等到所有待替换的值
+  // 全部找出后再一起替换.
   let res = null;
-  let replaceArray = [];
+  let replaceMap = new Map();
 
   while ((res = SNIP_FUNC_PATTERN.exec(str)) !== null) {
     let [stmt, func] = res as RegExpExecArray;
     Logger.debug("Get parser", stmt);
+    if (replaceMap.get(stmt)) {
+      Logger.debug(`Already get ${stmt}.`);
+      continue;
+    }
 
     let func_type = FT_PYTHON;
     if (func.startsWith("!p")) {
@@ -92,11 +99,11 @@ function lexParser(str: string): [string, boolean] {
     switch (func_type) {
       case FT_PYTHON:
         rlt = pythonRewrite(func);
-        replaceArray.push([stmt, rlt]);
+        replaceMap.set(stmt, rlt);
         break;
       case FT_VIM:
         rlt = vimRewrite(func);
-        replaceArray.push([stmt, rlt]);
+        replaceMap.set(stmt, rlt);
         break;
       case FT_JAVASCRIPT:
         break;
@@ -107,12 +114,19 @@ function lexParser(str: string): [string, boolean] {
 
     Logger.debug("After replace stmt", stmt, "we got: ", str);
   }
-  replaceArray.forEach(pair => {
-    let [stmt, rlt] = pair;
+
+  // string.replace函数调用一次只能替换一个, 需要全部替换
+  // Copy from: https://stackoverflow.com/a/55698996
+  function replaceAll(text: string, busca: string, reemplaza: string) {
+    while (text.toString().indexOf(busca) != -1)
+      text = text.toString().replace(busca, reemplaza);
+    return text;
+  }
+  replaceMap.forEach((rlt, stmt) => {
     if (rlt.startsWith(`\`!js`)) {
       hasJSScript = true;
     }
-    str = str.replace(stmt, rlt);
+    str = replaceAll(str, stmt, rlt);
   });
 
   return [str, hasJSScript];
