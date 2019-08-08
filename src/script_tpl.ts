@@ -127,13 +127,13 @@ function initTemplateFunc() {
  *  2. 用户自定义函数
  */
 function getTemplateFunc(name: string) {
-  Logger.info("This time we wanna func: ", name);
-
   // 优先搜索此文件中定义的函数
   let func = BUILDIN_MODULE.get(name);
   if (func !== undefined) {
     return func;
   }
+
+  Logger.info(`Can't get func buildin: ${name}, query user module`);
 
   func = USER_MODULE.get(name);
   return func
