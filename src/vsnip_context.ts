@@ -40,5 +40,4 @@ class VSnipContext {
   }
 }
 
-
 export { VSnipContext };

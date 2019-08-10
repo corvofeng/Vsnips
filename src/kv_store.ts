@@ -142,7 +142,7 @@ function addVarfiles(files: string[]) {
  * }
  */
 function updateMultiWorkspaceSetting() {
-  const myWorkspaceConfig = path.join(VsnipDir, 'snips.code-workspace');
+  const myWorkspaceConfig = path.join(VsnipDir, "snips.code-workspace");
   let writeJSON = {
     folders: [
       {
@@ -157,7 +157,7 @@ function updateMultiWorkspaceSetting() {
   getSnipsDirs().forEach(snipDir => {
     writeJSON["folders"].push({ path: snipDir });
   });
-  fs.writeFile(myWorkspaceConfig, JSON.stringify(writeJSON), (err) => {
+  fs.writeFile(myWorkspaceConfig, JSON.stringify(writeJSON), err => {
     console.log("Can't write workspace config", err);
   });
   return myWorkspaceConfig;
@@ -174,5 +174,5 @@ export {
   getVarfiles,
   addVarfiles,
   clearSnipsDir,
-  updateMultiWorkspaceSetting,
+  updateMultiWorkspaceSetting
 };

@@ -45,7 +45,7 @@ export async function activate(context: vscode.ExtensionContext) {
   //  允许用户编辑snippets, 此操作将会打开新的window.
   context.subscriptions.push(
     vscode.commands.registerCommand("extension.edit_vsnips", () => {
-      let settingFile = updateMultiWorkspaceSetting()
+      let settingFile = updateMultiWorkspaceSetting();
       let uri = vscode.Uri.file(settingFile);
       vscode.commands.executeCommand("vscode.openFolder", uri, true);
     })

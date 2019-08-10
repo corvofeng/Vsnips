@@ -40,8 +40,8 @@ function jsFuncDecorator(funcName: string) {
 }
 
 function get_quoting_style() {
-  let style =  VIM_VARS_MAP.get('ultisnips_python_quoting_style')|| 'double';
-  if (style === 'single') {
+  let style = VIM_VARS_MAP.get("ultisnips_python_quoting_style") || "double";
+  if (style === "single") {
     return SINGLE_QUOTES;
   }
 
@@ -49,11 +49,11 @@ function get_quoting_style() {
 }
 
 function triple_quotes() {
-  let style =  VIM_VARS_MAP.get('ultisnips_python_triple_quoting_style');
-  if(!style) {
+  let style = VIM_VARS_MAP.get("ultisnips_python_triple_quoting_style");
+  if (!style) {
     return get_quoting_style().repeat(3);
   }
-  if (style === 'double') {
+  if (style === "double") {
     return DOUBLE_QUOTES.repeat(3);
   } else {
     return SINGLE_QUOTES.repeat(3);
@@ -73,7 +73,6 @@ function js_markdown_title(vsContext: VSnipContext) {
 
   return path.basename(fn, path.extname(fn));
 }
-
 
 function var_parser(data: string) {
   // 只匹配let开头的语句, 并且要求只能是数字或是字符串
@@ -115,10 +114,10 @@ function get_vim_var(name: string) {
 
 function initTemplateFunc() {
   jsParser();
-  BUILDIN_MODULE.set('get_quoting_style', get_quoting_style);
-  BUILDIN_MODULE.set('get_markdown_title', get_markdown_title);
-  BUILDIN_MODULE.set('triple_quotes', triple_quotes);
-  BUILDIN_MODULE.set('js_markdown_title', js_markdown_title);
+  BUILDIN_MODULE.set("get_quoting_style", get_quoting_style);
+  BUILDIN_MODULE.set("get_markdown_title", get_markdown_title);
+  BUILDIN_MODULE.set("triple_quotes", triple_quotes);
+  BUILDIN_MODULE.set("js_markdown_title", js_markdown_title);
 }
 
 /**
@@ -136,7 +135,7 @@ function getTemplateFunc(name: string) {
   Logger.info(`Can't get func buildin: ${name}, query user module`);
 
   func = USER_MODULE.get(name);
-  return func
+  return func;
 }
 
 export {
@@ -145,7 +144,7 @@ export {
   jsFuncDecorator,
   var_parser,
   initTemplateFunc,
-  getTemplateFunc,
+  getTemplateFunc
 };
 
 // 测试VIM配置的读取
