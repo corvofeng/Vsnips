@@ -143,7 +143,7 @@ function pythonRewrite(stmt: string) {
     Logger.debug("Get func name", func_name);
     let func = ScriptFunc.getTemplateFunc(func_name);
     if (func === undefined) {
-      Logger.warn("Can't get js function", func_name, "please check");
+      Logger.warn("Can't get function", func_name, "please check");
       return "";
     }
 

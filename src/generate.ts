@@ -58,7 +58,7 @@ async function generate(context: vscode.ExtensionContext) {
             Logger.warn(`The ${snipFile} not exists!!`);
             continue;
           }
-          await inner_generate(snipFile, fileType);
+          await innerGenerate(snipFile, fileType);
         }
       });
     } else {
@@ -67,7 +67,7 @@ async function generate(context: vscode.ExtensionContext) {
   }
 
   // 主生成函数
-  async function inner_generate(fName: string, needFileType: string) {
+  async function innerGenerate(fName: string, needFileType: string) {
     const sel: vscode.DocumentFilter = {
       scheme: "file",
       language: needFileType
