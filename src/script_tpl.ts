@@ -40,7 +40,7 @@ function jsFuncDecorator(funcName: string) {
 }
 
 function get_quoting_style() {
-  let style = VIM_VARS_MAP.get("ultisnips_python_quoting_style") || "double";
+  let style = getVimVar("ultisnips_python_quoting_style", "double");
   if (style === "single") {
     return SINGLE_QUOTES;
   }
@@ -49,7 +49,7 @@ function get_quoting_style() {
 }
 
 function triple_quotes() {
-  let style = VIM_VARS_MAP.get("ultisnips_python_triple_quoting_style");
+  let style = getVimVar("ultisnips_python_triple_quoting_style");
   if (!style) {
     return get_quoting_style().repeat(3);
   }
@@ -103,13 +103,13 @@ function init_vim_var(var_files: Array<string>) {
 }
 
 // 通过变量名获取vim中的变量
-function get_vim_var(name: string) {
+function getVimVar(name: string, default_value: string = "") {
   if (VIM_VARS_MAP === null) {
     Logger.warn("There is no varilables in map");
     return "";
   }
 
-  return VIM_VARS_MAP.get(name) || "";
+  return VIM_VARS_MAP.get(name) || default_value;
 }
 
 function initTemplateFunc() {
@@ -140,7 +140,7 @@ function getTemplateFunc(name: string) {
 
 export {
   init_vim_var,
-  get_vim_var,
+  getVimVar,
   jsFuncDecorator,
   var_parser,
   initTemplateFunc,
@@ -169,9 +169,9 @@ function test_vim_read() {
   });
   Logger.info(
     "Get var ale_cpp_clangtidy_options:",
-    get_vim_var("ale_cpp_clangtidy_options")
+    getVimVar("ale_cpp_clangtidy_options")
   );
-  Logger.info("Get var no_exist:", get_vim_var("no_exist"));
+  Logger.info("Get var no_exist:", getVimVar("no_exist"));
 }
 
 function main() {

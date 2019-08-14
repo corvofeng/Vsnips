@@ -12,7 +12,8 @@
  */
 import { Logger } from "./logger";
 import * as fs from "fs";
-import { jsFuncDecorator as funcDecorator } from "./script_tpl";
+// import { jsFuncDecorator as funcDecorator } from "./script_tpl";
+import * as ScriptFunc from "./script_tpl";
 
 // 允许用户定义自己的函数
 let USER_SCRIPT_FILE = ["/home/corvo/.vim/UltiSnips/func.js"];
@@ -38,15 +39,19 @@ function jsParser() {
       // 使用eval时, eval的context会与当前环境保持一致,
       // 所以需要为用户预定义一些函数, 以便用户直接调用.
       const LOG = Logger;
-      const jsFuncDecorator = funcDecorator;
+      const jsFuncDecorator = ScriptFunc.jsFuncDecorator;
+      const getVimVar = ScriptFunc.getVimVar;
       try {
         userJSFunc = eval(data) as object;
       } catch (e) {
         Logger.error("Eval js file error: ", e);
-        console.log(e);
       }
     })();
-    Logger.debug("Get user js func: ", userJSFunc);
+
+    if (userJSFunc == undefined){
+      Logger.warn("Can't parse: ", jsFile);
+      return;
+    }
 
     // 将用户的函数记录在我们的模块中, 以供调用
     Object.keys(userJSFunc).forEach((funcName: string) => {
@@ -60,6 +65,7 @@ function jsParser() {
 
 function main() {
   jsParser();
+  Logger.info("Get user module", USER_MODULE);
 }
 
 if (require.main === module) {

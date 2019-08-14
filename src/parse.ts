@@ -188,7 +188,7 @@ function vimRewrite(stmt: string) {
   } else if (variable_pattern.test(stmt)) {
     let [_, variable_name] = variable_pattern.exec(stmt) as RegExpExecArray;
     Logger.debug("Get var", variable_name);
-    stmt = ScriptFunc.get_vim_var(variable_name);
+    stmt = ScriptFunc.getVimVar(variable_name);
   }
 
   return stmt;
