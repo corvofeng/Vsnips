@@ -62,6 +62,8 @@ let VarFiles: string[] = [
   // '/home/corvo/.vim/common.vim',
 ];
 
+let UserScriptFiles: string[] = [];
+
 function DownloadSnips() {
   // Download snippets from: https://github.com/honza/vim-snippets
   DeafultLang.forEach((lang: string) => {
@@ -163,6 +165,13 @@ function updateMultiWorkspaceSetting() {
   return myWorkspaceConfig;
 }
 
+function addUserScriptFiles(files: string[]) {
+  UserScriptFiles = UserScriptFiles.concat(files);
+}
+function getUserScriptFiles(): string[] {
+  return UserScriptFiles;
+}
+
 export {
   // VsnipDir,
   // UltiSnipsDir,
@@ -174,5 +183,7 @@ export {
   getVarfiles,
   addVarfiles,
   clearSnipsDir,
+  getUserScriptFiles,
+  addUserScriptFiles,
   updateMultiWorkspaceSetting
 };

@@ -16,6 +16,7 @@ import { Logger } from "./logger";
 import * as path from "path";
 import { VSnipContext } from "./vsnip_context";
 import { USER_MODULE, jsParser } from "./user_script";
+import { getUserScriptFiles } from "./kv_store";
 
 let BUILDIN_MODULE = new Map();
 
@@ -117,7 +118,7 @@ function initTemplateFunc() {
   BUILDIN_MODULE.set('get_markdown_title', get_markdown_title);
   BUILDIN_MODULE.set('triple_quotes', triple_quotes);
   BUILDIN_MODULE.set('js_markdown_title', js_markdown_title);
-  jsParser();
+  jsParser(getUserScriptFiles());
 }
 
 /**

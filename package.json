@@ -41,6 +41,11 @@
 					"description": "Wheather to use the default snippets from github",
 					"default": true
 				},
+				"Vsnips.UserScriptFiles": {
+					"type": "array",
+					"description": "User's own script function",
+					"default": []
+				},
 				"Vsnips.LogLevel": {
 					"type": "string",
 					"description": "The Vsnip's LogLevel",

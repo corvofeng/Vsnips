@@ -9,7 +9,8 @@ import {
   getVarfiles,
   addVarfiles,
   clearSnipsDir,
-  updateMultiWorkspaceSetting
+  updateMultiWorkspaceSetting,
+  addUserScriptFiles
 } from "./kv_store";
 import { init_vim_var, initTemplateFunc } from "./script_tpl";
 
@@ -37,6 +38,10 @@ export async function activate(context: vscode.ExtensionContext) {
   Logger.info("Get Vimfiles ", vimFiles, "now we start create snippets");
   addVarfiles(vimFiles);
   init_vim_var(getVarfiles());
+
+  const userScriptFiles = conf.get("Vsnips.UserScriptFiles", []);
+  Logger.info("Get user script files: ", userScriptFiles);
+  addUserScriptFiles(userScriptFiles);
 
   initTemplateFunc();
 

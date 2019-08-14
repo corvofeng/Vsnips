@@ -15,17 +15,14 @@ import * as fs from "fs";
 // import { jsFuncDecorator as funcDecorator } from "./script_tpl";
 import * as ScriptFunc from "./script_tpl";
 
-// 允许用户定义自己的函数
-let USER_SCRIPT_FILE = ["/home/corvo/.vim/UltiSnips/func.js"];
-
 // 记录函数对应关系
 // Map<string, function>
 let USER_MODULE = new Map();
 
-function jsParser() {
+function jsParser(userScriptFiles: Array<string>) {
   Logger.info("Current parse the user js file");
-  USER_SCRIPT_FILE.forEach((jsFile) => {
 
+  userScriptFiles.forEach((jsFile) => {
     if (!fs.existsSync(jsFile)) {
       Logger.warn(`The ${jsFile} not exists, stop parse js file!!`);
       return;
@@ -64,7 +61,9 @@ function jsParser() {
 }
 
 function main() {
-  jsParser();
+// 允许用户定义自己的函数
+  let testScriptfiles = ["/home/corvo/.vim/UltiSnips/func.js"];
+  jsParser(testScriptfiles);
   Logger.info("Get user module", USER_MODULE);
 }
 
