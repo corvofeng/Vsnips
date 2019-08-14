@@ -66,12 +66,7 @@ function get_markdown_title() {
 }
 
 function js_markdown_title(vsContext: VSnipContext) {
-  Logger.debug("Get doc:", vsContext.document);
-  Logger.debug("Get pos:", vsContext.position);
-  Logger.debug("Get tok:", vsContext.token);
-  Logger.debug("Get ctx:", vsContext.context);
   let fn = vsContext.document.fileName;
-
   return path.basename(fn, path.extname(fn));
 }
 
