@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.2.1] - 2019-08-14
+
+- Allow user modify python quoting style.
+- Only call func once in every snippet.
+- Allow specify the js script function file.
 
 ## [0.1.8] - 2019-08-04
 
