@@ -174,6 +174,7 @@ function vimRewrite(stmt: string) {
     let replace_table = [
       ["%Y", "$CURRENT_YEAR"],
       ["%B", "$CURRENT_MONTH_NAME"],
+      ["%b", "$CURRENT_MONTH_NAME_SHORT"],
       ["%m", "$CURRENT_MONTH"],
       ["%d", "$CURRENT_DATE"],
       ["%H", "$CURRENT_HOUR"],
