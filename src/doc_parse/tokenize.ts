@@ -24,16 +24,17 @@ function pythonTokenizer(defs: string) {
   if (match == undefined || match[1] == undefined) {
     return [];
   }
+  // let _, 
+  // Logger.debug("Get matched: ", match);
 
   const tokens = tokenizeParameterString(match[1]);
+  Logger.debug(match[0], tokens);
 
   if (match[2] != undefined) {
     tokens.push(match[2]);
   }
 
-  Logger.debug(tokens);
   return tokens;
-
 }
 
 function tokenizeParameterString(parameterString: string): string[] {
@@ -126,13 +127,16 @@ function parseFunc() {
   let TEST_FUNCS = [
     ['def query_docs(q_str):', 'python'],
     ['def query_docs(q_str: string):', 'python'],
+    ['def query_docs(q_str: string=""):', 'python'],
+    ['def query_docs(eggs=None):', 'python'],
     [`def query_docs(
         arg1,
         q_str: string
       ):
       `,
       'python'],
-    ['class query_docs(object):', 'python'],
+    ['class example_cls(object):', 'python'],
+    ['def greeting(name: str) -> str:', 'python'],
   ];
   TEST_FUNCS.forEach(c => {
     parseTokenizer(c[0], c[1])
