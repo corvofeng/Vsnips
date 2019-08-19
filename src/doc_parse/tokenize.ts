@@ -1,6 +1,7 @@
 "use strict";
 
 import { Logger } from "../logger";
+import { PyFuncToken, FuncArg } from "./token_obj";
 
 // vim: ts=2 sw=2 sts=2 et:
 /*
@@ -19,22 +20,31 @@ import { Logger } from "../logger";
 
 
 function pythonTokenizer(defs: string) {
-  const definitionPattern = /(?:def|class)\s+\w+\s*\(([\s\S]*)\)\s*(->\s*[\w\[\], \.]*)?:\s*$/;
-  const match = definitionPattern.exec(defs);
-  if (match == undefined || match[1] == undefined) {
+  const definitionPattern = /(def|class)\s+(\w+)\s*\(([\s\S]*)\)\s*(->\s*[\w\[\], \.]*)?:\s*$/;
+  const match = definitionPattern.exec(defs) as RegExpExecArray;
+  let [_, tokType, tokName, tokArgsRaw, tokRet] = match;
+
+  if (match == undefined || tokArgsRaw == undefined) {
+    Logger.warn(tokType, tokName, tokArgsRaw, tokRet);
     return [];
   }
-  // let _, 
-  // Logger.debug("Get matched: ", match);
 
-  const tokens = tokenizeParameterString(match[1]);
-  Logger.debug(match[0], tokens);
+  const tokArgs = tokenizeParameterString(tokArgsRaw);
+  Logger.debug("Get tokName: ", tokName, "\t tokArgs: ", tokArgs, "\t tokRet: ", tokRet);
 
-  if (match[2] != undefined) {
-    tokens.push(match[2]);
+  // if (match[2] != undefined) {
+  //   tokArgs.push(match[2]);
+  // }
+
+  if (tokType === 'def') {
+    // new PyFuncToken(tokName, )
+    // return new PyFuncToken(match[2], new FuncArg(), null);
+    // } else if ()
+  } else if (tokType === 'class') {
+
   }
 
-  return tokens;
+  return tokArgs;
 }
 
 function tokenizeParameterString(parameterString: string): string[] {

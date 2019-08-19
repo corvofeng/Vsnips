@@ -14,11 +14,15 @@
 class FuncArg {
   argName: string;
   argType: string;
+  argDefault: string;
 
-  constructor(argName: string, argType: string) {
+  constructor(argName: string, argType: string, argDefault: string = '') {
     this.argName = argName;
     this.argType = argType;
+    this.argDefault = argDefault;
   }
+
+
 }
 
 class FuncToken {
@@ -51,10 +55,42 @@ class ClassToken {
 
 class PyFuncToken extends FuncToken {
 
+  /**
+   * 根据tokens构建参数列表
+   *  'q_str:string'
+   *  'q_str:string=""'
+   *  'eggs=None'
+   * @param tokens 
+   */
+  static constructArgFromTokens(tokens: Array<string>): Array<FuncArg> {
+    let argList: Array<FuncArg> = [];
+    tokens.forEach((tok) => {
+      const tokPattern = /^(\w+)(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?/;
+      console.log(tokPattern.exec(tok));
+
+      // let ret = tok.split(':');
+      // console.log(ret);
+    });
+    return argList;
+  }
 }
 
 class PyClassToken extends ClassToken {
 
 }
 
-export { PyFuncToken, PyClassToken };
+export { FuncArg, PyFuncToken, PyClassToken };
+
+function main() {
+
+  let TEST_CASES = [
+    'q_str',
+    'q_str:string',
+    'q_str:string=""',
+    'eggs=None',
+  ];
+  PyFuncToken.constructArgFromTokens(TEST_CASES);
+}
+if (require.main === module) {
+  main();
+}
