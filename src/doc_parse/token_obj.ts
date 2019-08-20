@@ -11,18 +11,18 @@
  *=======================================================================
  */
 
+import { Logger } from "../logger";
+
 class FuncArg {
   argName: string;
   argType: string;
   argDefault: string;
 
-  constructor(argName: string, argType: string, argDefault: string = '') {
+  constructor(argName: string, argType: string = '', argDefault: string = '') {
     this.argName = argName;
     this.argType = argType;
     this.argDefault = argDefault;
   }
-
-
 }
 
 class FuncToken {
@@ -57,19 +57,15 @@ class PyFuncToken extends FuncToken {
 
   /**
    * 根据tokens构建参数列表
-   *  'q_str:string'
-   *  'q_str:string=""'
-   *  'eggs=None'
    * @param tokens 
    */
   static constructArgFromTokens(tokens: Array<string>): Array<FuncArg> {
     let argList: Array<FuncArg> = [];
     tokens.forEach((tok) => {
       const tokPattern = /^(\w+)(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?/;
-      console.log(tokPattern.exec(tok));
+      let [_, argName, argType, argDefault] = tokPattern.exec(tok) as RegExpExecArray;
 
-      // let ret = tok.split(':');
-      // console.log(ret);
+      argList.push(new FuncArg(argName, argType, argDefault));
     });
     return argList;
   }
@@ -84,13 +80,26 @@ export { FuncArg, PyFuncToken, PyClassToken };
 function main() {
 
   let TEST_CASES = [
-    'q_str',
-    'q_str:string',
-    'q_str:string=""',
-    'eggs=None',
+    [['q_str'], [new FuncArg('q_str')]],
+    [['q_str:string'], [new FuncArg('q_str', 'string')]],
+    [['q_str:string=""'], [new FuncArg('q_str', 'string', '""')]],
+    [['eggs=None'], [new FuncArg('eggs', '', 'None')]],
+    [['eggs: obj=None'], [new FuncArg('eggs', 'obj', 'None')]],
   ];
-  PyFuncToken.constructArgFromTokens(TEST_CASES);
+  TEST_CASES.forEach((c) => {
+    let funcArgs = PyFuncToken.constructArgFromTokens(c[0] as Array<string>);
+    let a1 = funcArgs[0];
+    let a2: FuncArg = c[1][0] as any;
+    if (a1.argName != a2.argName || a1.argType != a2.argType || a1.argDefault != a2.argDefault) {
+      // console.log(a1.argName, a2.argName);
+      Logger.error("Fetal in parse: ", c[0], "get: ", funcArgs);
+      return -1;
+    }
+  });
+  return 0;
 }
 if (require.main === module) {
-  main();
+  if (!main()) {
+    process.exit(-1);
+  }
 }

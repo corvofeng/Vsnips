@@ -1,8 +1,4 @@
 "use strict";
-
-import { Logger } from "../logger";
-import { PyFuncToken, FuncArg } from "./token_obj";
-
 // vim: ts=2 sw=2 sts=2 et:
 /*
  *=======================================================================
@@ -18,6 +14,8 @@ import { PyFuncToken, FuncArg } from "./token_obj";
  *=======================================================================
  */
 
+import { Logger } from "../logger";
+import { PyFuncToken, FuncArg } from "./token_obj";
 
 function pythonTokenizer(defs: string) {
   const definitionPattern = /(def|class)\s+(\w+)\s*\(([\s\S]*)\)\s*(->\s*[\w\[\], \.]*)?:\s*$/;
@@ -30,14 +28,14 @@ function pythonTokenizer(defs: string) {
   }
 
   const tokArgs = tokenizeParameterString(tokArgsRaw);
-  Logger.debug("Get tokName: ", tokName, "\t tokArgs: ", tokArgs, "\t tokRet: ", tokRet);
-
+  // Logger.debug("Get tokName: ", tokName, "\t tokArgs: ", tokArgs, "\t tokRet: ", tokRet);
   // if (match[2] != undefined) {
   //   tokArgs.push(match[2]);
   // }
 
   if (tokType === 'def') {
     // new PyFuncToken(tokName, )
+    return new PyFuncToken(tokName, PyFuncToken.constructArgFromTokens(tokArgs), []);
     // return new PyFuncToken(match[2], new FuncArg(), null);
     // } else if ()
   } else if (tokType === 'class') {
@@ -149,9 +147,9 @@ function parseFunc() {
     ['def greeting(name: str) -> str:', 'python'],
   ];
   TEST_FUNCS.forEach(c => {
-    parseTokenizer(c[0], c[1])
+    let tok = parseTokenizer(c[0], c[1])
+    Logger.debug("Get tokobj: ", tok);
   });
-
 }
 
 function main() {
