@@ -38,6 +38,19 @@ class VSnipContext {
     this.token = token;
     this.context = context;
   }
+
+  getActiveEditor() {
+    return vscode.window.activeTextEditor;
+  }
+
+  getTextByShift(numberOfShift: number) {
+    const position = this.position;
+    const range = new vscode.Range(
+      position.translate(0, numberOfShift * -1),
+      position,
+    );
+    return this.document.getText(range);
+  }
 }
 
 export { VSnipContext };

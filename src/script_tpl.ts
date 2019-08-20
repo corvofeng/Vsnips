@@ -17,6 +17,7 @@ import * as path from "path";
 import { VSnipContext } from "./vsnip_context";
 import { USER_MODULE, jsParser } from "./user_script";
 import { getUserScriptFiles } from "./kv_store";
+import * as vscode from "vscode";
 
 let BUILDIN_MODULE = new Map();
 
@@ -70,6 +71,18 @@ function js_markdown_title(vsContext: VSnipContext) {
   return path.basename(fn, path.extname(fn));
 }
 
+function js_python_doc(vsContext: VSnipContext) {
+  Logger.info("In js python doc:", vsContext);
+
+
+  return vsContext.getTextByShift(3);
+}
+
+function get_python_doc() {
+  return jsFuncDecorator('js_python_doc');
+}
+
+
 function var_parser(data: string) {
   // 只匹配let开头的语句, 并且要求只能是数字或是字符串
   // 数字可以不带引号, 字符串必须用单引号或是双引号包裹
@@ -113,6 +126,8 @@ function initTemplateFunc() {
   BUILDIN_MODULE.set('get_markdown_title', get_markdown_title);
   BUILDIN_MODULE.set('triple_quotes', triple_quotes);
   BUILDIN_MODULE.set('js_markdown_title', js_markdown_title);
+  BUILDIN_MODULE.set('get_python_doc', get_python_doc);
+  BUILDIN_MODULE.set('js_python_doc', js_python_doc);
   jsParser(getUserScriptFiles());
 }
 
