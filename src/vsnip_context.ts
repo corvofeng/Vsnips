@@ -43,11 +43,16 @@ class VSnipContext {
     return vscode.window.activeTextEditor;
   }
 
+  /**
+   * 
+   * @param numberOfShift 获取当前行数向上或偏移n行的效果.
+   */
   getTextByShift(numberOfShift: number) {
-    const position = this.position;
+    const pos= this.position;
+
     const range = new vscode.Range(
-      position.translate(0, numberOfShift * -1),
-      position,
+      new vscode.Position(pos.line + numberOfShift * -1, 0),
+      new vscode.Position(pos.line, 0),
     );
     return this.document.getText(range);
   }

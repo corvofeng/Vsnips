@@ -17,32 +17,29 @@
 import { Logger } from "../logger";
 import { PyFuncToken, FuncArg } from "./token_obj";
 
-function pythonTokenizer(defs: string) {
+function pythonTokenizer(defs: string): PyFuncToken | undefined {
   const definitionPattern = /(def|class)\s+(\w+)\s*\(([\s\S]*)\)\s*(->\s*[\w\[\], \.]*)?:\s*$/;
   const match = definitionPattern.exec(defs) as RegExpExecArray;
-  let [_, tokType, tokName, tokArgsRaw, tokRet] = match;
+  if (match === null) {
+    Logger.info("Can't get token in:", defs);
+    return undefined;
+  }
 
-  if (match == undefined || tokArgsRaw == undefined) {
+  let [_, tokType, tokName, tokArgsRaw, tokRet] = match;
+  if (tokArgsRaw == undefined) {
     Logger.warn(tokType, tokName, tokArgsRaw, tokRet);
-    return [];
+    return undefined;
   }
 
   const tokArgs = tokenizeParameterString(tokArgsRaw);
-  // Logger.debug("Get tokName: ", tokName, "\t tokArgs: ", tokArgs, "\t tokRet: ", tokRet);
-  // if (match[2] != undefined) {
-  //   tokArgs.push(match[2]);
-  // }
 
   if (tokType === 'def') {
-    // new PyFuncToken(tokName, )
     return new PyFuncToken(tokName, PyFuncToken.constructArgFromTokens(tokArgs), []);
-    // return new PyFuncToken(match[2], new FuncArg(), null);
-    // } else if ()
   } else if (tokType === 'class') {
-
+    return undefined
   }
 
-  return tokArgs;
+  return undefined;
 }
 
 function tokenizeParameterString(parameterString: string): string[] {
@@ -129,6 +126,7 @@ function parseTokenizer(defs: string, defsType: string) {
   }
 }
 
+export { parseTokenizer };
 
 
 function parseFunc() {
@@ -145,6 +143,9 @@ function parseFunc() {
       'python'],
     ['class example_cls(object):', 'python'],
     ['def greeting(name: str) -> str:', 'python'],
+    ['    def greeting(name: str="") -> str:', 'python'], // 包含缩进
+    ['import IPython; IPython.embed()', 'python'],  // 非函数定义
+    ['def greeting(name: str=""', 'python'],   // 不完整的函数定义
   ];
   TEST_FUNCS.forEach(c => {
     let tok = parseTokenizer(c[0], c[1])

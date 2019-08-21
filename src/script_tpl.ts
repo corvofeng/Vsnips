@@ -18,6 +18,7 @@ import { VSnipContext } from "./vsnip_context";
 import { USER_MODULE, jsParser } from "./user_script";
 import { getUserScriptFiles } from "./kv_store";
 import * as vscode from "vscode";
+import { parseTokenizer } from "./doc_parse/tokenize";
 
 let BUILDIN_MODULE = new Map();
 
@@ -73,9 +74,16 @@ function js_markdown_title(vsContext: VSnipContext) {
 
 function js_python_doc(vsContext: VSnipContext) {
   Logger.info("In js python doc:", vsContext);
+  let rlt = undefined;
+  for (let shift = 2; shift < 20; shift += 1) {
+    rlt = parseTokenizer(vsContext.getTextByShift(shift), 'python');
+    if (rlt != undefined) {
+      break;
+    }
+  }
+  Logger.info("Get token: ", rlt);
 
-
-  return vsContext.getTextByShift(3);
+  return 'hello';
 }
 
 function get_python_doc() {
