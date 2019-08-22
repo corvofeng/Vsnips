@@ -55,6 +55,13 @@ class ClassToken {
 
 class PyFuncToken extends FuncToken {
 
+  static NORMAL = 0x1;
+  static DOXYGEN = 0x2;
+  static SPHINX = 0x3;
+  static GOOGLE = 0x4;
+  static NUMPY = 0x5;
+  static JEDI = 0x6;
+
   /**
    * 根据tokens构建参数列表
    * @param tokens 
@@ -68,6 +75,69 @@ class PyFuncToken extends FuncToken {
       argList.push(new FuncArg(argName, argType, argDefault));
     });
     return argList;
+  }
+
+  getSnip(style: number) {
+    function format_arg(arg: FuncArg, style: number) {
+      if (style == PyFuncToken.DOXYGEN) {
+      }
+      let rlt = '';
+      switch (style) {
+        case PyFuncToken.DOXYGEN:
+          rlt = `@param ${arg.argName} TODO`;
+          break;
+
+        case PyFuncToken.SPHINX:
+          rlt = `:param ${arg.argName}: TODO`;
+          break;
+
+        case PyFuncToken.GOOGLE:
+          rlt = `${arg.argName} (TODO): TODO`;
+          break;
+        case PyFuncToken.JEDI:
+          rlt = `:type ${arg.argName}: TODO`;
+          break;
+
+        case PyFuncToken.NUMPY:
+          rlt = `${arg.argName} : TODO`
+          break;
+
+        default:
+          break;
+      }
+      return rlt;
+    }
+
+    function format_return(style: number) {
+      let rlt = '';
+      switch (style) {
+        case PyFuncToken.DOXYGEN:
+          rlt = "@return: TODO";
+          break;
+
+        case PyFuncToken.NORMAL:
+        case PyFuncToken.SPHINX:
+        case PyFuncToken.JEDI:
+          rlt = ":returns: TODO";
+          break;
+
+        case PyFuncToken.GOOGLE:
+          rlt = "Returns: TODO";
+          break;
+
+        default:
+          break;
+      }
+      return rlt;
+    }
+
+    let doc = '';
+    this.funcArgs.forEach((arg) => {
+      doc += format_arg(arg, style) + '\n';
+    });
+    doc += '\n';
+    doc += format_return(style);
+    return doc;
   }
 }
 
