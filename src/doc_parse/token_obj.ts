@@ -172,7 +172,7 @@ function main() {
   return 0;
 }
 if (require.main === module) {
-  if (!main()) {
+  if (main() < 0) {
     process.exit(-1);
   }
 }
