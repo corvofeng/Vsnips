@@ -5,7 +5,7 @@ import { setLogLevel, addSnipsDir, getVarfiles, addVarfiles } from "../kv_store"
 function main() {
   setLogLevel('DEBUG');
   InitLogger();
-  let example_file = "/home/corvo/.vim/UltiSnips/func.js";
+  let example_file = "./example/func.js";
   let TEST_CASE = [
     'console.log("Hello world");',
   ];
