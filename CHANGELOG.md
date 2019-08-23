@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.2.1] - 2019-08-23
+
+- Parse python class and func token.
+- Allow python function use sphinx doc.
+- Add travis CI.
+- Add example snippet and js func.
+
 ## [0.2.1] - 2019-08-14
 
 - Allow user modify python quoting style.
