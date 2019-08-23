@@ -89,10 +89,14 @@ class PyFuncToken extends FuncToken {
 
         case PyFuncToken.SPHINX:
           rlt = `:param ${arg.argName}: TODO`;
+          if (arg.argType) {
+            rlt += '\n'
+            rlt += `:type ${arg.argName}: ${arg.argType}`;
+          }
           break;
 
         case PyFuncToken.GOOGLE:
-          rlt = `${arg.argName} (TODO): TODO`;
+          rlt = `${arg.argName} (${arg.argType || "TODO"}): TODO`;
           break;
         case PyFuncToken.JEDI:
           rlt = `:type ${arg.argName}: TODO`;
@@ -135,7 +139,6 @@ class PyFuncToken extends FuncToken {
     this.funcArgs.forEach((arg) => {
       doc += format_arg(arg, style) + '\n';
     });
-    doc += '\n';
     doc += format_return(style);
     return doc;
   }

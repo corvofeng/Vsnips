@@ -29,12 +29,6 @@ let JS_FUNC_FMT = `!js`;
 let SINGLE_QUOTES = "'";
 let DOUBLE_QUOTES = '"';
 
-let NORMAL = 0x1;
-let DOXYGEN = 0x2;
-let SPHINX = 0x3;
-let GOOGLE = 0x4;
-let NUMPY = 0x5;
-let JEDI = 0x6;
 let VIM_VARS_MAP: Map<string, string> = new Map();
 
 // jsFuncDecorator 与jsFuncEval配合使用
@@ -83,11 +77,13 @@ function js_python_doc(vsContext: VSnipContext) {
     }
   }
   Logger.debug("Get token: ", rlt);
+  let snipData = '';
   if (rlt !== undefined) {
-    return rlt.getSnip(PyFuncToken.SPHINX);
+    snipData = rlt.getSnip(PyFuncToken.SPHINX);
   }
-
-  return '';
+  return triple_quotes() + "\n" +
+    snipData + "\n" +
+    triple_quotes();
 }
 
 function get_python_doc() {
