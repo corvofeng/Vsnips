@@ -62,7 +62,7 @@ function jsParser(userScriptFiles: Array<string>) {
 
 function main() {
 // 允许用户定义自己的函数
-  let testScriptfiles = ["/home/corvo/.vim/UltiSnips/func.js"];
+  let testScriptfiles = ["./example/func.js"];
   jsParser(testScriptfiles);
   Logger.info("Get user module", USER_MODULE);
 }
