@@ -67,6 +67,31 @@ function js_markdown_title(vsContext: VSnipContext) {
   return path.basename(fn, path.extname(fn));
 }
 
+function get_python_doc_style() {
+  let docStyle = getVimVar('ultisnips_python_style', 'sphinx');
+  let st=PyFuncToken.SPHINX;
+  switch (docStyle) {
+    case 'sphinx':
+      st=PyFuncToken.SPHINX;
+      break;
+    case 'doxygen':
+      st=PyFuncToken.DOXYGEN;
+      break;
+    case 'google':
+      st=PyFuncToken.GOOGLE;
+      break;
+    case 'numpy':
+      st=PyFuncToken.NUMPY;
+      break;
+    case 'jedi':
+      st=PyFuncToken.JEDI;
+      break;
+    default:
+      Logger.warn(`The ${docStyle} not found`);
+  }
+  return st;
+}
+
 function js_python_doc(vsContext: VSnipContext) {
   Logger.debug("In js python doc:", vsContext);
   let rlt = undefined;
@@ -76,10 +101,11 @@ function js_python_doc(vsContext: VSnipContext) {
       break;
     }
   }
+
   Logger.debug("Get token: ", rlt);
   let snipData = '';
   if (rlt !== undefined) {
-    snipData = rlt.getSnip(PyFuncToken.SPHINX);
+    snipData = rlt.getSnip(get_python_doc_style());
   }
   return triple_quotes() + "\n" +
     snipData + "\n" +
