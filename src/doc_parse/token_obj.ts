@@ -69,7 +69,7 @@ class PyFuncToken extends FuncToken {
   static constructArgFromTokens(tokens: Array<string>): Array<FuncArg> {
     let argList: Array<FuncArg> = [];
     tokens.forEach((tok) => {
-      const tokPattern = /^(\w+)(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?/;
+      const tokPattern = /^(\**\w+)(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?/;
       let [_, argName, argType, argDefault] = tokPattern.exec(tok) as RegExpExecArray;
 
       argList.push(new FuncArg(argName, argType, argDefault));
@@ -137,6 +137,9 @@ class PyFuncToken extends FuncToken {
 
     let doc = '';
     this.funcArgs.forEach((arg) => {
+      if (arg.argName == 'self') {
+        return;
+      }
       doc += format_arg(arg, style) + '\n';
     });
     doc += format_return(style);
@@ -158,6 +161,8 @@ function main() {
     [['q_str:string=""'], [new FuncArg('q_str', 'string', '""')]],
     [['eggs=None'], [new FuncArg('eggs', '', 'None')]],
     [['eggs: obj=None'], [new FuncArg('eggs', 'obj', 'None')]],
+    [['*args'], [new FuncArg('*args', '', '')]],
+    [['**kwargs'], [new FuncArg('**kwargs', '', '')]],
   ];
   TEST_CASES.forEach((c) => {
     let funcArgs = PyFuncToken.constructArgFromTokens(c[0] as Array<string>);

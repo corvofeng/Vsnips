@@ -145,6 +145,7 @@ function parseFunc() {
     ['def greeting(name: str) -> str:', 'python'],
     ['    def greeting(name: str="") -> str:', 'python'], // 包含缩进
     ['import IPython; IPython.embed()', 'python'],  // 非函数定义
+    ['def greeting(*args, **kwargs) -> str:', 'python'],
     ['def greeting(name: str=""', 'python'],   // 不完整的函数定义
   ];
   TEST_FUNCS.forEach(c => {
