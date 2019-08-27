@@ -86,7 +86,7 @@ endsnippet`
   let TEST_VAR_FILES = [
     '/home/corvo/.vim/common.vim',
   ];
-  ScriptFunc.init_vim_var(TEST_VAR_FILES);
+  ScriptFunc.initVimVar(TEST_VAR_FILES);
   setLogLevel('DEBUG');
   InitLogger();
 

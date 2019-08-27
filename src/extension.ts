@@ -12,7 +12,7 @@ import {
   updateMultiWorkspaceSetting,
   addUserScriptFiles
 } from "./kv_store";
-import { init_vim_var, initTemplateFunc } from "./script_tpl";
+import { initVimVar, initTemplateFunc } from "./script_tpl";
 
 export async function activate(context: vscode.ExtensionContext) {
   const conf = vscode.workspace.getConfiguration();
@@ -37,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const vimFiles = conf.get("Vsnips.VarFiles", []);
   Logger.info("Get Vimfiles ", vimFiles, "now we start create snippets");
   addVarfiles(vimFiles);
-  init_vim_var(getVarfiles());
+  initVimVar(getVarfiles());
 
   const userScriptFiles = conf.get("Vsnips.UserScriptFiles", []);
   Logger.info("Get user script files: ", userScriptFiles);

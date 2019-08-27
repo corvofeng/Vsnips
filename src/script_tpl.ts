@@ -23,8 +23,6 @@ import { PyFuncToken } from "./doc_parse/token_obj";
 
 let BUILDIN_MODULE = new Map();
 
-let JS_FUNC_FMT = `!js`;
-
 // For python.snippets
 let SINGLE_QUOTES = "'";
 let DOUBLE_QUOTES = '"';
@@ -121,7 +119,6 @@ function get_python_doc() {
 function var_parser(data: string) {
   // 只匹配let开头的语句, 并且要求只能是数字或是字符串
   // 数字可以不带引号, 字符串必须用单引号或是双引号包裹
-  // 目前尚不能处理当前行的注释
   const VIM_VARS_PATERN = /^let g:(\w+)\s*=\s*(\d*|'[^\']*'|"[^\"]*")?(?:\s*\"[^\"]*)?$/gm;
   let res = null;
 
@@ -134,7 +131,7 @@ function var_parser(data: string) {
 }
 
 // 读取给定文件中的vim变量
-function init_vim_var(var_files: Array<string>) {
+function initVimVar(var_files: Array<string>) {
   var_files.forEach(file => {
     Logger.debug("Get file", file);
     try {
@@ -185,7 +182,7 @@ function getTemplateFunc(name: string) {
 }
 
 export {
-  init_vim_var,
+  initVimVar,
   getVimVar,
   jsFuncDecorator,
   var_parser,
