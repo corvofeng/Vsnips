@@ -1,5 +1,7 @@
 # Vsnips
 
+[![Build Status](https://travis-ci.com/corvofeng/Vsnips.svg?branch=master)](https://travis-ci.com/corvofeng/Vsnips)
+
 ![](./images/icon.png)
 
 [中文文档](./README-zh_CN.md)
@@ -108,11 +110,11 @@ endsnippet
     - [x] Allow user define variables
     - [x] Allow some functions(Rewrite by javascript)
 - [x] Syntax highlight for snippets
+- [x] Allow user define their own functions
+- [x] Support autoDocstring for python
 
 ## Doing
 
-- [ ] Allow user define their own functions
-- [ ] Support autoDocstring for python
 - [ ] Support extends and priority in Ultisnips
 
 ### May not work

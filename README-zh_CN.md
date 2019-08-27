@@ -1,5 +1,7 @@
 # Vsnips
 
+[![Build Status](https://travis-ci.com/corvofeng/Vsnips.svg?branch=master)](https://travis-ci.com/corvofeng/Vsnips)
+
 ![](./images/icon.png)
 
 允许用户在VScode中使用UltiSnips语法的代码片段.
@@ -100,12 +102,12 @@ endsnippet
   - [x] 允许用户自定义变量
   - [x] 少量的Python函数支持(使用Javascript, 重写)
 - [x] snippets语法高亮
+- [x] 对于用户自定义Javascript函数的支持
+- [x] 支持类似`autoDocstring`的功能, 允许增加各种形式的Python注释
 
 
 ## 正在开发的功能
 
-- [ ] 对于用户自定义Javascript函数的支持
-- [ ] 支持类似`autoDocstring`的功能, 允许增加各种形式的Python注释
 - [ ] 支持`extends`与`priority`语句
 
 ## 一些可能无法支持的功能
