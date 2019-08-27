@@ -69,7 +69,7 @@ function js_markdown_title(vsContext: VSnipContext) {
 
 function get_python_doc_style() {
   let docStyle = getVimVar('ultisnips_python_style', 'sphinx');
-  Logger.info("Get style: ", docStyle);
+  Logger.debug("Get style: ", docStyle);
   let st = PyFuncToken.SPHINX;
   switch (docStyle) {
     case 'sphinx':
@@ -220,15 +220,6 @@ function test_vim_read() {
       return -1;
     }
   });
-  // Logger.info(
-  //   "Get var ale_cpp_clangtidy_options:",
-  //   getVimVar("ale_cpp_clangtidy_options")
-  // );
-  // Logger.info(
-  //   "Get var ultisnips_python_style:",
-  //   getVimVar("ultisnips_python_style")
-  // );
-  // Logger.info("Get var no_exist:", getVimVar("no_exist"));
   return 0;
 }
 
