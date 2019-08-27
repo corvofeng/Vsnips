@@ -170,7 +170,7 @@ function main() {
     let a2: FuncArg = c[1][0] as any;
     if (a1.argName != a2.argName || a1.argType != a2.argType || a1.argDefault != a2.argDefault) {
       // console.log(a1.argName, a2.argName);
-      Logger.error("Fetal in parse: ", c[0], "get: ", funcArgs);
+      Logger.error("Fatal in parse: ", c[0], "get: ", funcArgs);
       return -1;
     }
   });
