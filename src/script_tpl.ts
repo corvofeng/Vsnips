@@ -69,22 +69,23 @@ function js_markdown_title(vsContext: VSnipContext) {
 
 function get_python_doc_style() {
   let docStyle = getVimVar('ultisnips_python_style', 'sphinx');
-  let st=PyFuncToken.SPHINX;
+  Logger.info("Get style: ", docStyle);
+  let st = PyFuncToken.SPHINX;
   switch (docStyle) {
     case 'sphinx':
-      st=PyFuncToken.SPHINX;
+      st = PyFuncToken.SPHINX;
       break;
     case 'doxygen':
-      st=PyFuncToken.DOXYGEN;
+      st = PyFuncToken.DOXYGEN;
       break;
     case 'google':
-      st=PyFuncToken.GOOGLE;
+      st = PyFuncToken.GOOGLE;
       break;
     case 'numpy':
-      st=PyFuncToken.NUMPY;
+      st = PyFuncToken.NUMPY;
       break;
     case 'jedi':
-      st=PyFuncToken.JEDI;
+      st = PyFuncToken.JEDI;
       break;
     default:
       Logger.warn(`The ${docStyle} not found`);
@@ -121,7 +122,7 @@ function var_parser(data: string) {
   // 只匹配let开头的语句, 并且要求只能是数字或是字符串
   // 数字可以不带引号, 字符串必须用单引号或是双引号包裹
   // 目前尚不能处理当前行的注释
-  const VIM_VARS_PATERN = /^let g:(\w+)\s*=\s*(\d*|'[^\']*'|"[^\"]*")$/gm;
+  const VIM_VARS_PATERN = /^let g:(\w+)\s*=\s*(\d*|'[^\']*'|"[^\"]*")?(?:\s*\"[^\"]*)?$/gm;
   let res = null;
 
   while ((res = VIM_VARS_PATERN.exec(data)) !== null) {
@@ -196,32 +197,44 @@ export {
 function test_vim_read() {
   let TEST_VARS = [
     // only number
-    `let g:ale_set_loclist = 1`,
+    [`let g:ale_set_loclist = 1`, 'ale_set_loclist', 1],
 
-    `let g:snips_author="corvo"`,
-
-    // string with single quotes
-    `let g:ale_echo_msg_error_str = 'Error'`,
+    [`let g:snips_author="corvo"`, 'snips_author', 'corvo'],
 
     // string with single quotes
-    `let g:ale_cpp_clangtidy_options = "p ./build/"`,
+    [`let g:ale_echo_msg_error_str = 'Error'`, 'ale_echo_msg_error_str', 'Error'],
+
+    // string with single quotes
+    [`let g:ale_cpp_clangtidy_options = "p ./build/"`, 'ale_cpp_clangtidy_options', 'p ./build/'],
 
     // string with comments
-    `let g:winManagerWindowLayout='NERDTree|TagList' "BufExplorer`
+    [`let g:winManagerWindowLayout='NERDTree|TagList' "BufExplorer`, 'winManagerWindowLayout', 'NERDTree|TagList'],
+
+    [`let g:ultisnips_python_style="google"       " python注释风格`, 'ultisnips_python_style', 'google'],
   ];
   TEST_VARS.forEach(varDef => {
-    var_parser(varDef);
+    let [express, key, value] = varDef;
+    var_parser(express as string);
+    if (getVimVar(key as string) != value) {
+      Logger.error("Fatal in parse:", express, "should get", value, "but get", getVimVar(key as string));
+      return -1;
+    }
   });
-  Logger.info(
-    "Get var ale_cpp_clangtidy_options:",
-    getVimVar("ale_cpp_clangtidy_options")
-  );
-  Logger.info("Get var no_exist:", getVimVar("no_exist"));
+  // Logger.info(
+  //   "Get var ale_cpp_clangtidy_options:",
+  //   getVimVar("ale_cpp_clangtidy_options")
+  // );
+  // Logger.info(
+  //   "Get var ultisnips_python_style:",
+  //   getVimVar("ultisnips_python_style")
+  // );
+  // Logger.info("Get var no_exist:", getVimVar("no_exist"));
+  return 0;
 }
 
-function main() {
-  test_vim_read();
-}
+
 if (require.main === module) {
-  main();
+  if (test_vim_read() < 0) {
+    process.exit(-1);
+  }
 }
