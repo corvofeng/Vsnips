@@ -12,7 +12,7 @@ import {
   updateMultiWorkspaceSetting,
   addUserScriptFiles
 } from "./kv_store";
-import { initVimVar, initTemplateFunc } from "./script_tpl";
+import { initVimVar, initTemplateFunc, initVSCodeVar } from "./script_tpl";
 
 export async function activate(context: vscode.ExtensionContext) {
   const conf = vscode.workspace.getConfiguration();
@@ -39,9 +39,15 @@ export async function activate(context: vscode.ExtensionContext) {
   addVarfiles(vimFiles);
   initVimVar(getVarfiles());
 
+  // 用户自己的脚本文件
   const userScriptFiles = conf.get("Vsnips.UserScriptFiles", []);
   Logger.info("Get user script files: ", userScriptFiles);
   addUserScriptFiles(userScriptFiles);
+
+  // 添加VSCode变量
+  const vscodeVars= new Map<string, string>(Object.entries(conf.get("Vsnips.VScodeVars", {})));
+  Logger.info("Get vscode variables: ", vscodeVars);
+  initVSCodeVar(vscodeVars);
 
   initTemplateFunc();
 

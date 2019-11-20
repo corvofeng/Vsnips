@@ -50,6 +50,11 @@
 					"type": "string",
 					"description": "The Vsnip's LogLevel",
 					"default": "NO"
+				},
+				"Vsnips.VScodeVars": {
+					"type": "object",
+					"description": "Vars in VSCode",
+					"default": {}
 				}
 			}
 		},

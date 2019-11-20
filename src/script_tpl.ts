@@ -143,6 +143,13 @@ function initVimVar(var_files: Array<string>) {
   });
 }
 
+function initVSCodeVar(vscodeVars: Map<string, string>) {
+  vscodeVars.forEach((varValue: string, varKey: string) => {
+    Logger.debug("Get VSCode var key:", varKey, "var value:", varValue);
+    VIM_VARS_MAP.set(varKey, varValue);
+  });
+}
+
 // 通过变量名获取vim中的变量
 function getVimVar(name: string, default_value: string = "") {
   if (VIM_VARS_MAP === null) {
@@ -187,7 +194,8 @@ export {
   jsFuncDecorator,
   var_parser,
   initTemplateFunc,
-  getTemplateFunc
+  getTemplateFunc,
+  initVSCodeVar
 };
 
 // 测试VIM配置的读取
