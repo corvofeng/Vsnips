@@ -23,6 +23,12 @@ class FuncArg {
     this.argType = argType;
     this.argDefault = argDefault;
   }
+  isSameArgs(args: FuncArg): boolean {
+    if (this.argName !== args.argName || this.argType !== args.argType || this.argDefault !== args.argDefault) {
+      return false;
+    }
+    return true
+  }
 }
 
 class FuncToken {
@@ -38,6 +44,53 @@ class FuncToken {
     this.funcName = funcName;
     this.funcArgs = funcArgs;
     this.funcRets = funcRets;
+  }
+
+  // 比较两个token是不是一个
+  isSameToken(token: FuncToken): boolean {
+    if (this.funcName !== token.funcName) {
+      return false;
+    }
+
+    function isContainsA1(a1: Array<FuncArg>, a2: Array<FuncArg>): boolean {
+      // 判断A1的每个数据是不是在A2中
+      let isInA2 = true;
+      a1.forEach((a1Arg: FuncArg) => {
+        if (!isInA2 == false) return;
+
+        let tmpIS = false; // 检查其中的某个元素是不是在A2
+        a2.forEach((a2Arg: FuncArg) => {
+          if (a1Arg.isSameArgs(a2Arg)) {
+            tmpIS = true;
+          }
+        });
+
+        if (!tmpIS) {
+          isInA2 = false;
+        }
+      });
+
+      return isInA2;
+    }
+    function isSameArgs(a1: Array<FuncArg>, a2: Array<FuncArg>): boolean {
+      if (a1.length !== a2.length) {
+        return false;
+      }
+      // a1 全部包含在 a2 并且 a2 全部包含在 a1
+      if (!isContainsA1(a1, a2) || !isContainsA1(a2, a1)) {
+        return false;
+      }
+
+      return true;
+    }
+
+    if (!isSameArgs(this.funcArgs, token.funcArgs) ||
+      !isSameArgs(this.funcRets, token.funcRets)
+    ) {
+      return false
+    }
+
+    return true;
   }
 }
 
@@ -147,13 +200,57 @@ class PyFuncToken extends FuncToken {
   }
 }
 
+class TsFuncToken extends FuncToken {
+  /**
+   * 根据tokens构建参数列表
+   * @param tokens 
+   */
+  static constructArgFromTokens(tokens: Array<string>): Array<FuncArg> {
+    let argList: Array<FuncArg> = [];
+    tokens.forEach((tok) => {
+      const tokPattern = /^((?:...)?\w+)(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?/;
+      let [_, argName, argType, argDefault] = tokPattern.exec(tok) as RegExpExecArray;
+
+      if (argName.startsWith('...')) { // 以'...'开头的参数, 说明是不定参数
+        if (argType === undefined) { // 如果TS中没有指定argType, 我们给定一个
+          argType = 'object[]'
+        }
+        argName = argName.substr(3);
+      }
+
+      argList.push(new FuncArg(argName, argType, argDefault));
+    });
+    return argList;
+  }
+
+  static constructRetFromTokens(tokens: Array<string>): Array<FuncArg> {
+    let retList: Array<FuncArg> = [];
+    if(tokens.length === 0) {
+      return retList;
+    }
+    let retType = tokens[0];
+
+    if(tokens.length > 1) {
+      Logger.warn("The ts return type length is bigger than 1: ", tokens);
+    }
+    retList.push(new FuncArg('', retType));
+
+    return retList;
+  }
+
+  getSnip(style: number) {
+    return "";
+  }
+
+}
+
 class PyClassToken extends ClassToken {
 
 }
 
-export { FuncArg, PyFuncToken, PyClassToken };
+export { FuncArg, PyFuncToken, PyClassToken, TsFuncToken };
 
-function main() {
+function test_for_pyfunctoken() {
 
   let TEST_CASES = [
     [['q_str'], [new FuncArg('q_str')]],
@@ -161,11 +258,9 @@ function main() {
     [['q_str:string=""'], [new FuncArg('q_str', 'string', '""')]],
     [['eggs=None'], [new FuncArg('eggs', '', 'None')]],
     [['eggs: obj=None'], [new FuncArg('eggs', 'obj', 'None')]],
-    [['*args'], [new FuncArg('*args', '', '')]],
-    [['**kwargs'], [new FuncArg('**kwargs', '', '')]],
   ];
   TEST_CASES.forEach((c) => {
-    let funcArgs = PyFuncToken.constructArgFromTokens(c[0] as Array<string>);
+    let funcArgs = TsFuncToken.constructArgFromTokens(c[0] as Array<string>);
     let a1 = funcArgs[0];
     let a2: FuncArg = c[1][0] as any;
     if (a1.argName != a2.argName || a1.argType != a2.argType || a1.argDefault != a2.argDefault) {
@@ -176,6 +271,42 @@ function main() {
   });
   return 0;
 }
+
+function test_for_tsfunctoken() {
+  let TEST_CASES = [
+    [['q_str'], [new FuncArg('q_str')]],
+    [['q_str:string'], [new FuncArg('q_str', 'string')]],
+    [['q_str:string=""'], [new FuncArg('q_str', 'string', '""')]],
+    [['eggs=None'], [new FuncArg('eggs', '', 'None')]],
+    [['eggs: obj=None'], [new FuncArg('eggs', 'obj', 'None')]],
+    [['...args'], [new FuncArg('args', 'object[]', '')]],
+    [['...restOfName: string[]'], [new FuncArg('restOfName', 'string[]', '')]],
+  ];
+  TEST_CASES.forEach((c) => {
+    let funcArgs = TsFuncToken.constructArgFromTokens(c[0] as Array<string>);
+    let a1 = funcArgs[0];
+    let a2: FuncArg = c[1][0] as any;
+    if (!a1.isSameArgs(a2)) {
+      Logger.error("Fatal in parse: ", c[0], "get: ", funcArgs);
+      return -1;
+    }
+  });
+
+  return 0;
+}
+
+
+function main() {
+  let succ = 0;
+  succ = test_for_pyfunctoken()
+  if (succ < 0) return succ;
+
+  succ = test_for_tsfunctoken()
+  if (succ < 0) return succ;
+
+  return 0;
+}
+
 if (require.main === module) {
   if (main() < 0) {
     process.exit(-1);

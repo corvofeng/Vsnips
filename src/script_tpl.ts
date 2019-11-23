@@ -95,7 +95,7 @@ function js_python_doc(vsContext: VSnipContext) {
   Logger.debug("In js python doc:", vsContext);
   let rlt = undefined;
   for (let shift = 2; shift < 20; shift += 1) {
-    rlt = parseTokenizer(vsContext.getTextByShift(shift), 'python');
+    rlt = parseTokenizer(vsContext.getTextByShift(shift), 'ts');
     if (rlt != undefined) {
       break;
     }
@@ -104,7 +104,7 @@ function js_python_doc(vsContext: VSnipContext) {
   Logger.debug("Get token: ", rlt);
   let snipData = '';
   if (rlt !== undefined) {
-    snipData = rlt.getSnip(get_python_doc_style());
+    // snipData = rlt.getSnip(get_python_doc_style());
   }
   return triple_quotes() + "\n" +
     snipData + "\n" +
