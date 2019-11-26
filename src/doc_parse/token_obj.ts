@@ -46,6 +46,25 @@ class FuncToken {
     this.funcRets = funcRets;
   }
 
+  static constructRetFromTokens(tokens: Array<string>): Array<FuncArg> {
+    let retList: Array<FuncArg> = [];
+    if (tokens.length === 0) {
+      return retList;
+    }
+    let retType = tokens[0];
+
+    if (tokens.length > 1) {
+      Logger.warn("The ts return type length is bigger than 1: ", tokens);
+    }
+    if (retType === '') {
+      return retList;
+    }
+
+    retList.push(new FuncArg('', retType));
+
+    return retList;
+  }
+
   // 比较两个token是不是一个
   isSameToken(token: FuncToken): boolean {
     if (this.funcName !== token.funcName) {
@@ -223,20 +242,7 @@ class TsFuncToken extends FuncToken {
     return argList;
   }
 
-  static constructRetFromTokens(tokens: Array<string>): Array<FuncArg> {
-    let retList: Array<FuncArg> = [];
-    if(tokens.length === 0) {
-      return retList;
-    }
-    let retType = tokens[0];
 
-    if(tokens.length > 1) {
-      Logger.warn("The ts return type length is bigger than 1: ", tokens);
-    }
-    retList.push(new FuncArg('', retType));
-
-    return retList;
-  }
 
   getSnip(style: number) {
     return "";
@@ -250,65 +256,3 @@ class PyClassToken extends ClassToken {
 
 export { FuncArg, PyFuncToken, PyClassToken, TsFuncToken };
 
-function test_for_pyfunctoken() {
-
-  let TEST_CASES = [
-    [['q_str'], [new FuncArg('q_str')]],
-    [['q_str:string'], [new FuncArg('q_str', 'string')]],
-    [['q_str:string=""'], [new FuncArg('q_str', 'string', '""')]],
-    [['eggs=None'], [new FuncArg('eggs', '', 'None')]],
-    [['eggs: obj=None'], [new FuncArg('eggs', 'obj', 'None')]],
-  ];
-  TEST_CASES.forEach((c) => {
-    let funcArgs = TsFuncToken.constructArgFromTokens(c[0] as Array<string>);
-    let a1 = funcArgs[0];
-    let a2: FuncArg = c[1][0] as any;
-    if (a1.argName != a2.argName || a1.argType != a2.argType || a1.argDefault != a2.argDefault) {
-      // console.log(a1.argName, a2.argName);
-      Logger.error("Fatal in parse: ", c[0], "get: ", funcArgs);
-      return -1;
-    }
-  });
-  return 0;
-}
-
-function test_for_tsfunctoken() {
-  let TEST_CASES = [
-    [['q_str'], [new FuncArg('q_str')]],
-    [['q_str:string'], [new FuncArg('q_str', 'string')]],
-    [['q_str:string=""'], [new FuncArg('q_str', 'string', '""')]],
-    [['eggs=None'], [new FuncArg('eggs', '', 'None')]],
-    [['eggs: obj=None'], [new FuncArg('eggs', 'obj', 'None')]],
-    [['...args'], [new FuncArg('args', 'object[]', '')]],
-    [['...restOfName: string[]'], [new FuncArg('restOfName', 'string[]', '')]],
-  ];
-  TEST_CASES.forEach((c) => {
-    let funcArgs = TsFuncToken.constructArgFromTokens(c[0] as Array<string>);
-    let a1 = funcArgs[0];
-    let a2: FuncArg = c[1][0] as any;
-    if (!a1.isSameArgs(a2)) {
-      Logger.error("Fatal in parse: ", c[0], "get: ", funcArgs);
-      return -1;
-    }
-  });
-
-  return 0;
-}
-
-
-function main() {
-  let succ = 0;
-  succ = test_for_pyfunctoken()
-  if (succ < 0) return succ;
-
-  succ = test_for_tsfunctoken()
-  if (succ < 0) return succ;
-
-  return 0;
-}
-
-if (require.main === module) {
-  if (main() < 0) {
-    process.exit(-1);
-  }
-}

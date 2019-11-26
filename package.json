@@ -82,12 +82,17 @@
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
 		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "yarn run compile && node ./node_modules/vscode/bin/test"
+		"test": "yarn run compile && node ./node_modules/vscode/bin/test",
+		"test_base": "mocha -r ts-node/register ./src/test/**/*.spec.ts"
 	},
 	"devDependencies": {
-		"@types/mocha": "^2.2.42",
+		"@types/chai": "^4.2.5",
+		"@types/mocha": "^2.2.48",
 		"@types/node": "^10.12.21",
 		"@types/request": "^2.48.2",
+		"chai": "^4.2.0",
+		"mocha": "^6.2.2",
+		"ts-node": "^8.5.2",
 		"tslint": "^5.12.1",
 		"typescript": "^3.3.1",
 		"vscode": "^1.1.28"

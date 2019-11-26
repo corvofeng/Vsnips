@@ -26,15 +26,26 @@ function pythonTokenizer(defs: string): PyFuncToken | undefined {
   }
 
   let [_, tokType, tokName, tokArgsRaw, tokRet] = match;
-  if (tokArgsRaw == undefined) {
+  if (tokArgsRaw === undefined) {
     Logger.warn(tokType, tokName, tokArgsRaw, tokRet);
     return undefined;
   }
 
   const tokArgs = tokenizeParameterString(tokArgsRaw);
 
+  if (tokRet !== undefined) {
+    if (tokRet.startsWith('->')) {
+      tokRet = tokRet.substr(2);
+      tokRet = tokRet.replace(/\s+/g, '');
+    }
+  } else {
+    tokRet = '';
+  }
   if (tokType === 'def') {
-    return new PyFuncToken(tokName, PyFuncToken.constructArgFromTokens(tokArgs), []);
+    return new PyFuncToken(tokName,
+      PyFuncToken.constructArgFromTokens(tokArgs),
+      PyFuncToken.constructRetFromTokens([tokRet]),
+    );
   } else if (tokType === 'class') {
     return undefined
   }
@@ -150,6 +161,8 @@ function tsTokenizer(defs: string): TsFuncToken | undefined {
       tokRet = tokRet.substr(1);
       tokRet = tokRet.replace(/\s+/g, '');
     }
+  } else {
+    tokRet = '';
   }
 
   Logger.debug("Get ", defs, " result:\n", "type", tokType, "name", tokName, "args", tokArgsRaw, "ret", tokRet);
@@ -172,116 +185,3 @@ function parseTokenizer(defs: string, defsType: string) {
 }
 
 export { parseTokenizer };
-
-
-function parsePYFunc() {
-  let TEST_FUNCS = [
-    ['def query_docs(q_str):', 'python'],
-    ['def query_docs(q_str: string):', 'python'],
-    ['def query_docs(q_str: string=""):', 'python'],
-    ['def query_docs(eggs=None):', 'python'],
-    [`def query_docs(
-        arg1,
-        q_str: string
-      ):
-      `,
-      'python'],
-    ['class example_cls(object):', 'python'],
-    ['def greeting(name: str) -> str:', 'python'],
-    ['    def greeting(name: str="") -> str:', 'python'], // 包含缩进
-    ['import IPython; IPython.embed()', 'python'],  // 非函数定义
-    ['def greeting(*args, **kwargs) -> str:', 'python'],
-    ['def greeting(name: str=""', 'python'],   // 不完整的函数定义
-  ];
-  TEST_FUNCS.forEach(c => {
-    let tok = parseTokenizer(c[0], c[1])
-    Logger.debug("Get tokobj: ", tok);
-  });
-}
-
-
-function parseTSFunc() {
-  // [args] + [期望的返回值]
-  let TEST_JS_AND_TS_FUNCS = [
-    [ // 简单的JS函数
-      ['function query_docs(q_str):', 'javascript'],
-      [new TsFuncToken(
-        "query_docs",
-        [new FuncArg('q_str')],
-        []
-      )],
-    ],
-    [ // 基础的TS函数, 带返回类型
-      ['function add(x: number, y: number): number', 'typescript'],
-      [new TsFuncToken(
-        "add",
-        [new FuncArg('x', 'number', ''), new FuncArg('y', 'number', '')],
-        [new FuncArg('', 'number', ''),]
-      )],
-    ],
-    [ // 基础TS函数, 带返回类型, 增加了末尾的`{`
-      ['function add(x: number, y: number): number {', 'typescript'],
-      [new TsFuncToken(
-        "add",
-        [new FuncArg('x', 'number', ''), new FuncArg('y', 'number', '')],
-        [new FuncArg('', 'number', ''),]
-      )],
-    ],
-    [ // 可选参数的TS函数
-      ['function me(firstName: string, lastName?: string)', 'typescript'],
-      [new TsFuncToken(
-        "me",
-        [new FuncArg('firstName', 'string', ''), new FuncArg('lastName', 'string', '')],
-        []
-      )],
-    ],
-    [ // 携带缺省值的函数
-      ['function buildName(firstName: string, lastName = "Smith")', 'typescript'],
-      [new TsFuncToken(
-        "buildName",
-        [new FuncArg('firstName', 'string', ''), new FuncArg('lastName', '', 'Smith')],
-        []
-      )],
-    ],
-    [ // 可变参数 有自己的类型
-      ['function buildName(firstName: string, ...restOfName: string[]) {', 'typescript'],
-      [new TsFuncToken(
-        "buildName",
-        [new FuncArg('firstName', 'string', ''), new FuncArg('restOfName', 'string[]', '')],
-        []
-      )],
-    ],
-    [ // 可变参数, 但是没有自己的类型
-      ['function buildName(firstName: string, ...restOfName) {', 'typescript'],
-      [new TsFuncToken(
-        "buildName",
-        [new FuncArg('firstName', 'string', ''), new FuncArg('restOfName', 'object[]', '')],
-        []
-      )],
-    ],
-  ]
-  TEST_JS_AND_TS_FUNCS.forEach(c => {
-    let tok = parseTokenizer(c[0][0] as string, c[0][1] as string);
-    Logger.debug("Get tokobj: ", tok);
-
-    if (c.length == 2) {
-      let expectToke = c[1][0] as TsFuncToken;
-      if (tok !== undefined) {
-        if (!expectToke.isSameToken(tok)) {
-          Logger.error("Fatal in parse", c[0], "get", tok);
-        }
-      }
-      Logger.debug("Wanna get ", expectToke);
-    }
-  });
-}
-
-function main() {
-  parsePYFunc()
-  Logger.debug("==============")
-  parseTSFunc()
-}
-if (require.main === module) {
-  main();
-}
-

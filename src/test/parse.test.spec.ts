@@ -12,7 +12,7 @@ import { Logger, InitLogger } from "../logger";
 
 // This is for unittest.
 
-function main() {
+describe('Parse ultisnips', () => {
   let TEST_CASE = [
     // simple snippets
     `snippet gitig "Git add will ignore this"
@@ -87,15 +87,11 @@ endsnippet`
     '/home/corvo/.vim/common.vim',
   ];
   ScriptFunc.initVimVar(TEST_VAR_FILES);
-  setLogLevel('DEBUG');
+  setLogLevel('WARNING');
   InitLogger();
 
   TEST_CASE.forEach((txt: string) => {
     parse(txt);
   });
   // parse(TEST_CASE[TEST_CASE.length - 1]);
-}
-
-if (require.main === module) {
-  main();
-}
+});
