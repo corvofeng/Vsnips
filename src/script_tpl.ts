@@ -95,7 +95,7 @@ function js_python_doc(vsContext: VSnipContext) {
   Logger.debug("In js python doc:", vsContext);
   let rlt = undefined;
   for (let shift = 2; shift < 20; shift += 1) {
-    rlt = parseTokenizer(vsContext.getTextByShift(shift), 'ts');
+    rlt = parseTokenizer(vsContext.getTextByShift(shift), 'python');
     if (rlt != undefined) {
       break;
     }
@@ -104,17 +104,26 @@ function js_python_doc(vsContext: VSnipContext) {
   Logger.debug("Get token: ", rlt);
   let snipData = '';
   if (rlt !== undefined) {
-    // snipData = rlt.getSnip(get_python_doc_style());
+    snipData = rlt.getSnip(get_python_doc_style());
   }
   return triple_quotes() + "\n" +
     snipData + "\n" +
     triple_quotes();
 }
 
+function js_typescript_doc(vsContext: VSnipContext) {
+  Logger.debug("In js typescript doc:", vsContext);
+  // TODO: add
+
+  return '';
+}
+
 function get_python_doc() {
   return jsFuncDecorator('js_python_doc');
 }
-
+function get_typescript_doc() {
+  return jsFuncDecorator('js_typescript_doc');
+}
 
 function var_parser(data: string) {
   // 只匹配let开头的语句, 并且要求只能是数字或是字符串
@@ -167,6 +176,8 @@ function initTemplateFunc() {
   BUILDIN_MODULE.set('js_markdown_title', js_markdown_title);
   BUILDIN_MODULE.set('get_python_doc', get_python_doc);
   BUILDIN_MODULE.set('js_python_doc', js_python_doc);
+  BUILDIN_MODULE.set('js_typescript_doc', js_typescript_doc);
+  BUILDIN_MODULE.set('get_typescript_doc', get_typescript_doc);
   jsParser(getUserScriptFiles());
 }
 

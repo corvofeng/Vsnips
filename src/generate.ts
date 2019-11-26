@@ -58,21 +58,26 @@ async function generate(context: vscode.ExtensionContext) {
             Logger.warn(`The ${snipFile} not exists!!`);
             continue;
           }
-          await innerGenerate(snipFile, fileType);
+          const data = fs.readFileSync(snipFile, "utf8");
+          await innerGenerate(data, fileType);
         }
       });
+      // Add the doc snippets for current file type, a little ugly.
+      let docSnip = `snippet vdoc "${fileType} doc"\n` +
+        `\`!p snip.rv = get_${fileType}_doc(snip)\`\n` +
+        `endsnippet`;
+      innerGenerate(docSnip, fileType);
     } else {
       Logger.debug(fileType, "has been added");
     }
   }
 
   // 主生成函数
-  async function innerGenerate(fName: string, needFileType: string) {
+  async function innerGenerate(data: string, needFileType: string) {
     const sel: vscode.DocumentFilter = {
       scheme: "file",
       language: needFileType
     };
-    const data = fs.readFileSync(fName, "utf8");
     let snippets = await parse(data);
 
     let item = vscode.languages.registerCompletionItemProvider(
@@ -93,7 +98,7 @@ async function generate(context: vscode.ExtensionContext) {
               snip.descriptsion + "\n" + snip.body;
             snippetCompletion.label = `Vsnips-${snip.prefix}: ${
               snip.descriptsion
-            }`;
+              }`;
             snippetCompletion.insertText = new vscode.SnippetString(
               snip.get_snip_body(vSnipContext)
             );
