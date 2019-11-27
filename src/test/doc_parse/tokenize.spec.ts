@@ -35,6 +35,15 @@ describe('Tokenize', () => {
           [new FuncArg('', 'number', ''),]
         )],
       ],
+      [ // TS函数, 结尾有空格或换行
+        [`function func(a1: string, a2: number) {
+          `, 'typescript'],
+        [new TsFuncToken(
+          'func',
+          [new FuncArg('a1', 'string', ''), new FuncArg('a2', 'number', '')],
+          []
+        )]
+      ],
       [ // 基础TS函数, 带返回类型, 增加了末尾的`{`
         ['function add(x: number, y: number): number {', 'typescript'],
         [new TsFuncToken(
@@ -85,6 +94,8 @@ describe('Tokenize', () => {
         if (tok !== undefined) {
           Logger.debug("Wanna get ", expectToken, "get", tok);
           expect(expectToken.isSameToken(tok)).equal(true);
+        } else {
+          expect(tok === c[1][0]).equal(true);
         }
       }
     });

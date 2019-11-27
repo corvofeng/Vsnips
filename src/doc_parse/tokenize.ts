@@ -143,7 +143,7 @@ function tsTokenizer(defs: string): TsFuncToken | undefined {
   // 普通函数(一般不会写注释): let myAdd = function(x: number, y: number): number { return  x + y; };
 
   // const definitionPattern = /(function)\s+(\w+)\s*\(([\s\S]*)\)\s*(->\s*[\w\[\], \.]*)?(:|=>)\s*(?:{\s*}?)?$/;
-  const definitionPattern = /(function)\s+(\w+)\s*\(([\s\S]*)\)\s*(:\s*[\w\[\], \.]*)?(?:\s*\{)?$/;
+  const definitionPattern = /(function)\s+(\w+)\s*\(([\s\S]*)\)\s*(:\s*[\w\[\], \.]*)?(?:\s*\{\s*\n*)?$/;
   const match = definitionPattern.exec(defs) as RegExpExecArray;
   if (match === null) {
     Logger.info("Can't get token in:", defs);

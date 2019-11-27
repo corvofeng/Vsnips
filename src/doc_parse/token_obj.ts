@@ -32,6 +32,13 @@ class FuncArg {
 }
 
 class FuncToken {
+  static NORMAL = 0x1;
+  static DOXYGEN = 0x2;
+  static SPHINX = 0x3;
+  static GOOGLE = 0x4;
+  static NUMPY = 0x5;
+  static JEDI = 0x6;
+
   funcName: string;
   funcArgs: Array<FuncArg>;
   funcRets: Array<FuncArg>;
@@ -63,6 +70,61 @@ class FuncToken {
     retList.push(new FuncArg('', retType));
 
     return retList;
+  }
+
+  static format_arg(arg: FuncArg, style: number, prefix: string = '') {
+    let rlt = '';
+    switch (style) {
+      case FuncToken.DOXYGEN:
+        rlt = `${prefix}@param ${arg.argName} TODO`;
+        break;
+
+      case FuncToken.SPHINX:
+        rlt = `${prefix}:param ${arg.argName}: TODO`;
+        if (arg.argType) {
+          rlt += `${prefix}\n`
+          rlt += `${prefix}:type ${arg.argName}: ${arg.argType}`;
+        }
+        break;
+
+      case FuncToken.GOOGLE:
+        rlt = `${prefix}${arg.argName} (${arg.argType || "TODO"}): TODO`;
+        break;
+      case FuncToken.JEDI:
+        rlt = `${prefix}:type ${arg.argName}: TODO`;
+        break;
+
+      case FuncToken.NUMPY:
+        rlt = `${prefix}${arg.argName} : TODO`
+        break;
+
+      default:
+        break;
+    }
+    return rlt;
+  }
+
+  static format_return(style: number, prefix: string = '') {
+    let rlt = '';
+    switch (style) {
+      case PyFuncToken.DOXYGEN:
+        rlt = `${prefix}@return: TODO`;
+        break;
+
+      case PyFuncToken.NORMAL:
+      case PyFuncToken.SPHINX:
+      case PyFuncToken.JEDI:
+        rlt = `${prefix}:returns: TODO`;
+        break;
+
+      case PyFuncToken.GOOGLE:
+        rlt = `${prefix}Returns: TODO`;
+        break;
+
+      default:
+        break;
+    }
+    return rlt;
   }
 
   // 比较两个token是不是一个
@@ -127,13 +189,6 @@ class ClassToken {
 
 class PyFuncToken extends FuncToken {
 
-  static NORMAL = 0x1;
-  static DOXYGEN = 0x2;
-  static SPHINX = 0x3;
-  static GOOGLE = 0x4;
-  static NUMPY = 0x5;
-  static JEDI = 0x6;
-
   /**
    * 根据tokens构建参数列表
    * @param tokens 
@@ -150,74 +205,18 @@ class PyFuncToken extends FuncToken {
   }
 
   getSnip(style: number) {
-    function format_arg(arg: FuncArg, style: number) {
-      if (style == PyFuncToken.DOXYGEN) {
-      }
-      let rlt = '';
-      switch (style) {
-        case PyFuncToken.DOXYGEN:
-          rlt = `@param ${arg.argName} TODO`;
-          break;
-
-        case PyFuncToken.SPHINX:
-          rlt = `:param ${arg.argName}: TODO`;
-          if (arg.argType) {
-            rlt += '\n'
-            rlt += `:type ${arg.argName}: ${arg.argType}`;
-          }
-          break;
-
-        case PyFuncToken.GOOGLE:
-          rlt = `${arg.argName} (${arg.argType || "TODO"}): TODO`;
-          break;
-        case PyFuncToken.JEDI:
-          rlt = `:type ${arg.argName}: TODO`;
-          break;
-
-        case PyFuncToken.NUMPY:
-          rlt = `${arg.argName} : TODO`
-          break;
-
-        default:
-          break;
-      }
-      return rlt;
-    }
-
-    function format_return(style: number) {
-      let rlt = '';
-      switch (style) {
-        case PyFuncToken.DOXYGEN:
-          rlt = "@return: TODO";
-          break;
-
-        case PyFuncToken.NORMAL:
-        case PyFuncToken.SPHINX:
-        case PyFuncToken.JEDI:
-          rlt = ":returns: TODO";
-          break;
-
-        case PyFuncToken.GOOGLE:
-          rlt = "Returns: TODO";
-          break;
-
-        default:
-          break;
-      }
-      return rlt;
-    }
-
     let doc = '';
     this.funcArgs.forEach((arg) => {
       if (arg.argName == 'self') {
         return;
       }
-      doc += format_arg(arg, style) + '\n';
+      doc += FuncToken.format_arg(arg, style) + '\n';
     });
-    doc += format_return(style);
+    doc += FuncToken.format_return(style);
     return doc;
   }
 }
+
 
 class TsFuncToken extends FuncToken {
   /**
@@ -227,7 +226,7 @@ class TsFuncToken extends FuncToken {
   static constructArgFromTokens(tokens: Array<string>): Array<FuncArg> {
     let argList: Array<FuncArg> = [];
     tokens.forEach((tok) => {
-      const tokPattern = /^((?:...)?\w+)(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?/;
+      const tokPattern = /^((?:\.\.\.)?\w+)(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?/;
       let [_, argName, argType, argDefault] = tokPattern.exec(tok) as RegExpExecArray;
 
       if (argName.startsWith('...')) { // 以'...'开头的参数, 说明是不定参数
@@ -242,12 +241,17 @@ class TsFuncToken extends FuncToken {
     return argList;
   }
 
-
-
   getSnip(style: number) {
-    return "";
+    let doc = '';
+    this.funcArgs.forEach((arg) => {
+      if (arg.argName == 'self') {
+        return;
+      }
+      doc += FuncToken.format_arg(arg, style, ' * ') + '\n';
+    });
+    doc += FuncToken.format_return(style, ' * ');
+    return doc;
   }
-
 }
 
 class PyClassToken extends ClassToken {

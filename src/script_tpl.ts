@@ -19,7 +19,7 @@ import { USER_MODULE, jsParser } from "./user_script";
 import { getUserScriptFiles } from "./kv_store";
 import * as vscode from "vscode";
 import { parseTokenizer } from "./doc_parse/tokenize";
-import { PyFuncToken } from "./doc_parse/token_obj";
+import { PyFuncToken, TsFuncToken } from "./doc_parse/token_obj";
 
 let BUILDIN_MODULE = new Map();
 
@@ -113,9 +113,21 @@ function js_python_doc(vsContext: VSnipContext) {
 
 function js_typescript_doc(vsContext: VSnipContext) {
   Logger.debug("In js typescript doc:", vsContext);
-  // TODO: add
-
-  return '';
+  let rlt = undefined;
+  for (let shift = -1; shift > -20; shift -= 1) {
+    rlt = parseTokenizer(vsContext.getTextByShift(shift), 'typescript');
+    if (rlt != undefined) {
+      break;
+    }
+  }
+  Logger.debug("Get token", rlt);
+  if (rlt !== undefined) {
+    return '/**' + '\n' +
+      rlt.getSnip(TsFuncToken.GOOGLE) + '\n' +
+      ' */';
+  } else {
+    return '';
+  }
 }
 
 function get_python_doc() {

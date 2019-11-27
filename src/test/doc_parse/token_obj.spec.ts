@@ -18,6 +18,8 @@ describe("Token obj", () => {
       [['q_str'], [new FuncArg('q_str')]],
       [['q_str:string'], [new FuncArg('q_str', 'string')]],
       [['q_str:string=""'], [new FuncArg('q_str', 'string', '""')]],
+      [['a1:string'], [new FuncArg('a1', 'string', '')]],
+      [['a1: string'], [new FuncArg('a1', 'string', '')]],
       [['eggs=None'], [new FuncArg('eggs', '', 'None')]],
       [['eggs: obj=None'], [new FuncArg('eggs', 'obj', 'None')]],
       [['...args'], [new FuncArg('args', 'object[]', '')]],
@@ -34,6 +36,7 @@ describe("Token obj", () => {
   it('Python function token', () => {
     let TEST_CASES = [
       [['q_str'], [new FuncArg('q_str')]],
+      [['a1: string'], [new FuncArg('a1', 'string', '')]],
       [['q_str:string'], [new FuncArg('q_str', 'string')]],
       [['q_str:string=""'], [new FuncArg('q_str', 'string', '""')]],
       [['eggs=None'], [new FuncArg('eggs', '', 'None')]],
