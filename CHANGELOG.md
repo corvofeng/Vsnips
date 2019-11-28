@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.2.6] - 2019-11-27
+
+- Add doc support for Python and TypeScript.
+- Allow user change python func comments style.
+- Allow user define variables in VSCode.
+- Fix time function.
+- Add mocha for unittest.
+
 ## [0.2.1] - 2019-08-23
 
 - Parse python class and func token.
