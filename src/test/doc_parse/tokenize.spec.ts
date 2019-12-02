@@ -56,7 +56,7 @@ describe('Tokenize', () => {
         ['function me(firstName: string, lastName?: string)', 'typescript'],
         [new TsFuncToken(
           "me",
-          [new FuncArg('firstName', 'string', ''), new FuncArg('lastName', 'string', '')],
+          [new FuncArg('firstName', 'string', ''), new FuncArg('lastName?', 'string', '')],
           []
         )],
       ],
@@ -84,6 +84,16 @@ describe('Tokenize', () => {
           []
         )],
       ],
+      /*
+      [
+        ['function tsTokenizer(defs: string): TsFuncToken | undefined {', 'typescript'],
+        [new TsFuncToken(
+          "tsTokenizer",
+          [new FuncArg('defs', 'string', '')],
+          [new FuncArg('', 'TsFuncToken | undefined', '')]
+        )],
+      ],
+      */
     ];
     TEST_JS_AND_TS_FUNCS.forEach(c => {
       let tok = parseTokenizer(c[0][0] as string, c[0][1] as string);
@@ -93,7 +103,8 @@ describe('Tokenize', () => {
         let expectToken = c[1][0] as TsFuncToken;
         if (tok !== undefined) {
           Logger.debug("Wanna get ", expectToken, "get", tok);
-          expect(expectToken.isSameToken(tok)).equal(true);
+          // expect(expectToken.isSameToken(tok)).equal(true);
+          expect(expectToken).to.deep.equal(tok);
         } else {
           expect(tok === c[1][0]).equal(true);
         }

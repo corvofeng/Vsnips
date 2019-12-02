@@ -15,7 +15,7 @@
  */
 
 import { Logger } from "../logger";
-import { PyFuncToken, FuncArg, TsFuncToken } from "./token_obj";
+import { PyFuncToken, TsFuncToken } from "./token_obj";
 
 function pythonTokenizer(defs: string): PyFuncToken | undefined {
   const definitionPattern = /(def|class)\s+(\w+)\s*\(([\s\S]*)\)\s*(->\s*[\w\[\], \.]*)?:\s*$/;

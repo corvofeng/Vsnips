@@ -22,6 +22,8 @@ describe("Token obj", () => {
       [['a1: string'], [new FuncArg('a1', 'string', '')]],
       [['eggs=None'], [new FuncArg('eggs', '', 'None')]],
       [['eggs: obj=None'], [new FuncArg('eggs', 'obj', 'None')]],
+      [['lastName?: string'], [new FuncArg('lastName?', 'string', '')]],
+      [['lastName = "Smith"'], [new FuncArg('lastName', '', "Smith")]],
       [['...args'], [new FuncArg('args', 'object[]', '')]],
       [['...restOfName: string[]'], [new FuncArg('restOfName', 'string[]', '')]],
     ];
@@ -29,7 +31,7 @@ describe("Token obj", () => {
       let funcArgs = TsFuncToken.constructArgFromTokens(c[0] as Array<string>);
       let a1 = funcArgs[0];
       let a2: FuncArg = c[1][0] as any;
-      expect(a1.isSameArgs(a2)).equal(true);
+      expect(a1).to.deep.equal(a2);
     });
   });
 

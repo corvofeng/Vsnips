@@ -13,6 +13,29 @@
 
 import { Logger } from "../logger";
 
+/**
+ * str (string): TODO
+ * ch (string[]): TODO
+ * Returns: TODO
+ * 
+ * Copy from: https://stackoverflow.com/a/55292366
+ *  trimAny('|hello|world   ', [ '|', ' ' ]); // => 'hello|world'
+ *  because '.indexOf' is used, you could also pass a string for the 2nd parameter:
+ *  trimAny('|hello| world  ', '| '); // => 'hello|world'
+ */
+function trim(str: string, ch: string[]) {
+  var start = 0,
+    end = str.length;
+
+  while (start < end && ch.indexOf(str[start]) >= 0)
+    ++start;
+
+  while (end > start && ch.indexOf(str[end - 1]) >= 0)
+    --end;
+
+  return (start > 0 || end < str.length) ? str.substring(start, end) : str;
+}
+
 class FuncArg {
   argName: string;
   argType: string;
@@ -21,7 +44,7 @@ class FuncArg {
   constructor(argName: string, argType: string = '', argDefault: string = '') {
     this.argName = argName;
     this.argType = argType;
-    this.argDefault = argDefault;
+    this.argDefault = trim(argDefault, ['"', "'"]);
   }
   isSameArgs(args: FuncArg): boolean {
     if (this.argName !== args.argName || this.argType !== args.argType || this.argDefault !== args.argDefault) {
@@ -226,7 +249,7 @@ class TsFuncToken extends FuncToken {
   static constructArgFromTokens(tokens: Array<string>): Array<FuncArg> {
     let argList: Array<FuncArg> = [];
     tokens.forEach((tok) => {
-      const tokPattern = /^((?:\.\.\.)?\w+)(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?/;
+      const tokPattern = /^((?:\.\.\.)?\w+\??)(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?/;
       let [_, argName, argType, argDefault] = tokPattern.exec(tok) as RegExpExecArray;
 
       if (argName.startsWith('...')) { // 以'...'开头的参数, 说明是不定参数
