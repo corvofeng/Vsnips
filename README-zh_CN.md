@@ -103,18 +103,19 @@ endsnippet
   - [x] 少量的Python函数支持(使用Javascript, 重写)
 - [x] snippets语法高亮
 - [x] 对于用户自定义Javascript函数的支持
-- [x] 支持类似`autoDocstring`的功能, 允许增加各种形式的Python注释
+- [x] 支持类似`autoDocstring`的功能, 允许增加各种形式的Python注释以及增加TypeScript注释
 
 
 ## 正在开发的功能
 
 - [ ] 支持`extends`与`priority`语句
+- [ ] 支持Golang的函数注释
 
 ## 一些可能无法支持的功能
 
 可能各位也注意到了, vim中的UltiSnips可以直接根据Python函数中的参数来调整
 注释信息. 而Vsnips是基于VScode原生的片段, 若是直接支持可能很困难.
-退而求其次, 在写完函数参数后, 如果用户需要注释, 我们给出就可以了(具体实现打算参考`autoDocstrings`).
+退而求其次, 在写完函数参数后, 如果用户需要注释, 我们给出就可以了(具体实现打算参考[autoDocstrings][9]).
 
 [1]: https://github.com/SirVer/ultisnips
 [2]: https://camo.githubusercontent.com/296aecf30e1607233814196db6bd3f5f47e70c73/68747470733a2f2f7261772e6769746875622e636f6d2f5369725665722f756c7469736e6970732f6d61737465722f646f632f64656d6f2e676966
@@ -124,3 +125,4 @@ endsnippet
 [6]: https://marketplace.visualstudio.com/items?itemName=wcwhitehead.bootstrap-3-snippets
 [7]: https://user-images.githubusercontent.com/12025071/62412552-19928500-b637-11e9-8335-dfe3f0ca0688.gif
 [8]: https://code.visualstudio.com/api/references/vscode-api#CompletionItemProvider
+[9]: https://marketplace.visualstudio.com/items?itemName=njpwerner.autodocstring

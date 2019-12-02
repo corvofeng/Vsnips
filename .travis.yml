@@ -5,9 +5,5 @@ install:
   - npm install
 script:
   - ./node_modules/.bin/tsc
-  - node out/doc_parse/token_obj.js
-  - node out/doc_parse/tokenize.js
   - node out/script_tpl.js
-  - node out/test/parse.test.js
-  - node out/test/eval_file.js
-  # - node out/user_script.js
+  - npm run test_base

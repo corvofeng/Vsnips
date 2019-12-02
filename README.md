@@ -111,11 +111,12 @@ endsnippet
     - [x] Allow some functions(Rewrite by javascript)
 - [x] Syntax highlight for snippets
 - [x] Allow user define their own functions
-- [x] Support autoDocstring for python
+- [x] Support autoDocstring for Python and TypeScript.
 
 ## Doing
 
 - [ ] Support extends and priority in Ultisnips
+- [ ] Add support for golang function comments.
 
 ### May not work
 
@@ -123,8 +124,9 @@ The UltiSnips in vim could adjust the doc according to the
 python function argument. But the Vsnips is based on VScode
 `CompletionItemProvider`, it may be hard to support this feature.
 
-So, I change to another solution, after the user triggers the keys like `v-doc`, Vsnips could auto-generate the doc for the functions, Which
-will refer to `autoDocstring`.
+So, I change to another solution, after the user triggers the keys like `v-doc`,
+Vsnips could auto-generate the doc for the functions,
+Which will refer to [autoDocstring][9].
 
 
 [1]: https://github.com/SirVer/ultisnips
@@ -135,3 +137,4 @@ will refer to `autoDocstring`.
 [6]: https://marketplace.visualstudio.com/items?itemName=wcwhitehead.bootstrap-3-snippets
 [7]: https://user-images.githubusercontent.com/12025071/62412552-19928500-b637-11e9-8335-dfe3f0ca0688.gif
 [8]: https://code.visualstudio.com/api/references/vscode-api#CompletionItemProvider
+[9]: https://marketplace.visualstudio.com/items?itemName=njpwerner.autodocstring
