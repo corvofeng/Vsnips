@@ -4,7 +4,7 @@ import 'mocha';
 
 import { Logger, InitLogger } from "../../logger";
 import { setLogLevel } from "../../kv_store";
-import { FuncArg, TsFuncToken } from "../../doc_parse/token_obj";
+import { FuncArg, TsFuncToken, GoFuncToken } from "../../doc_parse/token_obj";
 
 describe("Token obj", () => {
   beforeEach(function (done) {
@@ -48,7 +48,25 @@ describe("Token obj", () => {
       let funcArgs = TsFuncToken.constructArgFromTokens(c[0] as Array<string>);
       let a1 = funcArgs[0];
       let a2: FuncArg = c[1][0] as any;
-      expect(a1.isSameArgs(a2)).equal(true);
+      expect(a1).deep.equal(a2);
     });
   });
+
+  it('Golang function token', () => {
+    let TEST_CASES = [
+      [['a1 string'], [new FuncArg('a1', 'string', '')]],
+      [['b []byte'], [new FuncArg('b', '[]byte', '')]],
+      [['x int'], [new FuncArg('x', 'int', '')]],
+      [['db *sql.DB'], [new FuncArg('db', '*sql.DB', '')]],
+      [['w http.ResponseWriter'], [new FuncArg('w', 'http.ResponseWriter', '')]],
+    ];
+    TEST_CASES.forEach((c) => {
+      let funcArgs = GoFuncToken.constructArgFromTokens(c[0] as Array<string>);
+      let a1 = funcArgs[0];
+      let a2: FuncArg = c[1][0] as any;
+      expect(a1).deep.equal(a2);
+    });
+  });
+
+
 });

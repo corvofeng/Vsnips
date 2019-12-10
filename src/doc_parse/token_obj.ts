@@ -149,53 +149,6 @@ class FuncToken {
     }
     return rlt;
   }
-
-  // 比较两个token是不是一个
-  isSameToken(token: FuncToken): boolean {
-    if (this.funcName !== token.funcName) {
-      return false;
-    }
-
-    function isContainsA1(a1: Array<FuncArg>, a2: Array<FuncArg>): boolean {
-      // 判断A1的每个数据是不是在A2中
-      let isInA2 = true;
-      a1.forEach((a1Arg: FuncArg) => {
-        if (!isInA2 == false) return;
-
-        let tmpIS = false; // 检查其中的某个元素是不是在A2
-        a2.forEach((a2Arg: FuncArg) => {
-          if (a1Arg.isSameArgs(a2Arg)) {
-            tmpIS = true;
-          }
-        });
-
-        if (!tmpIS) {
-          isInA2 = false;
-        }
-      });
-
-      return isInA2;
-    }
-    function isSameArgs(a1: Array<FuncArg>, a2: Array<FuncArg>): boolean {
-      if (a1.length !== a2.length) {
-        return false;
-      }
-      // a1 全部包含在 a2 并且 a2 全部包含在 a1
-      if (!isContainsA1(a1, a2) || !isContainsA1(a2, a1)) {
-        return false;
-      }
-
-      return true;
-    }
-
-    if (!isSameArgs(this.funcArgs, token.funcArgs) ||
-      !isSameArgs(this.funcRets, token.funcRets)
-    ) {
-      return false
-    }
-
-    return true;
-  }
 }
 
 class ClassToken {
@@ -254,7 +207,7 @@ class TsFuncToken extends FuncToken {
 
       if (argName.startsWith('...')) { // 以'...'开头的参数, 说明是不定参数
         if (argType === undefined) { // 如果TS中没有指定argType, 我们给定一个
-          argType = 'object[]'
+          argType = 'object[]';
         }
         argName = argName.substr(3);
       }
@@ -277,9 +230,46 @@ class TsFuncToken extends FuncToken {
   }
 }
 
+class GoFuncToken extends FuncToken {
+
+  static constructArgFromTokens(tokens: Array<string>): Array<FuncArg> {
+    let argList: Array<FuncArg> = [];
+    tokens.forEach((tok) => {
+      const [argName, argType] = trim(tok, [' ']).split(' ');
+      argList.push(new FuncArg(argName, argType, ''));
+    });
+
+    return argList;
+  }
+
+  static constructRetFromTokens(tokens: Array<string>): Array<FuncArg> {
+    let argList: Array<FuncArg> = [];
+    tokens.forEach((tok) => {
+      let ret = trim(tok, [' ', '\n']).split(' ');
+      if (ret.length === 1) {
+        argList.push(new FuncArg('', ret[0], ''));
+      } else if (ret.length === 2) {
+        argList.push(new FuncArg(ret[0], ret[1], ''));
+      }
+    });
+    return argList;
+  }
+  getSnip(style: number) {
+    let doc = '';
+    // this.funcName
+    doc += `// ${this.funcName} \$\{TODO\}` + '\n';
+    doc += '/*' + '\n';
+    this.funcArgs.forEach((arg) => {
+      doc += FuncToken.format_arg(arg, style, ' * ') + '\n';
+    });
+    doc += ' */';
+    return doc;
+  }
+}
+
 class PyClassToken extends ClassToken {
 
 }
 
-export { FuncArg, PyFuncToken, PyClassToken, TsFuncToken };
+export { FuncArg, PyFuncToken, PyClassToken, TsFuncToken, GoFuncToken };
 

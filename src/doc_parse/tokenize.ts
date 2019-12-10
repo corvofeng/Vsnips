@@ -15,7 +15,7 @@
  */
 
 import { Logger } from "../logger";
-import { PyFuncToken, TsFuncToken } from "./token_obj";
+import { PyFuncToken, TsFuncToken, GoFuncToken } from "./token_obj";
 
 function pythonTokenizer(defs: string): PyFuncToken | undefined {
   const definitionPattern = /(def|class)\s+(\w+)\s*\(([\s\S]*)\)\s*(->\s*[\w\[\], \.]*)?:\s*$/;
@@ -53,7 +53,11 @@ function pythonTokenizer(defs: string): PyFuncToken | undefined {
   return undefined;
 }
 
-// 从函数的所有参数列表中解析出每个参数
+/**
+ * 从函数的所有参数列表中解析出每个参数
+ * parameterString (string): TODO
+ * Returns: TODO
+ */
 function tokenizeParameterString(parameterString: string): string[] {
   const stack = [];
   const parameters = [];
@@ -174,14 +178,56 @@ function tsTokenizer(defs: string): TsFuncToken | undefined {
   );
 }
 
+function goTokenizer(defs: string): GoFuncToken | undefined {
+  // golang中可能有的函数
+  // 普通golang函数: func add(x int, y int) int 
+  // golang函数带有指针: func playExampleFile(file *ast.File) *ast.File 
+  // 多返回值: func nextInt(b []byte, i int) (int, int) {
+  // 多返回值,已有变量: func nextInt(b []byte, i int) (x1 int, x2 int) {
+  // 成员函数: func (file *File) Write(b []byte) (n int, err error)
+  // 注意: 在golang代码中的函数, 必须有'{' 作为结尾
+  const definitionPattern = /\s*(func)\s*(?:\(([\w\*\[\], \.]*)?\))?\s*(\w+)\s*\(\s*([\w\*\[\], \.]*)?\s*\)\s*\(?([\w\*\[\], \.\n\t]*)?\)?\s*{\s*/;
+  const match = definitionPattern.exec(defs) as RegExpExecArray;
+
+  if (match === null) {
+    Logger.info("Can't get token in:", defs);
+    return undefined;
+  }
+  Logger.debug("Get match", match);
+  let [_, tokType, sPointer, tokName, tokArgsRaw, tokRetRaw] = match;
+  if (tokArgsRaw == undefined) {
+    Logger.warn(tokType, sPointer, tokName, tokArgsRaw, tokRetRaw);
+    return undefined;
+  }
+  if (tokRetRaw === undefined) {
+    tokRetRaw = '';
+  }
+
+  {
+  Logger.debug('type: ', tokType);
+  Logger.debug('pointer: ', sPointer);
+  Logger.debug('tokName: ', tokName);
+  Logger.debug('tokArgsRaw: ', tokArgsRaw);
+  Logger.debug('tokRet: ', tokRetRaw);
+  }
+
+  return new GoFuncToken(tokName,
+    GoFuncToken.constructArgFromTokens(tokArgsRaw.split(',')),
+    GoFuncToken.constructRetFromTokens(tokRetRaw.split(',')),
+  );
+
+  return undefined
+}
 
 function parseTokenizer(defs: string, defsType: string) {
   if (defsType === 'python') {
     return pythonTokenizer(defs);
   } else if (defsType === 'javascript' || defsType === 'typescript') {
     return tsTokenizer(defs);
-
+  } else if (defsType === 'golang') {
+    return goTokenizer(defs);
   }
+
 }
 
 export { parseTokenizer };

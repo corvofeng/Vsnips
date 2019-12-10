@@ -19,7 +19,7 @@ import { USER_MODULE, jsParser } from "./user_script";
 import { getUserScriptFiles } from "./kv_store";
 import * as vscode from "vscode";
 import { parseTokenizer } from "./doc_parse/tokenize";
-import { PyFuncToken, TsFuncToken } from "./doc_parse/token_obj";
+import { PyFuncToken, TsFuncToken, GoFuncToken } from "./doc_parse/token_obj";
 
 let BUILDIN_MODULE = new Map();
 
@@ -130,11 +130,32 @@ function js_typescript_doc(vsContext: VSnipContext) {
   }
 }
 
+function js_go_doc(vsContext: VSnipContext) {
+  Logger.debug("In golang typescript doc:", vsContext);
+  let rlt = undefined;
+  for (let shift = -1; shift > -20; shift -= 1) {
+    rlt = parseTokenizer(vsContext.getTextByShift(shift), 'golang');
+    if (rlt != undefined) {
+      break;
+    }
+  }
+  Logger.debug("Get token", rlt);
+  if (rlt !== undefined) {
+      // ' */';
+      return rlt.getSnip(GoFuncToken.GOOGLE);
+  } else {
+    return '';
+  }
+}
+
 function get_python_doc() {
   return jsFuncDecorator('js_python_doc');
 }
 function get_typescript_doc() {
   return jsFuncDecorator('js_typescript_doc');
+}
+function get_go_doc() {
+  return jsFuncDecorator('js_go_doc');
 }
 
 function var_parser(data: string) {
@@ -190,6 +211,8 @@ function initTemplateFunc() {
   BUILDIN_MODULE.set('js_python_doc', js_python_doc);
   BUILDIN_MODULE.set('js_typescript_doc', js_typescript_doc);
   BUILDIN_MODULE.set('get_typescript_doc', get_typescript_doc);
+  BUILDIN_MODULE.set('js_go_doc', js_go_doc);
+  BUILDIN_MODULE.set('get_go_doc', get_go_doc);
   jsParser(getUserScriptFiles());
 }
 

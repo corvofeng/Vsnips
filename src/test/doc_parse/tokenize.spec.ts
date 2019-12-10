@@ -5,7 +5,7 @@ import 'mocha';
 
 import { Logger, InitLogger } from "../../logger";
 import { setLogLevel } from "../../kv_store";
-import { FuncArg, TsFuncToken, PyFuncToken } from "../../doc_parse/token_obj";
+import { FuncArg, TsFuncToken, PyFuncToken, GoFuncToken } from "../../doc_parse/token_obj";
 import { parseTokenizer } from "../../doc_parse/tokenize";
 
 
@@ -181,7 +181,7 @@ describe('Tokenize', () => {
         ['def greeting(*args, **kwargs) -> str:', 'python'],
         [new PyFuncToken(
           "greeting",
-          [new FuncArg('args', '', ''), new FuncArg('kwargs', '', '')],
+          [new FuncArg('*args', '', ''), new FuncArg('**kwargs', '', '')],
           [new FuncArg('', 'str', '')]
         )]
       ],
@@ -200,7 +200,7 @@ describe('Tokenize', () => {
         let expectToken = c[1][0] as PyFuncToken;
         if (expectToken != undefined) {
           Logger.debug("Wanna get ", expectToken, "get", tok);
-          expect(expectToken.isSameToken(tok)).equal(true);
+          expect(expectToken).to.deep.equal(tok);
         } else {
           expect(tok === c[1][0]).equal(true);
         }
@@ -208,4 +208,76 @@ describe('Tokenize', () => {
     });
   });
 
+  it('Parse golang function', () => {
+    let TEST_JS_AND_TS_FUNCS = [
+      [ // 简单的JS函数
+        ['func add(x int, y int) int {', 'golang'],
+        [new GoFuncToken(
+          "add",
+          [new FuncArg('x', 'int'), new FuncArg('y', 'int')],
+          [new FuncArg('', 'int')]
+        )],
+      ],
+      [
+        ['func nextInt(b []byte, i int) (int, int) {', 'golang'],
+        [new GoFuncToken(
+          "nextInt",
+          [new FuncArg('b', '[]byte'), new FuncArg('i', 'int')],
+          [new FuncArg('', 'int'), new FuncArg('', 'int')]
+        )],
+      ],
+      [
+        ['func playExampleFile(file *ast.File) *ast.File {', 'golang'],
+        [new GoFuncToken(
+          "playExampleFile",
+          [new FuncArg('file', '*ast.File')],
+          [new FuncArg('', '*ast.File')]
+        )],
+      ],
+      [
+        ['func (file *File) Write(b []byte) (n int, err error) {', 'golang'],
+        [new GoFuncToken(
+          "Write",
+          [new FuncArg('b', '[]byte')],
+          [new FuncArg('n', 'int'), new FuncArg('err', 'error')]
+        )],
+      ],
+      [
+        ['func nextInt0(b []byte, i int) (x1 int, x2 int) {', 'golang'],
+        [new GoFuncToken(
+          'nextInt0',
+          [new FuncArg('b', '[]byte'), new FuncArg('i', 'int')],
+          [new FuncArg('x1', 'int'), new FuncArg('x2', 'int')],
+        )],
+      ],
+      [
+        ['func nextInt1(b []byte, i int) (x1 int, ', 'golang'],
+        [undefined],
+      ],
+      [ // 包含换行
+        [`func nextInt2(b []byte, i int) (x1 int, 
+  x2 int) {`, 'golang'],
+        [new GoFuncToken(
+          'nextInt2',
+          [new FuncArg('b', '[]byte'), new FuncArg('i', 'int')],
+          [new FuncArg('x1', 'int'), new FuncArg('x2', 'int')],
+        )]
+      ],
+
+    ];
+
+    TEST_JS_AND_TS_FUNCS.forEach(c => {
+      let tok = parseTokenizer(c[0][0] as string, c[0][1] as string) as GoFuncToken;
+      Logger.debug("Get tokobj: ", tok);
+      if (c.length == 2) {
+        let expectToken = c[1][0] as GoFuncToken;
+        if (expectToken != undefined) {
+          Logger.debug("Wanna get ", expectToken, "get", tok);
+          expect(tok).to.deep.equal(expectToken);
+        } else {
+          expect(tok === undefined);
+        }
+      }
+    });
+  });
 });
