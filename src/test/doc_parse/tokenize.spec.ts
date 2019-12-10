@@ -84,16 +84,14 @@ describe('Tokenize', () => {
           []
         )],
       ],
-      /*
       [
         ['function tsTokenizer(defs: string): TsFuncToken | undefined {', 'typescript'],
         [new TsFuncToken(
           "tsTokenizer",
           [new FuncArg('defs', 'string', '')],
-          [new FuncArg('', 'TsFuncToken | undefined', '')]
+          [new FuncArg('', 'TsFuncToken|undefined', '')]
         )],
       ],
-      */
     ];
     TEST_JS_AND_TS_FUNCS.forEach(c => {
       let tok = parseTokenizer(c[0][0] as string, c[0][1] as string);
