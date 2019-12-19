@@ -26,7 +26,7 @@ import * as path from "path";
 const UserLocalDir =
   process.env.APPDATA ||
   (process.platform === "darwin"
-    ? process.env.HOME + "Library/Preferences"
+    ? process.env.HOME + "/Library/Preferences"
     : process.env.HOME + "/.local/share");
 console.log("Get usre dir", UserLocalDir);
 
