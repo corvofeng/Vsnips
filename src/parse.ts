@@ -1,8 +1,8 @@
 import { Logger } from "./logger";
 import { VSnipContext } from "./vsnip_context";
 import * as ScriptFunc from "./script_tpl";
-import UNSNIPS_ULTISNIPS from '@unisnips/ultisnips';
-import { SnippetDefinition, applyReplacements, PlaceholderReplacement, ParseOptions } from '@unisnips/core';
+import UNSNIPS_ULTISNIPS from "@unisnips/ultisnips";
+import { SnippetDefinition, applyReplacements, PlaceholderReplacement, ParseOptions } from "@unisnips/core";
 
 class Snippet {
   prefix: string;
@@ -60,24 +60,24 @@ function replacePlaceholderScript(snip: Snippet) {
   // 全部找出后再一起替换.
   const replacements: PlaceholderReplacement[] = [];
 
-  snip.definition.placeholders.forEach((placeholder) => {
-    if (placeholder.valueType === 'script') {
+  snip.definition.placeholders.forEach(placeholder => {
+    if (placeholder.valueType === "script") {
       let replacement: PlaceholderReplacement | null = null;
       const { scriptInfo } = placeholder;
       if (scriptInfo) {
-        if (scriptInfo.scriptType === 'js') {
+        if (scriptInfo.scriptType === "js") {
           snip.hasJSScript = true;
-        } else if (scriptInfo.scriptType === 'python') {
+        } else if (scriptInfo.scriptType === "python") {
           replacement = {
             placeholder,
-            type: 'string',
-            replaceContent: pythonRewrite(scriptInfo.code),
+            type: "string",
+            replaceContent: pythonRewrite(scriptInfo.code)
           };
-        } else if (scriptInfo.scriptType === 'vim') {
+        } else if (scriptInfo.scriptType === "vim") {
           replacement = {
             placeholder,
-            type: 'string',
-            replaceContent: vimRewrite(scriptInfo.code),
+            type: "string",
+            replaceContent: vimRewrite(scriptInfo.code)
           };
         }
       }
