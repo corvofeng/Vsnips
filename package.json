@@ -98,8 +98,9 @@
 		"vscode": "^1.1.28"
 	},
 	"dependencies": {
-		"request": "^2.88.0",
-		"js-logger": "^1.6.0"
+		"@unisnips/ultisnips": "^0.2.0-alpha.0",
+		"js-logger": "^1.6.0",
+		"request": "^2.88.0"
 	},
 	"__metadata": {
 		"id": "a42f9b10-ee80-433b-9043-fc3a48ac1b2e",

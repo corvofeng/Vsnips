@@ -59,7 +59,7 @@ async function generate(context: vscode.ExtensionContext) {
             continue;
           }
           const data = fs.readFileSync(snipFile, "utf8");
-          await innerGenerate(data, fileType);
+          await innerGenerate(data, fileType, snipFile);
         }
       });
       // Add the doc snippets for current file type, a little ugly.
@@ -73,12 +73,14 @@ async function generate(context: vscode.ExtensionContext) {
   }
 
   // 主生成函数
-  async function innerGenerate(data: string, needFileType: string) {
+  async function innerGenerate(data: string, needFileType: string, snipFile?: string) {
     const sel: vscode.DocumentFilter = {
       scheme: "file",
       language: needFileType
     };
-    let snippets = await parse(data);
+    let snippets = await parse(data, {
+      snippetsFilePath: snipFile,
+    });
 
     let item = vscode.languages.registerCompletionItemProvider(
       sel, // 指定代码语言
@@ -110,6 +112,7 @@ async function generate(context: vscode.ExtensionContext) {
       "V",
       "v"
     );
+
     await context.subscriptions.push(item);
   }
 }
