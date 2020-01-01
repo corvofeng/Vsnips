@@ -42,6 +42,7 @@ function parse(rawSnippets: string, opts: ParseOptions = {}): Array<Snippet> {
     snip.definition = def;
     snip.prefix = def.trigger;
     snip.body = def.body;
+    snip.descriptsion = def.description;
     replacePlaceholderScript(snip);
 
     Logger.debug("prefix: ", snip.prefix);
