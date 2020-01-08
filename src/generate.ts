@@ -17,6 +17,12 @@ async function generate(context: vscode.ExtensionContext) {
   let has_repush: Map<string, boolean> = new Map();
   Logger.info("Start register vsnips");
 
+  // Trigger snippet on every reasonable ascii character.
+  const triggers: string[] = [];
+  for (let i = 32; i <= 126; i++) {
+    triggers.push(String.fromCharCode(i));
+  }
+
   // 如果从一开始就解析所有的snippet文件, 势必会造成vscode启动卡顿的问题
   // 这里采取一种替换方案, 初始时, 只是注册一个`registerCompletionItemProvider`
   // 当用户真正触发补全操作时, 才会解析对应的snippets文件,
@@ -32,13 +38,11 @@ async function generate(context: vscode.ExtensionContext) {
         return null;
       }
     },
-    "v",
-    "V"
+    ...triggers
   );
   context.subscriptions.push(defaultItem);
 
   Logger.info("Register vsnips success!!");
-  return; // 插件初始化操作已经结束, 直接return
 
   // 2. 用户触发了补全事件, 此时依照文件类型, 查找对应的snippets文件
   //   查找snippets文件时, 需要注意两点:
@@ -85,6 +89,19 @@ async function generate(context: vscode.ExtensionContext) {
       {
         provideCompletionItems(document, position, token, context) {
           Logger.debug("Get completion item", document, position);
+          const prevContentInLine = document.getText(new vscode.Range(position.line, 0, position.line, position.character));
+
+          // Checks if the cursor is at a word, if so the word is our context, otherwise grab
+          // everything until previous whitespace, and that is our contextWord.
+          let range = document.getWordRangeAtPosition(position);
+          if (!range) {
+            let match = prevContentInLine.match(/\S*$/);
+            const charPos = (match as RegExpMatchArray).index || 0;
+            range = new vscode.Range(position.line, charPos, position.line, position.character);
+          }
+          const contextWord = document.getText(range);
+          const shouldAddAll = 'vsnips'.startsWith(contextWord.toLowerCase());
+
           let compleItems: Array<vscode.CompletionItem> = [];
           let vSnipContext = new VSnipContext(
             document,
@@ -93,6 +110,15 @@ async function generate(context: vscode.ExtensionContext) {
             context
           );
           snippets.forEach(snip => {
+            let shouldAdd = shouldAddAll;
+            if (!shouldAdd) {
+              if (snip.prefix.startsWith(contextWord)) {
+                shouldAdd = true;
+              }
+            }
+            if (!shouldAdd) {
+              return;
+            }
             const snippetCompletion = new vscode.CompletionItem(snip.prefix);
             snippetCompletion.documentation =
               snip.descriptsion + "\n" + snip.body;
@@ -107,8 +133,7 @@ async function generate(context: vscode.ExtensionContext) {
           return compleItems;
         }
       },
-      "V",
-      "v"
+      ...triggers
     );
     await context.subscriptions.push(item);
   }
