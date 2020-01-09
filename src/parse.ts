@@ -5,7 +5,7 @@ import * as vscode from "vscode";
 
 const VIM_SNIPPET = /^snippet ([^\s]*)\s*(?:"(.*?)".*)?\n((?:.|\n)*?)\nendsnippet$/gm;
 
-class Snippet {
+export class Snippet {
   prefix: string;
   body: string;
   descriptsion: string;

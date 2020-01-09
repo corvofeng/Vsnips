@@ -2,7 +2,8 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { Logger, InitLogger } from "./logger";
-import { generate } from "./generate";
+import { Snippet } from './parse';
+import { generate, expandSnippet } from "./generate";
 import {
   setLogLevel,
   addSnipsDir,
@@ -50,6 +51,15 @@ export async function activate(context: vscode.ExtensionContext) {
   initVSCodeVar(vscodeVars);
 
   initTemplateFunc();
+
+  context.subscriptions.push(
+    vscode.commands.registerTextEditorCommand(
+      'Vsnips.expand',
+      (editor, _, payload) => {
+        expandSnippet(editor, payload);
+      }
+    )
+  );
 
   await generate(context);
 

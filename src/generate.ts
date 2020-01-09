@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
-import { Logger } from "./logger";
-import { parse } from "./parse";
 import * as vscode from "vscode";
+import { Logger } from "./logger";
+import { parse, Snippet } from "./parse";
 import { VSnipContext } from "./vsnip_context";
 import { getSnipsDirs } from "./kv_store";
 
@@ -12,7 +12,7 @@ import { getSnipsDirs } from "./kv_store";
 //   return snippets;
 // }
 
-async function generate(context: vscode.ExtensionContext) {
+export async function generate(context: vscode.ExtensionContext) {
   // 记录哪些类型的语言已经增加过snippets, 已经增加过的不再重复.
   let has_repush: Map<string, boolean> = new Map();
   Logger.info("Start register vsnips");
@@ -84,7 +84,7 @@ async function generate(context: vscode.ExtensionContext) {
     };
     let snippets = await parse(data);
 
-    let item = vscode.languages.registerCompletionItemProvider(
+    const provider = vscode.languages.registerCompletionItemProvider(
       sel, // 指定代码语言
       {
         provideCompletionItems(document, position, token, context) {
@@ -103,12 +103,6 @@ async function generate(context: vscode.ExtensionContext) {
           const shouldAddAll = 'vsnips'.startsWith(contextWord.toLowerCase());
 
           let compleItems: Array<vscode.CompletionItem> = [];
-          let vSnipContext = new VSnipContext(
-            document,
-            position,
-            token,
-            context
-          );
           snippets.forEach(snip => {
             let shouldAdd = shouldAddAll;
             if (!shouldAdd) {
@@ -119,23 +113,56 @@ async function generate(context: vscode.ExtensionContext) {
             if (!shouldAdd) {
               return;
             }
-            const snippetCompletion = new vscode.CompletionItem(snip.prefix);
-            snippetCompletion.documentation =
-              snip.descriptsion + "\n" + snip.body;
-            snippetCompletion.label = `Vsnips-${snip.prefix}: ${
-              snip.descriptsion
-              }`;
-            snippetCompletion.insertText = new vscode.SnippetString(
-              snip.get_snip_body(vSnipContext)
-            );
-            compleItems.push(snippetCompletion);
+            const completionItem = new vscode.CompletionItem(snip.prefix, vscode.CompletionItemKind.Snippet);
+            completionItem.detail = `Vsnips-${snip.prefix}: ${ snip.descriptsion }`;
+            completionItem.filterText = completionItem.detail;
+            completionItem.sortText = completionItem.detail;
+            completionItem.documentation = snip.descriptsion + "\n" + snip.body;
+            const payload: ExpandSnippetCommandPayload = {
+              snippet: snip,
+              document,
+              position,
+              token,
+              context,
+            };
+            // 调用 command 的时候才真正展开 snippet body
+            completionItem.command = {
+              command: 'Vsnips.expand',
+              title: 'expand',
+              arguments: [payload]
+            };
+            compleItems.push(completionItem);
           });
           return compleItems;
-        }
+        },
       },
       ...triggers
     );
-    await context.subscriptions.push(item);
+
+    await context.subscriptions.push(provider);
   }
 }
-export { generate };
+
+export type ExpandSnippetCommandPayload = {
+  snippet: Snippet
+  document: vscode.TextDocument
+  position: vscode.Position
+  token: vscode.CancellationToken
+  context: vscode.CompletionContext
+};
+
+/**
+ * 会被 'Vsnips.expand' command 调用
+ */
+export function expandSnippet(editor: vscode.TextEditor, payload: ExpandSnippetCommandPayload) {
+  const { snippet, document, position, token, context } = payload;
+  const vSnipContext = new VSnipContext(
+    document,
+    position,
+    token,
+    context
+  );
+  const vsSnippet = new vscode.SnippetString(snippet.get_snip_body(vSnipContext));
+  const contextWordRange = document.getWordRangeAtPosition(position);
+  editor.insertSnippet(vsSnippet, contextWordRange, { undoStopBefore: false, undoStopAfter: false });
+}
