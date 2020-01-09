@@ -19,7 +19,7 @@
             "patterns": [
                 {
                     "name": "keyword.control",
-                    "match": "\\b(?i)(snippet|endsnippet|priority|global|endglobal)\\b"
+                    "match": "\\b(?i)(snippet|endsnippet|priority|global|endglobal|extends)\\b"
                 }
             ]
         },
