@@ -65,9 +65,8 @@ function replacePlaceholderScript(snip: Snippet) {
       let replacement: PlaceholderReplacement | null = null;
       const { scriptInfo } = placeholder;
       if (scriptInfo) {
-        if (scriptInfo.scriptType === "js") {
-          snip.hasJSScript = true;
-        } else if (scriptInfo.scriptType === "python") {
+        snip.hasJSScript = true;
+        if (scriptInfo.scriptType === "python") {
           replacement = {
             placeholder,
             type: "string",
