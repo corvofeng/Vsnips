@@ -54,6 +54,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
   generate(context);
 
+  // 如果从一开始就解析所有的snippet文件, 势必会造成vscode启动卡顿的问题
+  // 这里采取一种替换方案, 当用户打开某种语言的文件时, 才会解析对应的snippets文件
+  vscode.workspace.onDidOpenTextDocument((document) => {
+    // 此时依照文件类型, 查找对应的snippets文件
+    snippetManager.addLanguage(document.languageId);
+  });
+
   context.subscriptions.push(
     vscode.commands.registerTextEditorCommand(
       'Vsnips.expand',

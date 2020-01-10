@@ -20,10 +20,6 @@ export function generate(context: vscode.ExtensionContext) {
     triggers.push(String.fromCharCode(i));
   }
 
-  // 如果从一开始就解析所有的snippet文件, 势必会造成vscode启动卡顿的问题
-  // 这里采取一种替换方案, 当用户真正触发补全操作时, 才会解析对应的snippets文件,
-  // 将解析放在了用户第一次触发的阶段.
-
   // 注册 completionItemProiver
   const provider = vscode.languages.registerCompletionItemProvider(
     { scheme: "file" },
@@ -31,8 +27,6 @@ export function generate(context: vscode.ExtensionContext) {
       provideCompletionItems(document, position, token, context) {
         Logger.debug("Get completion item", document, position);
 
-        // 用户触发了补全事件, 此时依照文件类型, 查找对应的snippets文件
-        snippetManager.addLanguage(document.languageId);
         const snippets = snippetManager.getSnippets(document.languageId);
         if (!snippets.length) {
           return [];
