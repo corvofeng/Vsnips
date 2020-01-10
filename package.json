@@ -19,8 +19,28 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.edit_vsnips",
-				"title": "Vsnips: Edit snippets"
+				"command": "Vsnips.edit_vsnips",
+				"title": "Edit snippets",
+				"category": "Vsnips"
+			},
+			{
+				"command": "Vsnips.show_available_snippets",
+				"title": "Show available snippets",
+				"category": "Vsnips"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "Vsnips.show_available_snippets"
+				}
+			]
+		},
+		"keybindings": [
+			{
+				"command": "Vsnips.show_available_snippets",
+				"key": "ctrl+alt+v",
+				"mac": "cmd+alt+v"
 			}
 		],
 		"configuration": {

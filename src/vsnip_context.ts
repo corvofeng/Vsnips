@@ -22,21 +22,25 @@ class VSnipContext {
   position: vscode.Position;
 
   // Please refer to https://code.visualstudio.com/api/references/vscode-api#CancellationToken
-  token: vscode.CancellationToken;
+  token?: vscode.CancellationToken | null;
 
   // please refer to https://code.visualstudio.com/api/references/vscode-api#CompletionContext
-  context: vscode.CompletionContext;
+  context?: vscode.CompletionContext;
 
   constructor(
     document: vscode.TextDocument,
     position: vscode.Position,
-    token: vscode.CancellationToken,
-    context: vscode.CompletionContext
+    token?: vscode.CancellationToken | null,
+    context?: vscode.CompletionContext
   ) {
     this.document = document;
     this.position = position;
-    this.token = token;
-    this.context = context;
+    if (token) {
+      this.token = token;
+    }
+    if (context) {
+      this.context = context;
+    }
   }
 
   getActiveEditor() {
@@ -44,7 +48,7 @@ class VSnipContext {
   }
 
   /**
-   * 
+   *
    * @param numberOfShift 获取当前行数向上或偏移n行的效果.
    */
   getTextByShift(numberOfShift: number) {

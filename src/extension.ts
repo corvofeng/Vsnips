@@ -2,7 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { Logger, InitLogger } from "./logger";
-import { Snippet } from './parse';
 import { generate, expandSnippet } from "./generate";
 import {
   setLogLevel,
@@ -13,6 +12,7 @@ import {
   updateMultiWorkspaceSetting,
   addUserScriptFiles
 } from "./kv_store";
+import { snippetManager, Snippet } from './snippet_manager';
 import { initVimVar, initTemplateFunc, initVSCodeVar } from "./script_tpl";
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -52,6 +52,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   initTemplateFunc();
 
+  generate(context);
+
   context.subscriptions.push(
     vscode.commands.registerTextEditorCommand(
       'Vsnips.expand',
@@ -61,11 +63,36 @@ export async function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  await generate(context);
+  context.subscriptions.push(
+    vscode.commands.registerTextEditorCommand(
+      'Vsnips.show_available_snippets',
+      (editor) => {
+        const langId = editor.document.languageId;
+        const items: Array<vscode.QuickPickItem & { snippet: Snippet }> = snippetManager.getSnippets(langId).map((snippet) => {
+          return {
+            label: snippet.prefix,
+            detail: snippet.descriptsion,
+            snippet,
+          };
+        });
+        vscode.window.showQuickPick(items, {
+          placeHolder: 'Expand a Vsnips snippet',
+        }).then((pickedItem) => {
+          if (pickedItem) {
+            expandSnippet(editor, {
+              snippet: pickedItem.snippet,
+              document: editor.document,
+              position: editor.selection.active,
+            });
+          }
+        });
+      }
+    )
+  );
 
   //  允许用户编辑snippets, 此操作将会打开新的window.
   context.subscriptions.push(
-    vscode.commands.registerCommand("extension.edit_vsnips", () => {
+    vscode.commands.registerCommand("Vsnips.edit_vsnips", () => {
       let settingFile = updateMultiWorkspaceSetting();
       let uri = vscode.Uri.file(settingFile);
       vscode.commands.executeCommand("vscode.openFolder", uri, true);
