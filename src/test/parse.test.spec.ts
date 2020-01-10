@@ -1,7 +1,12 @@
 import * as assert from "assert";
 import * as ScriptFunc from "../script_tpl";
 import { parse } from "../parse";
-import {setLogLevel, addSnipsDir, getVarfiles, addVarfiles} from "../kv_store";
+import {
+  setLogLevel,
+  addSnipsDir,
+  getVarfiles,
+  addVarfiles
+} from "../kv_store";
 import { Logger, InitLogger } from "../logger";
 
 // suite("Parser Tests", function() {
@@ -12,7 +17,7 @@ import { Logger, InitLogger } from "../logger";
 
 // This is for unittest.
 
-describe('Parse ultisnips', () => {
+describe("Parse ultisnips", () => {
   let TEST_CASE = [
     // simple snippets
     `snippet gitig "Git add will ignore this"
@@ -80,18 +85,19 @@ write_init_body(args, t[2], snip)
 \`
     $0
 endsnippet`
-
   ];
-
-  let TEST_VAR_FILES = [
-    '/home/corvo/.vim/common.vim',
-  ];
-  ScriptFunc.initVimVar(TEST_VAR_FILES);
-  setLogLevel('WARNING');
-  InitLogger();
-
-  TEST_CASE.forEach((txt: string) => {
-    parse(txt);
+  beforeEach(function(done) {
+    let TEST_VAR_FILES = ["/home/corvo/.vim/common.vim"];
+    ScriptFunc.initVimVar(TEST_VAR_FILES);
+    setLogLevel("WARNING");
+    InitLogger();
+    done();
   });
-  // parse(TEST_CASE[TEST_CASE.length - 1]);
+
+  it("Parse vim snips", () => {
+    TEST_CASE.forEach((txt: string) => {
+      console.log(parse(txt));
+    });
+    // parse(TEST_CASE[TEST_CASE.length - 1]);
+  });
 });
