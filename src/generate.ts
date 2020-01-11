@@ -40,6 +40,11 @@ export function generate(context: vscode.ExtensionContext) {
           let match = prevContentInLine.match(/\S*$/);
           const charPos = (match as RegExpMatchArray).index || 0;
           range = new vscode.Range(position.line, charPos, position.line, position.character);
+
+          if (range.start.isEqual(range.end)) {
+            // should not provide items when there is no word
+            return;
+          }
         }
         const contextWord = document.getText(range);
 
