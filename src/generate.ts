@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import { Logger } from "./logger";
 import { parse, Snippet } from "./parse";
 import { VSnipContext } from "./vsnip_context";
-import { longestMatchCharsFromStart } from './util';
 import { snippetManager } from './snippet_manager';
 
 // function ultisnipsToJSON(ultisnips: string) {
@@ -44,12 +43,9 @@ export function generate(context: vscode.ExtensionContext) {
         }
         const contextWord = document.getText(range);
 
-        // 前两个字符是 vs 的话就列出所有 snippets
-        const shouldAddAll = longestMatchCharsFromStart('vsnips', contextWord.toLowerCase()).length >= 2;
-
         let compleItems: Array<vscode.CompletionItem> = [];
         snippets.forEach(snip => {
-          let shouldAdd = shouldAddAll;
+          let shouldAdd = false;
           if (!shouldAdd) {
             // MAYBE: 如果有 fuzzy search 会更好
             if (snip.prefix.startsWith(contextWord)) {
