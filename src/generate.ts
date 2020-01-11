@@ -13,12 +13,6 @@ import { snippetManager } from './snippet_manager';
 export function generate(context: vscode.ExtensionContext) {
   snippetManager.initDefaultLanguage();
 
-  // Trigger snippet on every reasonable ascii character.
-  const triggers: string[] = [];
-  for (let i = 32; i <= 126; i++) {
-    triggers.push(String.fromCharCode(i));
-  }
-
   // 注册 completionItemProiver
   const provider = vscode.languages.registerCompletionItemProvider(
     { scheme: "file" },
@@ -83,7 +77,6 @@ export function generate(context: vscode.ExtensionContext) {
         return compleItems;
       }
     },
-    ...triggers
   );
   context.subscriptions.push(provider);
 
