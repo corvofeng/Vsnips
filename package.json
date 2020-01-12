@@ -102,8 +102,7 @@
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
 		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "yarn run compile && node ./node_modules/vscode/bin/test",
-		"test_base": "mocha -r ts-node/register ./src/test/**/*.spec.ts ./src/test/*.spec.ts"
+		"test": "yarn run compile && node ./node_modules/vscode/bin/test"
 	},
 	"devDependencies": {
 		"@types/chai": "^4.2.5",
