@@ -15,11 +15,7 @@ class BoxWatcher extends VSnipWatcher {
 
   onUpdate(changes: readonly vscode.TextDocumentContentChangeEvent[]): void {
     let ordChanges = [...changes];
-    ordChanges.sort((a, b) => {
-      if (a.range.end.isBefore(b.range.end)) return -1;
-      else if (a.range.end.isEqual(b.range.end)) return 0;
-      else return 1;
-    });
+
     Logger.debug("Get update", ordChanges);
     if (this.box.blockChanged) {
       this.box.blockChanged = false;
@@ -103,14 +99,14 @@ class Box {
   public constructor(
     prefix = "",
     leftUp = '┌',
-    left = '|',
+    left = '│',
     leftBottom = '└',
 
     up = '─',
     bottom = '─',
 
     rightUp = '┐',
-    right = '|',
+    right = '│',
     rightBottom = '┘',
   ) {
     this.prefix = prefix;

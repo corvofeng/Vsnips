@@ -41,9 +41,9 @@ describe("Box change", () => {
 
     simpleBox.boxContents = [
       "// ┌───────┐",
-      "// | hello |",
-      "// |  my   |",
-      "// | world |",
+      "// │ hello │",
+      "// │  my   │",
+      "// │ world │",
       "// └───────┘",
     ];
     simpleBox.leftUpPos = new vscode.Position(0, 0);
@@ -58,9 +58,9 @@ describe("Box change", () => {
     // 末尾增加s
     let newContent = [
       "// ┌───────┐",
-      "// | hello |",
-      "// |  my   |",
-      "// | worlds |",
+      "// │ hello │",
+      "// │  my   │",
+      "// │ worlds │",
       "// └───────┘",
     ];
     let ch = new MyEvent(
@@ -80,9 +80,9 @@ describe("Box change", () => {
     // 删除y
     let newContent = [
       "// ┌───────┐",
-      "// | hello |",
-      "// |  m   |",
-      "// | world |",
+      "// │ hello │",
+      "// │  m   │",
+      "// │ world │",
       "// └───────┘",
     ];
     let ch = new MyEvent(
@@ -103,7 +103,7 @@ describe("Box change", () => {
     // 删除o my wo
     let newContent = [
       "// ┌───────┐",
-      "// | hellrld |",
+      "// │ hellrld │",
       "// └───────┘",
     ];
 
@@ -126,11 +126,11 @@ describe("Box change", () => {
     // {"range":[{"line":40,"character":8},{"line":40,"character":8}],"rangeOffset":706,"rangeLength":0,"}
     let newContent = [
       "// ┌───────┐",
-      "// | hello |",
-      "// |  myvsnips",
+      "// │ hello │",
+      "// │  myvsnips",
       "is",
-      "best   |",
-      "// | world |",
+      "best   │",
+      "// │ world │",
       "// └───────┘",
     ];
     let ch = new MyEvent(
@@ -155,9 +155,9 @@ describe("Refect box", () => {
 
     simpleBox.boxContents = [
       "// ┌───────┐",
-      "// | hello |",
-      "// |  my   |",
-      "// | world |",
+      "// │ hello │",
+      "// │  my   │",
+      "// │ world │",
       "// └───────┘",
     ];
     simpleBox.prefix = '// ';
@@ -172,9 +172,9 @@ describe("Refect box", () => {
   it("Simple add", () => {
     let newContent = [
       "// ┌───────┐",
-      "// | hello |",
-      "// |  m   |",
-      "// | world |",
+      "// │ hello │",
+      "// │  m   │",
+      "// │ world │",
       "// └───────┘"
     ];
     simpleBox.boxContents = newContent;
@@ -182,9 +182,9 @@ describe("Refect box", () => {
 
     let refectContent = [
       "// ┌───────┐",
-      "// | hello |",
-      "// |  m    |",
-      "// | world |",
+      "// │ hello │",
+      "// │  m    │",
+      "// │ world │",
       "// └───────┘",
     ];
     expect(simpleBox.boxContents).deep.eq(refectContent);
@@ -193,17 +193,17 @@ describe("Refect box", () => {
   it("Simple del", () => {
     let newContent = [
       "// ┌───────┐",
-      "// | hello |",
-      "// |  m   |",
-      "// | world |",
+      "// │ hello │",
+      "// │  m   │",
+      "// │ world │",
       "// └───────┘",
     ];
 
     let refectContent = [
       "// ┌───────┐",
-      "// | hello |",
-      "// |  m    |",
-      "// | world |",
+      "// │ hello │",
+      "// │  m    │",
+      "// │ world │",
       "// └───────┘",
     ];
 
@@ -215,20 +215,20 @@ describe("Refect box", () => {
   it("Not full line", () => {
     let newContent = [
       "// ┌───────┐",
-      "// | hello |",
-      "// |  myvsnips",
+      "// │ hello │",
+      "// │  myvsnips",
       "is",
-      "best   |",
-      "// | world |",
+      "best   │",
+      "// │ world │",
       "// └───────┘",
     ];
     let refectContent = [
       "// ┌──────────┐",
-      "// | hello    |",
-      "// |  myvsnips|",
-      "// |is        |",
-      "// |best      |",
-      "// | world    |",
+      "// │ hello    │",
+      "// │  myvsnips│",
+      "// │is        │",
+      "// │best      │",
+      "// │ world    │",
       "// └──────────┘",
     ]
     simpleBox.boxContents = newContent;
