@@ -11,19 +11,18 @@
  *=======================================================================
  */
 
-import { expect } from 'chai';
-import 'mocha';
-import { Logger, InitLogger } from "../../logger";
+import { expect } from "chai";
+import "mocha";
+import { InitLogger } from "../../logger";
 import { setLogLevel } from "../../kv_store";
-import { FuncArg, TsFuncToken, GoFuncToken } from "../../doc_parse/token_obj";
-import { Box } from '../../box/box';
+import { Box } from "../../box/box";
 import * as vscode from "vscode";
 
 class MyEvent implements vscode.TextDocumentContentChangeEvent {
-  range: vscode.Range;
-  rangeOffset: number;
-  rangeLength: number;
-  text: string
+  public range: vscode.Range;
+  public rangeOffset: number;
+  public rangeLength: number;
+  public text: string;
 
   constructor(range: vscode.Range, rangeOffset: number, rangeLength: number, text: string) {
     this.range = range;
@@ -34,9 +33,9 @@ class MyEvent implements vscode.TextDocumentContentChangeEvent {
 }
 
 describe("Box change", () => {
-  let simpleBox = new Box();
-  beforeEach(function (done) {
-    setLogLevel('DEBUG');
+  const simpleBox = new Box();
+  beforeEach((done) => {
+    setLogLevel("WARN");
     InitLogger();
 
     simpleBox.boxContents = [
@@ -49,58 +48,58 @@ describe("Box change", () => {
     simpleBox.leftUpPos = new vscode.Position(0, 0);
     simpleBox.rightBottomPos = new vscode.Position(
       simpleBox.leftUpPos.line + simpleBox.boxContents.length - 1,
-      simpleBox.boxContents[simpleBox.boxContents.length - 1].length - 1
+      simpleBox.boxContents[simpleBox.boxContents.length - 1].length - 1,
     );
     done();
   });
 
-  it('Add a char', () => {
+  it("Add a char", () => {
     // 末尾增加s
-    let newContent = [
+    const newContent = [
       "// ┌───────┐",
       "// │ hello │",
       "// │  my   │",
       "// │ worlds │",
       "// └───────┘",
     ];
-    let ch = new MyEvent(
+    const ch = new MyEvent(
       new vscode.Range(
         new vscode.Position(3, 10),
         new vscode.Position(3, 10),
       ),
       0,
       0,
-      's',
+      "s",
     );
     simpleBox.doChange(ch);
     expect(simpleBox.boxContents).deep.eq(newContent);
   });
 
-  it('Del a char', () => {
+  it("Del a char", () => {
     // 删除y
-    let newContent = [
+    const newContent = [
       "// ┌───────┐",
       "// │ hello │",
       "// │  m   │",
       "// │ world │",
       "// └───────┘",
     ];
-    let ch = new MyEvent(
+    const ch = new MyEvent(
       new vscode.Range(
         new vscode.Position(2, 7),
         new vscode.Position(2, 8),
       ),
       0,
       1,
-      '',
+      "",
     );
 
     simpleBox.doChange(ch);
     expect(simpleBox.boxContents).deep.eq(newContent);
   });
 
-  it('Add new line', () => {
-    let newContent = [
+  it("Add new line", () => {
+    const newContent = [
       "// ┌───────┐",
       "// │ hello │",
       "// │  my   │",
@@ -108,45 +107,45 @@ describe("Box change", () => {
       " │",
       "// └───────┘",
     ];
-    let ch = new MyEvent(
+    const ch = new MyEvent(
       new vscode.Range(
         new vscode.Position(3, 10),
         new vscode.Position(3, 10),
       ),
       0,
       0,
-      '\n',
-    )
+      "\n",
+    );
     simpleBox.doChange(ch);
     expect(simpleBox.boxContents).deep.eq(newContent);
   });
 
-  it('Delte multiline', () => {
+  it("Delte multiline", () => {
     // 删除o my wo
-    let newContent = [
+    const newContent = [
       "// ┌───────┐",
       "// │ hellrld │",
       "// └───────┘",
     ];
 
-    let ch = new MyEvent(
+    const ch = new MyEvent(
       new vscode.Range(
         new vscode.Position(1, 9),
         new vscode.Position(3, 7),
       ),
       0,
       24,
-      '',
+      "",
     );
     simpleBox.doChange(ch);
     expect(simpleBox.boxContents).deep.eq(newContent);
   });
 
-  it('Add multi line', () => {
-    // 在my后面增加 'vsnips\nis\nbest'
+  it("Add multi line", () => {
+    // 在my后面增加 "vsnips\nis\nbest"
 
     // {"range":[{"line":40,"character":8},{"line":40,"character":8}],"rangeOffset":706,"rangeLength":0,"}
-    let newContent = [
+    const newContent = [
       "// ┌───────┐",
       "// │ hello │",
       "// │  myvsnips",
@@ -155,7 +154,7 @@ describe("Box change", () => {
       "// │ world │",
       "// └───────┘",
     ];
-    let ch = new MyEvent(
+    const ch = new MyEvent(
       new vscode.Range(
         new vscode.Position(2, 8),
         new vscode.Position(2, 8),
@@ -168,28 +167,28 @@ describe("Box change", () => {
     expect(simpleBox.boxContents).deep.eq(newContent);
   });
 
-  it('Test box without prefix', () => {
-    let oldContent = [
+  it("Test box without prefix", () => {
+    const oldContent = [
       "┌──┐",
       "│  │",
       "└──┘",
     ];
     simpleBox.boxContents = oldContent;
-    simpleBox.prefix = '';
+    simpleBox.prefix = "";
 
     // 增加x
-    let ch = new MyEvent(
+    const ch = new MyEvent(
       new vscode.Range(
         new vscode.Position(1, 2),
         new vscode.Position(1, 2),
       ),
       0,
       0,
-      'x',
+      "x",
     );
     simpleBox.doChange(ch);
 
-    let newContent = [
+    const newContent = [
       "┌──┐",
       "│ x │",
       "└──┘",
@@ -199,9 +198,9 @@ describe("Box change", () => {
 });
 
 describe("Refect box", () => {
-  let simpleBox = new Box();
-  beforeEach(function (done) {
-    setLogLevel('DEBUG');
+  const simpleBox = new Box();
+  beforeEach((done) => {
+    setLogLevel("WARN");
     InitLogger();
 
     simpleBox.boxContents = [
@@ -211,27 +210,27 @@ describe("Refect box", () => {
       "// │ world │",
       "// └───────┘",
     ];
-    simpleBox.prefix = '// ';
+    simpleBox.prefix = "// ";
     simpleBox.leftUpPos = new vscode.Position(0, 0);
     simpleBox.rightBottomPos = new vscode.Position(
       simpleBox.leftUpPos.line + simpleBox.boxContents.length - 1,
-      simpleBox.boxContents[simpleBox.boxContents.length - 1].length - 1
+      simpleBox.boxContents[simpleBox.boxContents.length - 1].length - 1,
     );
     done();
-  })
+  });
 
   it("Simple add", () => {
-    let newContent = [
+    const newContent = [
       "// ┌───────┐",
       "// │ hello │",
       "// │  m   │",
       "// │ world │",
-      "// └───────┘"
+      "// └───────┘",
     ];
     simpleBox.boxContents = newContent;
     simpleBox.refectorBox();
 
-    let refectContent = [
+    const refectContent = [
       "// ┌───────┐",
       "// │ hello │",
       "// │  m    │",
@@ -242,7 +241,7 @@ describe("Refect box", () => {
   });
 
   it("Simple del", () => {
-    let newContent = [
+    const newContent = [
       "// ┌───────┐",
       "// │ hello │",
       "// │  m   │",
@@ -250,7 +249,7 @@ describe("Refect box", () => {
       "// └───────┘",
     ];
 
-    let refectContent = [
+    const refectContent = [
       "// ┌───────┐",
       "// │ hello │",
       "// │  m    │",
@@ -264,7 +263,7 @@ describe("Refect box", () => {
   });
 
   it("Not full line", () => {
-    let newContent = [
+    const newContent = [
       "// ┌───────┐",
       "// │ hello │",
       "// │  myvsnips",
@@ -273,7 +272,7 @@ describe("Refect box", () => {
       "// │ world │",
       "// └───────┘",
     ];
-    let refectContent = [
+    const refectContent = [
       "// ┌───────────┐",
       "// │ hello     │",
       "// │  myvsnips │",
@@ -281,7 +280,7 @@ describe("Refect box", () => {
       "// │best       │",
       "// │ world     │",
       "// └───────────┘",
-    ]
+    ];
     simpleBox.boxContents = newContent;
     simpleBox.refectorBox();
     expect(simpleBox.boxContents).deep.eq(refectContent);
@@ -289,7 +288,7 @@ describe("Refect box", () => {
 
 
   it("For large input", () => {
-    let newContent = [
+    const newContent = [
       "// ┌─────────────┐",
       "// │ helloxxx    │",
       "// │  mxxxxxxxxxxxx   │",
@@ -297,7 +296,7 @@ describe("Refect box", () => {
       "// └─────────────┘",
     ];
 
-    let refectContent = [
+    const refectContent = [
       "// ┌────────────────┐",
       "// │ helloxxx       │",
       "// │  mxxxxxxxxxxxx │",
@@ -311,14 +310,14 @@ describe("Refect box", () => {
   });
 
 
-  it('With no prefix', () => {
-    let newContent = [
+  it("With no prefix", () => {
+    const newContent = [
       "┌──┐",
       "│ x │",
       "└──┘",
     ];
 
-    let refectContent = [
+    const refectContent = [
       "┌───┐",
       "│ x │",
       "└───┘",
@@ -328,8 +327,8 @@ describe("Refect box", () => {
     simpleBox.refectorBox();
     expect(simpleBox.boxContents).deep.eq(refectContent);
   });
-  it('Add new line', () => {
-    let newContent = [
+  it("Add new line", () => {
+    const newContent = [
       "// ┌───────┐",
       "// │ hello │",
       "// │  my   │",
@@ -337,7 +336,7 @@ describe("Refect box", () => {
       " │",
       "// └───────┘",
     ];
-    let refectContent = [
+    const refectContent = [
       "// ┌───────┐",
       "// │ hello │",
       "// │  my   │",

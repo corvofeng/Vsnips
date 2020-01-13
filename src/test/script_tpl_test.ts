@@ -16,8 +16,8 @@ import { initTemplateFunc, getTemplateFunc } from "../script_tpl";
 import { Logger } from "../logger";
 import * as vscode from "vscode";
 
-let example_vs_context = new VSnipContext(
-  <vscode.TextDocument>{
+const ExampleVSCntext = new VSnipContext(
+  {
     uri: vscode.Uri.parse("/home/corvo/Project/WebTools/README.md"),
     fileName: "/home/corvo/Project/WebTools/README.md",
     isUntitled: false,
@@ -26,20 +26,20 @@ let example_vs_context = new VSnipContext(
     isClosed: false,
     isDirty: true,
     eol: 1,
-    lineCount: 1
-  },
-  <vscode.Position>{
+    lineCount: 1,
+  } as vscode.TextDocument,
+  {
     line: 0,
-    character: 1
-  },
-  <vscode.CancellationToken>{},
-  <vscode.CompletionContext>{}
+    character: 1,
+  } as vscode.Position,
+  {} as vscode.CancellationToken,
+  {} as vscode.CompletionContext,
 );
 
 function test_js_markdown() {
   initTemplateFunc();
-  let func = getTemplateFunc('js_markdown_title');
-  Logger.info("Get title: ", func(example_vs_context));
+  const func = getTemplateFunc("js_markdown_title");
+  Logger.info("Get title: ", func(ExampleVSCntext));
 }
 
 export { test_js_markdown };

@@ -1,11 +1,9 @@
-import * as fs from "fs";
-import * as path from "path";
 import { Logger } from "./logger";
-import { parse, Snippet } from "./parse";
+import { Snippet } from "./parse";
 import * as vscode from "vscode";
 import { VSnipContext } from "./vsnip_context";
 import { snippetManager } from './snippet_manager';
-import { getSnipsDirs, getTrigers, getDisplayStrategy } from "./kv_store";
+import { getTrigers, getDisplayStrategy } from "./kv_store";
 
 // function ultisnipsToJSON(ultisnips: string) {
 //   const snippets = parse(ultisnips);

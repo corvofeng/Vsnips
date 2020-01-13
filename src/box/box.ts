@@ -32,6 +32,7 @@ class BoxWatcher extends VSnipWatcher {
 
     if (hasChange) {
       this.box.refectorBox();
+      // eslint-disable-next-line
       console.log(this.box.boxContents);
 
       this.editor.edit(edit => {
@@ -156,7 +157,7 @@ class Box {
     this.syncRightBottom();
     this.blockChanged = true;
 
-    Logger.debug("Create box with", this.leftUpPos, this.rightBottomPos)
+    Logger.debug("Create box with", this.leftUpPos, this.rightBottomPos);
     return snipArr.join('\n');
   }
 
@@ -208,7 +209,7 @@ class Box {
         if (s.line !== e.line) {
           let newBoxContnts = [];
           // 删除多行
-          newBoxContnts = this.boxContents.slice(0, s.line - this.leftUpPos.line)
+          newBoxContnts = this.boxContents.slice(0, s.line - this.leftUpPos.line);
           newBoxContnts.push(
             this.boxContents[s.line - this.leftUpPos.line].slice(0, s.character) +
             this.boxContents[e.line - this.leftUpPos.line].slice(e.character)
@@ -218,7 +219,7 @@ class Box {
           );
           this.boxContents = newBoxContnts;
         } else {  // 行内删除, 只修改当前行
-          let oldLine = this.boxContents[s.line - this.leftUpPos.line]
+          let oldLine = this.boxContents[s.line - this.leftUpPos.line];
           this.boxContents[s.line - this.leftUpPos.line] = oldLine.slice(0, s.character) + oldLine.slice(e.character);
         }
       } else {
@@ -235,7 +236,7 @@ class Box {
         this.boxContents[s.line - this.leftUpPos.line] = lineLeft + arr[0] + lineRight;
       } else {
         let newBoxContnts = [];
-        newBoxContnts = this.boxContents.slice(0, s.line - this.leftUpPos.line)
+        newBoxContnts = this.boxContents.slice(0, s.line - this.leftUpPos.line);
         newBoxContnts = newBoxContnts.concat(lineLeft + arr[0]);
 
         arr[arr.length - 1] = arr[arr.length - 1] + lineRight;
@@ -247,7 +248,7 @@ class Box {
           this.boxContents.slice(
             s.line - this.leftUpPos.line + 1
           )
-        )
+        );
         this.boxContents = newBoxContnts;
       }
     }

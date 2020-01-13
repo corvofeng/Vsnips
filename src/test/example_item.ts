@@ -1,13 +1,13 @@
 
 import * as vscode from "vscode";
 
-
-let provider1 = vscode.languages.registerCompletionItemProvider("javascript", {
+/* eslint-disable */
+const provider1 = vscode.languages.registerCompletionItemProvider("javascript", {
     provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
         token: vscode.CancellationToken,
-        context: vscode.CompletionContext
+        context: vscode.CompletionContext,
     ) {
         // a simple completion item which inserts `Hello World!`
         const simpleCompletion = new vscode.CompletionItem("Hello World!");
@@ -16,13 +16,13 @@ let provider1 = vscode.languages.registerCompletionItemProvider("javascript", {
         // the `insertText`-property is a `SnippetString` which we will
         // honored by the editor.
         const snippetCompletion = new vscode.CompletionItem(
-            "Good part of the day"
+            "Good part of the day",
         );
         snippetCompletion.insertText = new vscode.SnippetString(
-            "Good ${1|morning,afternoon,evening|}. It is ${1}, right?"
+            "Good ${1|morning,afternoon,evening|}. It is ${1}, right?",
         );
         snippetCompletion.documentation = new vscode.MarkdownString(
-            "Inserts a snippet that lets you select the _appropriate_ part of the day for your greeting."
+            "Inserts a snippet that lets you select the _appropriate_ part of the day for your greeting.",
         );
 
         // a completion item that can be accepted by a commit character,
@@ -31,7 +31,7 @@ let provider1 = vscode.languages.registerCompletionItemProvider("javascript", {
         const commitCharacterCompletion = new vscode.CompletionItem("console");
         commitCharacterCompletion.commitCharacters = ["."];
         commitCharacterCompletion.documentation = new vscode.MarkdownString(
-            "Press `.` to get `console.`"
+            "Press `.` to get `console.`",
         );
 
         // a completion item that retriggers IntelliSense when being accepted,
@@ -43,7 +43,7 @@ let provider1 = vscode.languages.registerCompletionItemProvider("javascript", {
         commandCompletion.insertText = "new ";
         commandCompletion.command = {
             command: "editor.action.triggerSuggest",
-            title: "Re-trigger completions..."
+            title: "Re-trigger completions...",
         };
 
         // return all completion items as array
@@ -51,9 +51,9 @@ let provider1 = vscode.languages.registerCompletionItemProvider("javascript", {
             simpleCompletion,
             snippetCompletion,
             commitCharacterCompletion,
-            commandCompletion
+            commandCompletion,
         ];
-    }
+    },
 });
 
 
@@ -62,11 +62,11 @@ const provider2 = vscode.languages.registerCompletionItemProvider(
     {
         provideCompletionItems(
             document: vscode.TextDocument,
-            position: vscode.Position
+            position: vscode.Position,
         ) {
             // get all text until the `position` and check if it reads `console.`
             // and iff so then complete if `log`, `warn`, and `error`
-            let linePrefix = document
+            const linePrefix = document
                 .lineAt(position)
                 .text.substr(0, position.character);
             if (!linePrefix.endsWith("console.")) {
@@ -76,11 +76,11 @@ const provider2 = vscode.languages.registerCompletionItemProvider(
             return [
                 new vscode.CompletionItem("log", vscode.CompletionItemKind.Method),
                 new vscode.CompletionItem("warn", vscode.CompletionItemKind.Method),
-                new vscode.CompletionItem("error", vscode.CompletionItemKind.Method)
+                new vscode.CompletionItem("error", vscode.CompletionItemKind.Method),
             ];
-        }
+        },
     },
-    "." // triggered whenever a '.' is being typed
+    ".",  // triggered whenever a '.' is being typed
 );
 
 // context.subscriptions.push(provider1, provider2);

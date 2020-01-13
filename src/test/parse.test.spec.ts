@@ -1,8 +1,7 @@
-import * as assert from "assert";
 import * as ScriptFunc from "../script_tpl";
 import { parse } from "../parse";
-import { setLogLevel, addSnipsDir, getVarfiles, addVarfiles } from "../kv_store";
-import { Logger, InitLogger } from "../logger";
+import { setLogLevel } from "../kv_store";
+import { InitLogger, Logger } from "../logger";
 
 // suite("Parser Tests", function() {
 //   test("Somethins 1", function() {
@@ -12,8 +11,8 @@ import { Logger, InitLogger } from "../logger";
 
 // This is for unittest.
 
-describe('Parse ultisnips', () => {
-  let TEST_CASE = [
+describe("Parse ultisnips", () => {
+  const TEST_CASE = [
     // simple snippets
     `snippet gitig "Git add will ignore this"
 ####### XXX: Can't GIT add [START] #########
@@ -48,10 +47,10 @@ layout: post
 title: \`!p snip.rv = get_markdown_title(snip)\`
 date: \`!v strftime("%Y-%m-%d %H:%M:%S")\`
 author: \`!v g:snips_author\`
-tags: 
+tags:
 description: ${3}
 categories: Docs
-photos:  
+photos:
 toc: true
 
 ---
@@ -83,19 +82,17 @@ endsnippet`,
 
     `snippet vbox "box" w
 \`!p snip.rv = get_simple_box(snip)\`
-endsnippet`,
+endsnippet`
   ];
-  it('parser', () => {
-    let TEST_VAR_FILES = [
-      '/home/corvo/.vim/common.vim',
-    ];
+  it("parser", () => {
+    const TEST_VAR_FILES = ["/home/corvo/.vim/common.vim"];
     ScriptFunc.initVimVar(TEST_VAR_FILES);
-    setLogLevel('WARNING');
+    setLogLevel("WARN");
     InitLogger();
 
     TEST_CASE.forEach((txt: string) => {
-      let snippet = parse(txt);
-      // Logger.warn(snippet);
+      const snippet = parse(txt);
+      Logger.info(snippet);
     });
   });
   // parse(TEST_CASE[TEST_CASE.length - 1]);

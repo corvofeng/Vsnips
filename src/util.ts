@@ -1,5 +1,5 @@
-import * as vscode from "vscode";
 import { Logger } from "./logger";
+import * as vscode from "vscode";
 
 function longestMatchCharsFromStart(base: string, candidate: string) {
   const minLen = Math.min(base.length, candidate.length);
@@ -112,7 +112,7 @@ function checkLanguageId(doc: vscode.TextDocument): string {
     ["tsx", "typescriptreact"],
     ["vb", "vb"],
     ["xml", "xml"],
-    ["yaml", "yaml"]
+    ["yaml", "yaml"],
   ];
 
   let p = doc.uri.path;
@@ -121,8 +121,7 @@ function checkLanguageId(doc: vscode.TextDocument): string {
   }
   let languageId = doc.languageId;
 
-  for (let i = 0; i < mappings.length; i++) {
-    let [ext, langId, regexp] = mappings[i];
+  for (const [ext, langId, regexp] of mappings) {
     if (regexp) { // 如果有正则, 以正则匹配为准
       if (regexp.match(p)) {
         languageId = langId;
@@ -166,7 +165,7 @@ function trim(str: string, ch: string[]) {
 
 function trimLeft(str: string, ch: string[]) {
   let start = 0;
-  let end = str.length;
+  const end = str.length;
   while (start < end && ch.indexOf(str[start]) >= 0) {
     ++start;
   }
@@ -175,7 +174,7 @@ function trimLeft(str: string, ch: string[]) {
 }
 
 function trimRight(str: string, ch: string[]) {
-  let start = 0;
+  const start = 0;
   let end = str.length;
   while (end > start && ch.indexOf(str[end - 1]) >= 0) {
     --end;
@@ -189,5 +188,5 @@ export {
   checkLanguageId,
   trim,
   trimLeft,
-  trimRight
+  trimRight,
 };

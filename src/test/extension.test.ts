@@ -4,9 +4,9 @@
 //
 
 // The module 'assert' provides assertion methods from node
-import * as assert from 'assert';
-import { test_js_markdown } from './script_tpl_test';
-import * as vscode from 'vscode';
+// import * as assert from "assert";
+// import { test_js_markdown } from "./script_tpl_test";
+// import * as vscode from "vscode";
 
 /*
 suite('Extension Test Suite', () => {

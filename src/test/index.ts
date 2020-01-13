@@ -10,13 +10,13 @@
 // to report the results back to the caller. When the tests are finished, return
 // a possible error to the callback or null if none.
 
-import * as testRunner from 'vscode/lib/testrunner';
+// import * as testRunner from "vscode/lib/testrunner";
 
-import * as path from 'path';
-import * as Mocha from 'mocha';
-import * as glob from 'glob';
-import { window } from 'vscode';
-import * as assert from 'assert';
+import * as path from "path";
+import * as Mocha from "mocha";
+import * as glob from "glob";
+// import { window } from "vscode";
+// import * as assert from "assert";
 
 // You can directly control Mocha options by configuring the test runner below
 // See https://github.com/mochajs/mocha/wiki/Using-mocha-programmatically#set-options
@@ -31,32 +31,34 @@ import * as assert from 'assert';
 export function run(): Promise<void> {
   // Create the mocha test
   const mocha = new Mocha({
-    ui: 'bdd',
-    reporter: 'list',
+    ui: "bdd",
+    reporter: "list",
   });
   mocha.useColors(true);
 
-  const testsRoot = path.resolve(__dirname, '..');
+  const testsRoot = path.resolve(__dirname, "..");
 
   return new Promise((c, e) => {
-    glob('./test/**/*.spec.js', { cwd: testsRoot }, (err, files) => {
+    glob("./test/**/*.spec.js", { cwd: testsRoot }, (err, files) => {
       if (err) {
         return e(err);
       }
       // Add files to the test suite
-      files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
+      files.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)));
 
       try {
         // Run the mocha test
-        mocha.run(failures => {
+        mocha.run((failures) => {
           if (failures > 0) {
-          console.error(failures);
+            // eslint-disable-next-line
+            console.error(failures);
             e(new Error(`${failures} tests failed.`));
           } else {
             c();
           }
         });
       } catch (err) {
+        // eslint-disable-next-line
         console.error(err);
         e(err);
       }

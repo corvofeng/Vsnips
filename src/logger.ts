@@ -28,7 +28,7 @@ const myLogger: ILogger = jsLogger.get("Vsnips");
 function ObjectToString(input: object | string): string {
   if (input instanceof Object) {
     let ret = JSON.stringify(input);
-    if (ret != '{}') {
+    if (ret !== '{}') {
       return JSON.stringify(input);
     }
 
@@ -39,6 +39,7 @@ function ObjectToString(input: object | string): string {
       if (typeof val === 'function') {
         nextTry.set(key, val.name);
       } else {
+        // eslint-disable-next-line
         console.log("Now we get ", val, "But can't parse");
       }
     });
@@ -50,10 +51,10 @@ function ObjectToString(input: object | string): string {
 /**
  * 测试时我一般开DEBUG日志, 想要过滤可以使用下面的语句, grep + 正则可以过滤其他级别的日志
  *  `tail -F ~/.local/share/Vsnips/vsnips.log | grep '\[[IW]\]'`
- * 
+ *
  * 具体的日志样式如下:
  *  2019-07-31 08:21:32: [I] Repush the pip-requirementsfrom local dir
- * 
+ *
  */
 function InitLogger() {
   let VsnipsStream = fs.createWriteStream(getLogFile(), { flags: "a" });
@@ -73,9 +74,12 @@ function InitLogger() {
       let time = ('0' + today.getHours()).slice(-2) + ":" + ('0' + today.getMinutes()).slice(-2) + ":" + ('0' + today.getSeconds()).slice(-2);
 
       const formatLog = `${date} ${time}: [${context.level.name[0]}] ${msg}\n`;
+      // eslint-disable-next-line
       console.log(formatLog);
       VsnipsStream.write(formatLog);
     });
+  } else {
+    myLogger.setLevel(jsLogger.ERROR);
   }
 }
 

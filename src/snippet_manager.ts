@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import * as path from "path";
-import * as vscode from "vscode";
 import { getSnipsDirs } from "./kv_store";
 import { parse, Snippet } from "./parse";
 import { Logger } from "./logger";
@@ -15,7 +14,7 @@ export class SnippetManager {
    */
   protected snippetsByLanguage = new Map<string, Snippet[]>();
 
-  addLanguage(language: string) {
+  public addLanguage(language: string) {
     if (!this.snippetsByLanguage.get(language)) {
       Logger.info("Repush the " + language + "from local dir");
       this.doAddLanguageType(language);
@@ -24,17 +23,17 @@ export class SnippetManager {
     }
   }
 
-  initDefaultLanguage() {
-    this.addLanguage('all');
+  public initDefaultLanguage() {
+    this.addLanguage("all");
   }
 
   /**
    * 根据语言查询可用 snippets,
    * `all.snippets` 可以被所有语言使用
    */
-  getSnippets(language: string) {
+  public getSnippets(language: string) {
     const snippetsOfLanguage = this.snippetsByLanguage.get(language) || [];
-    const snippetsOfAll = this.snippetsByLanguage.get('all') || [];
+    const snippetsOfAll = this.snippetsByLanguage.get("all") || [];
     return snippetsOfAll.concat(snippetsOfLanguage);
   }
 
@@ -44,9 +43,9 @@ export class SnippetManager {
   protected doAddLanguageType(fileType: string) {
     const snippets: Snippet[] = [];
     const snippetFilePaths = getSnipsDirs().reduce((out: string[], snipDir) => {
-      let snipFileNames = [`${fileType}.snippets`];
+      const snipFileNames = [`${fileType}.snippets`];
       for (let i = 0; i < snipFileNames.length; i++) {
-        let snipFile = path.join(snipDir, snipFileNames[i]);
+        const snipFile = path.join(snipDir, snipFileNames[i]);
         Logger.info("Currently want search:", snipFile);
         if (!fs.existsSync(snipFile)) {
           Logger.warn(`The ${snipFile} not exists!!`);
@@ -57,14 +56,13 @@ export class SnippetManager {
       return out;
     }, []);
 
-    snippetFilePaths.forEach(snipFile => {
+    snippetFilePaths.forEach((snipFile) => {
       const fileContent = fs.readFileSync(snipFile, "utf8");
 
       // 如果 snippet中有extends语句, 根据 snippetsFilePath 查找同目录的 parent .snippets 文件
       const fileSnippets = parse(fileContent);
       snippets.push(...fileSnippets);
     });
-
 
     // Add the vdoc snippets for current file type, a little ugly.
     const vdocSnipContent = `snippet vdoc "${fileType} doc"\n` +

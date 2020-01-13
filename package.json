@@ -121,6 +121,7 @@
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",
 		"compile": "tsc -p ./",
+		"lint": "eslint src --ext .ts",
 		"watch": "tsc -watch -p ./",
 		"postinstall": "node ./node_modules/vscode/bin/install",
 		"test": "yarn run compile && node ./node_modules/vscode/bin/test"
@@ -131,17 +132,19 @@
 		"@types/mocha": "^2.2.48",
 		"@types/node": "^10.12.21",
 		"@types/request": "^2.48.2",
+		"@typescript-eslint/eslint-plugin": "^2.17.0",
+		"@typescript-eslint/parser": "^2.17.0",
 		"chai": "^4.2.0",
+		"eslint": "^6.8.0",
 		"glob": "^7.1.6",
 		"mocha": "^6.2.2",
 		"ts-node": "^8.5.2",
-		"tslint": "^5.12.1",
 		"typescript": "^3.3.1",
 		"vscode": "^1.1.28"
 	},
 	"dependencies": {
-		"request": "^2.88.0",
-		"js-logger": "^1.6.0"
+		"js-logger": "^1.6.0",
+		"request": "^2.88.0"
 	},
 	"__metadata": {
 		"id": "a42f9b10-ee80-433b-9043-fc3a48ac1b2e",

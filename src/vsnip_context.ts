@@ -16,22 +16,22 @@ import * as vscode from "vscode";
 // 记录当前补全时需要的上下文信息, 是针对vscode所给信息的一层封装
 class VSnipContext {
   // Please refer to https://code.visualstudio.com/api/references/vscode-api#TextDocument
-  document: vscode.TextDocument;
+  public document: vscode.TextDocument;
 
   // Please refer to https://code.visualstudio.com/api/references/vscode-api#Position
-  position: vscode.Position;
+  public position: vscode.Position;
 
   // Please refer to https://code.visualstudio.com/api/references/vscode-api#CancellationToken
-  token?: vscode.CancellationToken | null;
+  public token?: vscode.CancellationToken | null;
 
   // please refer to https://code.visualstudio.com/api/references/vscode-api#CompletionContext
-  context?: vscode.CompletionContext;
+  public context?: vscode.CompletionContext;
 
   constructor(
     document: vscode.TextDocument,
     position: vscode.Position,
     token?: vscode.CancellationToken | null,
-    context?: vscode.CompletionContext
+    context?: vscode.CompletionContext,
   ) {
     this.document = document;
     this.position = position;
@@ -43,7 +43,7 @@ class VSnipContext {
     }
   }
 
-  getActiveEditor() {
+  public getActiveEditor() {
     return vscode.window.activeTextEditor;
   }
 
@@ -51,7 +51,7 @@ class VSnipContext {
    *
    * @param numberOfShift 获取当前行数向上或偏移n行的效果.
    */
-  getTextByShift(numberOfShift: number) {
+  public getTextByShift(numberOfShift: number) {
     const pos = this.position;
     let range = null;
     if (numberOfShift > 0) {

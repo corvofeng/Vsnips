@@ -28,6 +28,7 @@ const UserLocalDir =
   (process.platform === "darwin"
     ? process.env.HOME + "/Library/Preferences"
     : process.env.HOME + "/.local/share");
+// eslint-disable-next-line
 console.log("Get usre dir", UserLocalDir);
 
 // In linux, the default vsnips dir is in:
@@ -44,13 +45,13 @@ if (!fs.existsSync(UltiSnipsDir)) {
   fs.mkdirSync(UltiSnipsDir);
 }
 
-let DeafultLang = ["lua", "c", "cpp", "all", "javascript", "python"];
+const DeafultLang = ["lua", "c", "cpp", "all", "javascript", "python"];
 
 /**
  * 存放snippet片段的文件夹
  */
 let SearchDirs = [
-  UltiSnipsDir
+  UltiSnipsDir,
   // path.join(process.env.HOME, '.vim', 'UltiSnips'),
   // '/home/corvo/.vim/UltiSnips',
   // '/home/corvo/.vim/plugged/vim-snippets/UltiSnips',
@@ -83,13 +84,14 @@ let UserScriptFiles: string[] = [];
 function DownloadSnips() {
   // Download snippets from: https://github.com/honza/vim-snippets
   DeafultLang.forEach((lang: string) => {
-    let snipfile = path.join(UltiSnipsDir, lang + ".snippets");
+    const snipfile = path.join(UltiSnipsDir, lang + ".snippets");
     if (!fs.existsSync(snipfile)) {
+      // eslint-disable-next-line
       console.log("Create file: ", snipfile);
       const file = fs.createWriteStream(snipfile);
-      const req = request
+      request
         .get(
-          `https://raw.githubusercontent.com/honza/vim-snippets/master/UltiSnips/${lang}.snippets`
+          `https://raw.githubusercontent.com/honza/vim-snippets/master/UltiSnips/${lang}.snippets`,
         )
         .pipe(file);
     }
@@ -104,7 +106,7 @@ function setLogLevel(level: string) {
 }
 
 function getLogLevel() {
-  let lvl = undefined;
+  let lvl;
   switch (LogLevel) {
     case "NO":
       break;
@@ -167,21 +169,22 @@ function addVarfiles(files: string[]) {
  */
 function updateMultiWorkspaceSetting() {
   const myWorkspaceConfig = path.join(VsnipDir, "snips.code-workspace");
-  let writeJSON = {
+  const writeJSON = {
     folders: [
       {
-        path: "/home/corvo/.local/share/Vsnips/Ultisnips"
+        path: "/home/corvo/.local/share/Vsnips/Ultisnips",
       },
       {
-        path: "/home/corvo/.vim/UltiSnips"
-      }
+        path: "/home/corvo/.vim/UltiSnips",
+      },
     ],
-    settings: {}
+    settings: {},
   };
-  getSnipsDirs().forEach(snipDir => {
-    writeJSON["folders"].push({ path: snipDir });
+  getSnipsDirs().forEach((snipDir) => {
+    writeJSON.folders.push({ path: snipDir });
   });
-  fs.writeFile(myWorkspaceConfig, JSON.stringify(writeJSON), err => {
+  fs.writeFile(myWorkspaceConfig, JSON.stringify(writeJSON), (err) => {
+    // eslint-disable-next-line
     console.log("Can't write workspace config", err);
   });
   return myWorkspaceConfig;
@@ -224,5 +227,5 @@ export {
   getDisplayStrategy,
   setTrigers,
   getTrigers,
-  updateMultiWorkspaceSetting
+  updateMultiWorkspaceSetting,
 };

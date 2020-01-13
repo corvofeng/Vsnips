@@ -8,16 +8,19 @@
  *  Created on: August 15, 2019
  *
  *      Author: corvofeng
- * 
+ *
  * This file refer to:
  *   https://github.com/NilsJPWerner/autoDocstring/blob/master/src/parse/tokenize_definition.ts
  *=======================================================================
  */
 
 import { Logger } from "../logger";
-import { PyFuncToken, TsFuncToken, GoFuncToken } from "./token_obj";
+import { PyFuncToken } from "./token_python";
+import { GoFuncToken } from "./token_go";
+import { TsFuncToken } from "./token_typescript";
 
 function pythonTokenizer(defs: string): PyFuncToken | undefined {
+  // eslint-disable-next-line
   const definitionPattern = /(def|class)\s+(\w+)\s*\(([\s\S]*)\)\s*(->\s*[\w\[\], \.]*)?:\s*$/;
   const match = definitionPattern.exec(defs) as RegExpExecArray;
   if (match === null) {
@@ -25,7 +28,7 @@ function pythonTokenizer(defs: string): PyFuncToken | undefined {
     return undefined;
   }
 
-  let [_, tokType, tokName, tokArgsRaw, tokRet] = match;
+  let [, tokType, tokName, tokArgsRaw, tokRet] = match;
   if (tokArgsRaw === undefined) {
     Logger.warn(tokType, tokName, tokArgsRaw, tokRet);
     return undefined;
@@ -47,7 +50,7 @@ function pythonTokenizer(defs: string): PyFuncToken | undefined {
       PyFuncToken.constructRetFromTokens([tokRet]),
     );
   } else if (tokType === 'class') {
-    return undefined
+    return undefined;
   }
 
   return undefined;
@@ -147,14 +150,15 @@ function tsTokenizer(defs: string): TsFuncToken | undefined {
   // 普通函数(一般不会写注释): let myAdd = function(x: number, y: number): number { return  x + y; };
 
   // const definitionPattern = /(function)\s+(\w+)\s*\(([\s\S]*)\)\s*(->\s*[\w\[\], \.]*)?(:|=>)\s*(?:{\s*}?)?$/;
+  // eslint-disable-next-line
   const definitionPattern = /(function)\s+(\w+)\s*\(([\s\S]*)\)\s*(:\s*[\w\|\[\], \.]*)?(?:\s*\{\s*\n*)?$/;
   const match = definitionPattern.exec(defs) as RegExpExecArray;
   if (match === null) {
     Logger.info("Can't get token in:", defs);
     return undefined;
   }
-  let [_, tokType, tokName, tokArgsRaw, tokRet] = match;
-  if (tokArgsRaw == undefined) {
+  let [, tokType, tokName, tokArgsRaw, tokRet] = match;
+  if (tokArgsRaw === undefined) {
     Logger.warn(tokType, tokName, tokArgsRaw, tokRet);
     return undefined;
   }
@@ -180,12 +184,13 @@ function tsTokenizer(defs: string): TsFuncToken | undefined {
 
 function goTokenizer(defs: string): GoFuncToken | undefined {
   // golang中可能有的函数
-  // 普通golang函数: func add(x int, y int) int 
-  // golang函数带有指针: func playExampleFile(file *ast.File) *ast.File 
+  // 普通golang函数: func add(x int, y int) int
+  // golang函数带有指针: func playExampleFile(file *ast.File) *ast.File
   // 多返回值: func nextInt(b []byte, i int) (int, int) {
   // 多返回值,已有变量: func nextInt(b []byte, i int) (x1 int, x2 int) {
   // 成员函数: func (file *File) Write(b []byte) (n int, err error)
   // 注意: 在golang代码中的函数, 必须有'{' 作为结尾
+  // eslint-disable-next-line
   const definitionPattern = /\s*(func)\s*(?:\(([\w\*\[\], \.]*)?\))?\s*(\w+)\s*\(\s*([\w\*\[\], \.]*)?\s*\)\s*\(?([\w\*\[\], \.\n\t]*)?\)?\s*{\s*/;
   const match = definitionPattern.exec(defs) as RegExpExecArray;
 
@@ -194,8 +199,8 @@ function goTokenizer(defs: string): GoFuncToken | undefined {
     return undefined;
   }
   Logger.debug("Get match", match);
-  let [_, tokType, sPointer, tokName, tokArgsRaw, tokRetRaw] = match;
-  if (tokArgsRaw == undefined) {
+  let [, tokType, sPointer, tokName, tokArgsRaw, tokRetRaw] = match;
+  if (tokArgsRaw === undefined) {
     Logger.warn(tokType, sPointer, tokName, tokArgsRaw, tokRetRaw);
     return undefined;
   }
@@ -216,7 +221,7 @@ function goTokenizer(defs: string): GoFuncToken | undefined {
     GoFuncToken.constructRetFromTokens(tokRetRaw.split(',')),
   );
 
-  return undefined
+  return undefined;
 }
 
 function parseTokenizer(defs: string, defsType: string) {
