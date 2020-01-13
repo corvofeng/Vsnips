@@ -1,4 +1,4 @@
-import { VSnipWatcher } from "../vsnip_watcher";
+import { VSnipWatcher, VSnipWatcherArray } from "../vsnip_watcher";
 import * as vscode from "vscode";
 import { Logger } from "../logger";
 import { VSnipContext } from "../vsnip_context";
@@ -197,13 +197,16 @@ class Box {
       ch.range.end.line >= this.rightBottomPos.line) {
       // 此次修改不在box内部, 不做任何处理
       Logger.warn("Can't process change outside box:", ch, this.leftUpPos, this.rightBottomPos);
+      // 同时也表明此次修改完成, 移除监听
+      VSnipWatcherArray.shift();
+      Logger.info("remove current watcher");
       return false;
     }
     let s = ch.range.start;
     let e = ch.range.end;
     if (ch.text === "") {
-      if (ch.rangeLength != 0) {
-        if (s.line != e.line) {
+      if (ch.rangeLength !== 0) {
+        if (s.line !== e.line) {
           let newBoxContnts = [];
           // 删除多行
           newBoxContnts = this.boxContents.slice(0, s.line - this.leftUpPos.line)
