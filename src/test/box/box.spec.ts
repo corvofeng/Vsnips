@@ -99,6 +99,28 @@ describe("Box change", () => {
     expect(simpleBox.boxContents).deep.eq(newContent);
   });
 
+  it('Add new line', () => {
+    let newContent = [
+      "// ┌───────┐",
+      "// │ hello │",
+      "// │  my   │",
+      "// │ world",
+      " │",
+      "// └───────┘",
+    ];
+    let ch = new MyEvent(
+      new vscode.Range(
+        new vscode.Position(3, 10),
+        new vscode.Position(3, 10),
+      ),
+      0,
+      0,
+      '\n',
+    )
+    simpleBox.doChange(ch);
+    expect(simpleBox.boxContents).deep.eq(newContent);
+  });
+
   it('Delte multiline', () => {
     // 删除o my wo
     let newContent = [
@@ -144,6 +166,35 @@ describe("Box change", () => {
     );
     simpleBox.doChange(ch);
     expect(simpleBox.boxContents).deep.eq(newContent);
+  });
+
+  it('Test box without prefix', () => {
+    let oldContent = [
+      "┌──┐",
+      "│  │",
+      "└──┘",
+    ];
+    simpleBox.boxContents = oldContent;
+    simpleBox.prefix = '';
+
+    // 增加x
+    let ch = new MyEvent(
+      new vscode.Range(
+        new vscode.Position(1, 2),
+        new vscode.Position(1, 2),
+      ),
+      0,
+      0,
+      'x',
+    );
+    simpleBox.doChange(ch);
+
+    let newContent = [
+      "┌──┐",
+      "│ x │",
+      "└──┘",
+    ];
+    expect(newContent).deep.eq(simpleBox.boxContents);
   });
 });
 
@@ -223,16 +274,79 @@ describe("Refect box", () => {
       "// └───────┘",
     ];
     let refectContent = [
-      "// ┌──────────┐",
-      "// │ hello    │",
-      "// │  myvsnips│",
-      "// │is        │",
-      "// │best      │",
-      "// │ world    │",
-      "// └──────────┘",
+      "// ┌───────────┐",
+      "// │ hello     │",
+      "// │  myvsnips │",
+      "// │is         │",
+      "// │best       │",
+      "// │ world     │",
+      "// └───────────┘",
     ]
     simpleBox.boxContents = newContent;
     simpleBox.refectorBox();
     expect(simpleBox.boxContents).deep.eq(refectContent);
-  })
+  });
+
+
+  it("For large input", () => {
+    let newContent = [
+      "// ┌─────────────┐",
+      "// │ helloxxx    │",
+      "// │  mxxxxxxxxxxxx   │",
+      "// │ world       │",
+      "// └─────────────┘",
+    ];
+
+    let refectContent = [
+      "// ┌────────────────┐",
+      "// │ helloxxx       │",
+      "// │  mxxxxxxxxxxxx │",
+      "// │ world          │",
+      "// └────────────────┘",
+    ];
+
+    simpleBox.boxContents = newContent;
+    simpleBox.refectorBox();
+    expect(simpleBox.boxContents).deep.eq(refectContent);
+  });
+
+
+  it('With no prefix', () => {
+    let newContent = [
+      "┌──┐",
+      "│ x │",
+      "└──┘",
+    ];
+
+    let refectContent = [
+      "┌───┐",
+      "│ x │",
+      "└───┘",
+    ];
+    simpleBox.prefix = "";
+    simpleBox.boxContents = newContent;
+    simpleBox.refectorBox();
+    expect(simpleBox.boxContents).deep.eq(refectContent);
+  });
+  it('Add new line', () => {
+    let newContent = [
+      "// ┌───────┐",
+      "// │ hello │",
+      "// │  my   │",
+      "// │ world",
+      " │",
+      "// └───────┘",
+    ];
+    let refectContent = [
+      "// ┌───────┐",
+      "// │ hello │",
+      "// │  my   │",
+      "// │ world │",
+      "// │       │",
+      "// └───────┘",
+    ];
+    simpleBox.boxContents = newContent;
+    simpleBox.refectorBox();
+    expect(simpleBox.boxContents).deep.eq(refectContent);
+  });
 });

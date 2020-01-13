@@ -2,7 +2,7 @@ import { VSnipWatcher, VSnipWatcherArray } from "../vsnip_watcher";
 import * as vscode from "vscode";
 import { Logger } from "../logger";
 import { VSnipContext } from "../vsnip_context";
-import { trim } from "../utils";
+import { trim, trimRight } from "../utils";
 
 class BoxWatcher extends VSnipWatcher {
 
@@ -257,23 +257,31 @@ class Box {
 
   // 整理文本内容修改后的box样式, 因为简单的增加删除文本会导致box样式被破坏.
   public refectorBox() {
+    // 计算最长一行的长度, 以第一行为初始值
     let maxLen = this.boxContents[0].length;
-
-    // 注意, 首尾行是不计算的
-    for (let i = 1; i < this.boxContents.length - 1; i++) {
+    for (let i = 1; i < this.boxContents.length - 1; i++) { // 注意, 首尾行是不计算的
+      // 如果行首没有前缀字符, 则直接进行增加
       if (!this.boxContents[i].startsWith(this.prefix + this.left)) {
         this.boxContents[i] = this.prefix + this.left + this.boxContents[i];
       }
-      if (!this.boxContents[i].endsWith(this.right)) {
-        this.boxContents[i] = this.boxContents[i] + this.right;
+
+      // 删除行末的right字符以及' '(如果原来没有前缀字符则不进行删除)
+      if (this.boxContents[i] !== this.prefix + this.left) {
+        // 必须要分步删除, 只能删除一个右侧字符
+        this.boxContents[i] = trimRight(this.boxContents[i], [this.right]);
+        this.boxContents[i] = trimRight(this.boxContents[i], [' ']);
       }
-      if (this.boxContents[i].length > maxLen) {
-        maxLen = this.boxContents[i].length;
+
+      // 为增加一个空格 以及右侧字符 的长度
+      if (this.boxContents[i].length + this.right.length + 1 > maxLen) {
+        maxLen = this.boxContents[i].length + this.right.length + 1;
       }
     }
+
     if (maxLen > this.lineLimit) {
       Logger.warn(`Current line(${maxLen}) is larger than ${this.lineLimit}`);
     }
+
     let contentLen = maxLen - this.prefix.length - this.left.length - this.right.length;
 
     // 开始构建新的内容
@@ -281,7 +289,7 @@ class Box {
     // 添加首行
     newContents.push(`${this.prefix}${this.leftUp}${this.up.repeat(contentLen)}${this.rightUp}`);
     for (let i = 1; i < this.boxContents.length - 1; i++) {
-      let content = trim(this.boxContents[i], [this.right]);
+      let content = this.boxContents[i];
       newContents.push(
         content + ' '.repeat(contentLen - content.length + this.prefix.length + this.left.length) + this.right
       );
