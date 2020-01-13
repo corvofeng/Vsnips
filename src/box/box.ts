@@ -43,8 +43,8 @@ class BoxWatcher extends VSnipWatcher {
     return;
   }
 
-  init(vsContext: VSnipContext) {
-    return this.box.initSnip(vsContext);
+  init(leftUpPos: vscode.Position) {
+    return this.box.initSnip(leftUpPos);
   }
 }
 
@@ -139,21 +139,7 @@ class Box {
     // return new Box();
   }
 
-  public initSnip(vsContext: VSnipContext) {
-    // 找出前缀
-    this.prefix = trim(vsContext.getTextByShift(-1), ['\n']);
-
-    // 删除前缀, 因为之后会重新创建
-    if (this.prefix !== "") {
-      let e = vsContext.getActiveEditor();
-      if (e !== undefined) {
-        let startPos = new vscode.Position(vsContext.position.line, 0);
-        let endPos = vsContext.position
-        e.edit(e => {
-          e.delete(new vscode.Range(startPos, endPos));
-        });
-      }
-    }
+  public initSnip(leftUpPos: vscode.Position) {
 
     // 实际保存的snip字符串不包括$1这种占位符
     let snipArr = [];
@@ -167,10 +153,7 @@ class Box {
     snipArr.push(this.boxContents[2]);
 
     // 求出此时的leftUpPos以及rightBottomPos
-    this.leftUpPos = new vscode.Position(
-      vsContext.position.line,
-      0,
-    );
+    this.leftUpPos = leftUpPos;
     this.syncRightBottom();
     this.blockChanged = true;
 

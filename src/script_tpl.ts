@@ -21,6 +21,8 @@ import { parseTokenizer } from "./doc_parse/tokenize";
 import { PyFuncToken, TsFuncToken, GoFuncToken } from "./doc_parse/token_obj";
 import { BoxWatcher, Box } from "./box/box";
 import { VSnipWatcherArray } from "./vsnip_watcher";
+import { trim } from "./utils";
+import { Position, Range } from "vscode";
 
 let BUILDIN_MODULE = new Map();
 
@@ -169,9 +171,23 @@ function js_get_simple_box(vsContext: VSnipContext) {
     Logger.warn("Cant' get active editor");
     return;
   }
+  // 找出前缀
+  let prefix = trim(vsContext.getTextByShift(-1), ['\n']);
 
-  let boxWatcher = new BoxWatcher(e, new Box());
-  let snip = boxWatcher.init(vsContext);
+  // 删除前缀, 因为之后会重新创建
+  if (prefix !== "") {
+    let e = vsContext.getActiveEditor();
+    if (e !== undefined) {
+      let startPos = new Position(vsContext.position.line, 0);
+      let endPos = vsContext.position;
+      e.edit(e => {
+        e.delete(new Range(startPos, endPos));
+      });
+    }
+  }
+
+  let boxWatcher = new BoxWatcher(e, new Box((prefix = prefix)));
+  let snip = boxWatcher.init(new Position(vsContext.position.line, 0));
 
   Logger.info("Register a new box watcher");
 
