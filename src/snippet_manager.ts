@@ -73,6 +73,12 @@ export class SnippetManager {
     const vdocSnippet = parse(vdocSnipContent)[0];
     snippets.push(vdocSnippet);
 
+    const vboxSnipContent = `snippet vbox "box" w\n` +
+        `\`!p snip.rv = get_simple_box(snip)\`\n` +
+        `endsnippet`;
+    const vboxSnippet = parse(vboxSnipContent)[0];
+    snippets.push(vboxSnippet);
+
     this.snippetsByLanguage.set(fileType, snippets);
   }
 }

@@ -2,6 +2,7 @@ import { Logger, InitLogger } from "../logger";
 import * as fs from "fs";
 import { setLogLevel, addSnipsDir, getVarfiles, addVarfiles } from "../kv_store";
 import { expect } from 'chai';
+import * as path from 'path';
 import 'mocha';
 
 
@@ -14,7 +15,8 @@ describe("Eval file", () => {
   });
 
   it('Read and eval file', () => {
-    let example_file = "./example/func.js";
+    const testsRoot = path.resolve(__dirname, '..', '..');
+    let example_file = path.join(testsRoot, "./example/func.js");
     let TEST_CASE = [
       'console.log("Hello world");',
     ];
@@ -28,8 +30,8 @@ describe("Eval file", () => {
     let d = eval(data) as object;
     Logger.info(d);
     TEST_CASE.forEach((content: string) => {
-      //   Logger.info(content);
-      //   eval(data);
+        Logger.info(content);
+        eval(data);
     });
     expect(7).equal(7);
   });

@@ -3,12 +3,14 @@ import { VSnipContext } from "./vsnip_context";
 import * as ScriptFunc from "./script_tpl";
 import * as vscode from "vscode";
 
-const VIM_SNIPPET = /^snippet ([^\s]*)\s*(?:"(.*?)".*)?\n((?:.|\n)*?)\nendsnippet$/gm;
+const VIM_SNIPPET = /^snippet ([^\s]*)\s*(?:"(.*?)"(.*))?\n((?:.|\n)*?)\nendsnippet$/gm;
 
-export class Snippet {
+class Snippet {
+  // Please refer to: https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt
   prefix: string;
   body: string;
   descriptsion: string;
+  options: string;
 
   // 标记snip中是否有js函数, 如果有js占位函数的, 需要在补全时再进行一次求值操作
   // 将body体中的js函数进行求值处理.
@@ -19,9 +21,17 @@ export class Snippet {
     this.body = "";
     this.descriptsion = "";
     this.hasJSScript = false;
+    this.options = "";
   }
 
   get_snip_body(vsContext: VSnipContext) {
+    // if(this.options.includes('w')) {
+    //   console.log("Get txt", vsContext.getTextByShift(-1));
+    //   if(!vsContext.getTextByShift(-1).includes(this.prefix)) {
+    //     Logger.warn("The ", this.prefix, "must have all prefix");
+    //     return '';
+    //   }
+    // }
     let rlt = "";
     if (this.hasJSScript) {
       rlt = jsFuncEval(this.body, vsContext);
@@ -36,11 +46,12 @@ function parse(rawSnippets: string): Array<Snippet> {
   let res = null;
   let snips: Array<Snippet> = [];
   while ((res = VIM_SNIPPET.exec(rawSnippets)) !== null) {
-    const [_, prefix, description, body] = res;
+    const [_, prefix, description, options, body] = res;
 
     let snip = new Snippet();
     snip.prefix = prefix;
     snip.body = normalizePlaceholders(body);
+    snip.options = options;
     [snip.body, snip.hasJSScript] = lexParser(snip.body);
     snip.descriptsion = description;
 
@@ -234,4 +245,4 @@ function jsFuncEval(snip: string, vsContext: VSnipContext) {
   return snip;
 }
 
-export { parse };
+export { parse, Snippet };

@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import * as ScriptFunc from "../script_tpl";
 import { parse } from "../parse";
-import {setLogLevel, addSnipsDir, getVarfiles, addVarfiles} from "../kv_store";
+import { setLogLevel, addSnipsDir, getVarfiles, addVarfiles } from "../kv_store";
 import { Logger, InitLogger } from "../logger";
 
 // suite("Parser Tests", function() {
@@ -79,19 +79,24 @@ if args:
 write_init_body(args, t[2], snip)
 \`
     $0
-endsnippet`
+endsnippet`,
 
+    `snippet vbox "box" w
+\`!p snip.rv = get_simple_box(snip)\`
+endsnippet`,
   ];
+  it('parser', () => {
+    let TEST_VAR_FILES = [
+      '/home/corvo/.vim/common.vim',
+    ];
+    ScriptFunc.initVimVar(TEST_VAR_FILES);
+    setLogLevel('WARNING');
+    InitLogger();
 
-  let TEST_VAR_FILES = [
-    '/home/corvo/.vim/common.vim',
-  ];
-  ScriptFunc.initVimVar(TEST_VAR_FILES);
-  setLogLevel('WARNING');
-  InitLogger();
-
-  TEST_CASE.forEach((txt: string) => {
-    parse(txt);
+    TEST_CASE.forEach((txt: string) => {
+      let snippet = parse(txt);
+      // Logger.warn(snippet);
+    });
   });
   // parse(TEST_CASE[TEST_CASE.length - 1]);
 });

@@ -17,9 +17,10 @@ import * as path from "path";
 import { VSnipContext } from "./vsnip_context";
 import { USER_MODULE, jsParser } from "./user_script";
 import { getUserScriptFiles } from "./kv_store";
-import * as vscode from "vscode";
 import { parseTokenizer } from "./doc_parse/tokenize";
 import { PyFuncToken, TsFuncToken, GoFuncToken } from "./doc_parse/token_obj";
+import { BoxWatcher, Box } from "./box/box";
+import { VSnipWatcherArray } from "./vsnip_watcher";
 
 let BUILDIN_MODULE = new Map();
 
@@ -158,6 +159,27 @@ function get_go_doc() {
   return jsFuncDecorator('js_go_doc');
 }
 
+function get_simple_box() {
+  return jsFuncDecorator('js_get_simple_box');
+}
+
+function js_get_simple_box(vsContext: VSnipContext) {
+  let e = vsContext.getActiveEditor();
+  if (e === undefined) {
+    Logger.warn("Cant' get active editor");
+    return;
+  }
+
+  let boxWatcher = new BoxWatcher(e, new Box());
+  let snip = boxWatcher.init(vsContext);
+
+  Logger.info("Register a new box watcher");
+
+  // 注册监听事件
+  VSnipWatcherArray.push(boxWatcher);
+  return snip;
+}
+
 function var_parser(data: string) {
   // 只匹配let开头的语句, 并且要求只能是数字或是字符串
   // 数字可以不带引号, 字符串必须用单引号或是双引号包裹
@@ -208,9 +230,11 @@ function initTemplateFunc() {
   BUILDIN_MODULE.set('triple_quotes', triple_quotes);
   BUILDIN_MODULE.set('js_markdown_title', js_markdown_title);
   BUILDIN_MODULE.set('get_python_doc', get_python_doc);
+  BUILDIN_MODULE.set('get_simple_box', get_simple_box);
   BUILDIN_MODULE.set('js_python_doc', js_python_doc);
   BUILDIN_MODULE.set('js_typescript_doc', js_typescript_doc);
   BUILDIN_MODULE.set('get_typescript_doc', get_typescript_doc);
+  BUILDIN_MODULE.set('js_get_simple_box', js_get_simple_box);
   BUILDIN_MODULE.set('js_go_doc', js_go_doc);
   BUILDIN_MODULE.set('get_go_doc', get_go_doc);
   jsParser(getUserScriptFiles());

@@ -12,12 +12,54 @@
 
 import * as testRunner from 'vscode/lib/testrunner';
 
+import * as path from 'path';
+import * as Mocha from 'mocha';
+import * as glob from 'glob';
+import { window } from 'vscode';
+import * as assert from 'assert';
+
 // You can directly control Mocha options by configuring the test runner below
 // See https://github.com/mochajs/mocha/wiki/Using-mocha-programmatically#set-options
 // for more info
-testRunner.configure({
-    ui: 'tdd', 		// the TDD UI is being used in extension.test.ts (suite, test, etc.)
-    useColors: true // colored output from test results
-});
+// testRunner.configure({
+//     ui: 'tdd', 		// the TDD UI is being used in extension.test.ts (suite, test, etc.)
+//     useColors: true // colored output from test results
+// });
 
-module.exports = testRunner;
+// module.exports = testRunner;
+
+export function run(): Promise<void> {
+  // Create the mocha test
+  const mocha = new Mocha({
+    ui: 'bdd',
+    reporter: 'list',
+  });
+  mocha.useColors(true);
+
+  const testsRoot = path.resolve(__dirname, '..');
+
+  return new Promise((c, e) => {
+    glob('./test/**/*.spec.js', { cwd: testsRoot }, (err, files) => {
+      if (err) {
+        return e(err);
+      }
+      // Add files to the test suite
+      files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
+
+      try {
+        // Run the mocha test
+        mocha.run(failures => {
+          if (failures > 0) {
+          console.error(failures);
+            e(new Error(`${failures} tests failed.`));
+          } else {
+            c();
+          }
+        });
+      } catch (err) {
+        console.error(err);
+        e(err);
+      }
+    });
+  });
+}

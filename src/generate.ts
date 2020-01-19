@@ -1,8 +1,11 @@
-import * as vscode from "vscode";
+import * as fs from "fs";
+import * as path from "path";
 import { Logger } from "./logger";
 import { parse, Snippet } from "./parse";
+import * as vscode from "vscode";
 import { VSnipContext } from "./vsnip_context";
 import { snippetManager } from './snippet_manager';
+import { getSnipsDirs } from "./kv_store";
 
 // function ultisnipsToJSON(ultisnips: string) {
 //   const snippets = parse(ultisnips);
@@ -12,6 +15,23 @@ import { snippetManager } from './snippet_manager';
 
 export function generate(context: vscode.ExtensionContext) {
   snippetManager.initDefaultLanguage();
+
+  // 使用textEditCommand的好处是, 只有在真正插入阶段才会进行求值
+  // 十分适合vdoc以及vbox的插入
+  // context.subscriptions.push(
+  //   vscode.commands.registerTextEditorCommand(
+  //     'vsnips.expand-new',
+  //     (editor, _, snip: Snippet, vsContext: VSnipContext) => {
+  //       Logger.debug(editor, snip, vsContext);
+  //       editor.insertSnippet(
+  //         new vscode.SnippetString(snip.get_snip_body(vsContext))
+  //       ).then(() => {
+  //         Logger.debug("After create the snippets");
+  //       });
+  //     }
+  //   )
+  // );
+
 
   // 注册 completionItemProiver
   const provider = vscode.languages.registerCompletionItemProvider(

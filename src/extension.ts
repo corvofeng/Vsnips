@@ -15,6 +15,7 @@ import {
 import { snippetManager, Snippet } from './snippet_manager';
 import { initVimVar, initTemplateFunc, initVSCodeVar } from "./script_tpl";
 import { checkLanguageId } from "./util";
+import { VSnipWatcherArray } from "./vsnip_watcher";
 
 export async function activate(context: vscode.ExtensionContext) {
   const conf = vscode.workspace.getConfiguration();
@@ -106,6 +107,26 @@ export async function activate(context: vscode.ExtensionContext) {
       vscode.commands.executeCommand("vscode.openFolder", uri, true);
     })
   );
+
+  // 所有的文本修改事件均会进入
+  // 但只有在注册了Watcher事件之后, 并且Watcher的document与e.document的改动一致时
+  // Watcher才会被触发,
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument(e => {
+      if (VSnipWatcherArray.length === 0) {
+        return;
+      }
+      if (VSnipWatcherArray.length > 1) {
+        Logger.warn("There are two active VsnipWatcher, please check");
+      }
+      if (VSnipWatcherArray[0].getEditor().document !== e.document) {
+        return;
+      }
+      Logger.debug("Call a watcher", VSnipWatcherArray[0]);
+      VSnipWatcherArray[0].onUpdate(e.contentChanges);
+    })
+  );
+
 }
 
 // this method is called when your extension is deactivated

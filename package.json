@@ -107,10 +107,12 @@
 	},
 	"devDependencies": {
 		"@types/chai": "^4.2.5",
+		"@types/glob": "^7.1.1",
 		"@types/mocha": "^2.2.48",
 		"@types/node": "^10.12.21",
 		"@types/request": "^2.48.2",
 		"chai": "^4.2.0",
+		"glob": "^7.1.6",
 		"mocha": "^6.2.2",
 		"ts-node": "^8.5.2",
 		"tslint": "^5.12.1",
