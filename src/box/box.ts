@@ -168,8 +168,8 @@ class Box {
     this.boxContents.forEach((content, i) => {
       let range = new vscode.Range(
         new vscode.Position(pos.line + i, 0),
-        new vscode.Position(pos.line + i, content.length),
-      )
+        new vscode.Position(pos.line + i, content.length + 1),
+      );
       edit.replace(range, content);
     });
     this.syncRightBottom();
