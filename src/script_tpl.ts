@@ -176,6 +176,7 @@ function js_get_simple_box(vsContext: VSnipContext) {
   if (prefix.endsWith('vbox')) {
     prefix = prefix.substring(0, prefix.length - 4);
   }
+  Logger.info(`Get box prefix: '${prefix}'`);
 
   // 删除前缀, 因为之后会重新创建
   if (prefix !== "") {
