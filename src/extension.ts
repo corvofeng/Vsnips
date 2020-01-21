@@ -14,6 +14,7 @@ import {
 } from "./kv_store";
 import { snippetManager, Snippet } from './snippet_manager';
 import { initVimVar, initTemplateFunc, initVSCodeVar } from "./script_tpl";
+import { checkLanguageId } from "./util";
 
 export async function activate(context: vscode.ExtensionContext) {
   const conf = vscode.workspace.getConfiguration();
@@ -58,7 +59,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // 这里采取一种替换方案, 当用户打开某种语言的文件时, 才会解析对应的snippets文件
   vscode.workspace.onDidOpenTextDocument((document) => {
     // 此时依照文件类型, 查找对应的snippets文件
-    snippetManager.addLanguage(document.languageId);
+    snippetManager.addLanguage(checkLanguageId(document));
   });
 
   context.subscriptions.push(
