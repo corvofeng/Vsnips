@@ -69,7 +69,28 @@
 				"Vsnips.LogLevel": {
 					"type": "string",
 					"description": "The Vsnip's LogLevel",
+					"enum": [
+						"NO",
+						"DEBUG",
+						"INFO",
+						"WARN",
+						"ERROR"
+					],
 					"default": "NO"
+				},
+				"Vsnips.DisplayStrategy": {
+					"type": "string",
+					"description": "The Vsnip's display strategy",
+					"enum": [
+						"ALL",
+						"PREFIX"
+					],
+					"default": "ALL"
+				},
+				"Vsnips.trigers": {
+					"type": "array",
+					"description": "User's defined trigers, it is powerful but not recommanded",
+					"default": []
 				},
 				"Vsnips.VScodeVars": {
 					"type": "object",

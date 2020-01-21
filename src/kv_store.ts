@@ -62,6 +62,22 @@ let VarFiles: string[] = [
   // '/home/corvo/.vim/common.vim',
 ];
 
+/**
+ * 展示snippet的策略:
+ *  ALL: 表示每次均展示所有snippets
+ *  PREFIX: 表示只匹配前缀相同的snippet
+ *  TODO: Add other strategies.
+ */
+let DisplayStrategy: string = "ALL";
+
+/**
+ * 用户自定义的触发键位, 示例: ['v', 'V']
+ *
+ * 不推荐用户自定义, 会导致其他补全功能失效, 请查看:
+ *    https://github.com/corvofeng/Vsnips/commit/e2493bf9747b4e75a5c72d4fcfd07fe402de6f1e
+ */
+let Trigers: string[] = [];
+
 let UserScriptFiles: string[] = [];
 
 function DownloadSnips() {
@@ -95,8 +111,14 @@ function getLogLevel() {
     case "DEBUG":
       lvl = jsLogger.DEBUG;
       break;
-    case "DEBUG":
+    case "INFO":
       lvl = jsLogger.INFO;
+      break;
+    case "WARN":
+      lvl = jsLogger.WARN;
+      break;
+    case "ERROR":
+      lvl = jsLogger.ERROR;
       break;
     default:
       lvl = jsLogger.ERROR;
@@ -172,6 +194,19 @@ function getUserScriptFiles(): string[] {
   return UserScriptFiles;
 }
 
+function setDisplayStrategy(strategy: string) {
+  DisplayStrategy = strategy;
+}
+function getDisplayStrategy(): string {
+  return DisplayStrategy;
+}
+function setTrigers(trigers: string[]) {
+  Trigers = trigers;
+}
+function getTrigers(): string[] {
+  return Trigers;
+}
+
 export {
   // VsnipDir,
   // UltiSnipsDir,
@@ -185,5 +220,9 @@ export {
   clearSnipsDir,
   getUserScriptFiles,
   addUserScriptFiles,
+  setDisplayStrategy,
+  getDisplayStrategy,
+  setTrigers,
+  getTrigers,
   updateMultiWorkspaceSetting
 };

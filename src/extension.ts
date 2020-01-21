@@ -10,7 +10,9 @@ import {
   addVarfiles,
   clearSnipsDir,
   updateMultiWorkspaceSetting,
-  addUserScriptFiles
+  addUserScriptFiles,
+  setDisplayStrategy,
+  setTrigers
 } from "./kv_store";
 import { snippetManager, Snippet } from './snippet_manager';
 import { initVimVar, initTemplateFunc, initVSCodeVar } from "./script_tpl";
@@ -53,6 +55,16 @@ export async function activate(context: vscode.ExtensionContext) {
   initVSCodeVar(vscodeVars);
 
   initTemplateFunc();
+
+  // 获取展示策略
+  const displayStrategy = conf.get("Vsnips.DisplayStrategy", "ALL");
+  Logger.info("Get user display strategy:", displayStrategy);
+  setDisplayStrategy(displayStrategy);
+
+  // 获取触发键位
+  const trigers = conf.get("Vsnips.trigers", []);
+  Logger.info("Get user trigers:", displayStrategy);
+  setTrigers(trigers);
 
   generate(context);
 
