@@ -12,7 +12,7 @@
  */
 
 import { Logger } from "../logger";
-import { trim } from "../utils";
+import { trim } from "../util";
 
 
 

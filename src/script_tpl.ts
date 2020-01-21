@@ -21,7 +21,7 @@ import { parseTokenizer } from "./doc_parse/tokenize";
 import { PyFuncToken, TsFuncToken, GoFuncToken } from "./doc_parse/token_obj";
 import { BoxWatcher, Box } from "./box/box";
 import { VSnipWatcherArray } from "./vsnip_watcher";
-import { trim } from "./utils";
+import { trim } from "./util";
 import { Position, Range } from "vscode";
 
 let BUILDIN_MODULE = new Map();
@@ -173,6 +173,9 @@ function js_get_simple_box(vsContext: VSnipContext) {
   }
   // 找出前缀
   let prefix = trim(vsContext.getTextByShift(-1), ['\n']);
+  if (prefix.endsWith('vbox')) {
+    prefix = prefix.substring(0, prefix.length - 4);
+  }
 
   // 删除前缀, 因为之后会重新创建
   if (prefix !== "") {

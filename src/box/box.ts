@@ -1,8 +1,7 @@
 import { VSnipWatcher, VSnipWatcherArray } from "../vsnip_watcher";
 import * as vscode from "vscode";
 import { Logger } from "../logger";
-import { VSnipContext } from "../vsnip_context";
-import { trim, trimRight } from "../utils";
+import { trimRight } from "../util";
 
 class BoxWatcher extends VSnipWatcher {
 
@@ -17,7 +16,7 @@ class BoxWatcher extends VSnipWatcher {
     let ordChanges = [...changes];
 
     Logger.debug("Get update", ordChanges);
-    if (this.box.blockChanged) {
+    if (this.box.blockChanged) { // 防止循环调用
       this.box.blockChanged = false;
       return;
     }

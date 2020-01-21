@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Logger } from "./logger";
 
-export function longestMatchCharsFromStart(base: string, candidate: string) {
+function longestMatchCharsFromStart(base: string, candidate: string) {
   const minLen = Math.min(base.length, candidate.length);
   const matchedChars = [];
   for (let i = 0; i < minLen; i++) {
@@ -46,7 +46,7 @@ export function longestMatchCharsFromStart(base: string, candidate: string) {
  * doc (vscode.TextDocument): TODO
  * Returns: 真实的源码语言
  */
-export function checkLanguageId(doc: vscode.TextDocument): string {
+function checkLanguageId(doc: vscode.TextDocument): string {
   if (doc.languageId !== "plaintext") {
     // 已经存在的语言不做处理
     return doc.languageId;
@@ -116,15 +116,15 @@ export function checkLanguageId(doc: vscode.TextDocument): string {
   ];
 
   let p = doc.uri.path;
-  if (p.endsWith('.git')) { // remove '.git'
+  if (p.endsWith(".git")) { // remove '.git'
     p = p.substring(0, p.length - 4);
   }
   let languageId = doc.languageId;
 
   for (let i = 0; i < mappings.length; i++) {
     let [ext, langId, regexp] = mappings[i];
-    if(regexp) { // 如果有正则, 以正则匹配为准
-      if(regexp.match(p)) {
+    if (regexp) { // 如果有正则, 以正则匹配为准
+      if (regexp.match(p)) {
         languageId = langId;
         break;
       }
@@ -138,3 +138,56 @@ export function checkLanguageId(doc: vscode.TextDocument): string {
 
   return languageId;
 }
+
+/**
+ * str (string): TODO
+ * ch (string[]): TODO
+ * Returns: TODO
+ *
+ * Copy from: https://stackoverflow.com/a/55292366
+ *  trimAny('|hello|world   ', [ '|', ' ' ]); // => 'hello|world'
+ *  because '.indexOf' is used, you could also pass a string for the 2nd parameter:
+ *  trimAny('|hello| world  ', '| '); // => 'hello|world'
+ */
+function trim(str: string, ch: string[]) {
+  let start = 0;
+  let end = str.length;
+
+  while (start < end && ch.indexOf(str[start]) >= 0) {
+    ++start;
+  }
+
+  while (end > start && ch.indexOf(str[end - 1]) >= 0) {
+    --end;
+  }
+
+  return start > 0 || end < str.length ? str.substring(start, end) : str;
+}
+
+function trimLeft(str: string, ch: string[]) {
+  let start = 0;
+  let end = str.length;
+  while (start < end && ch.indexOf(str[start]) >= 0) {
+    ++start;
+  }
+
+  return start > 0 || end < str.length ? str.substring(start, end) : str;
+}
+
+function trimRight(str: string, ch: string[]) {
+  let start = 0;
+  let end = str.length;
+  while (end > start && ch.indexOf(str[end - 1]) >= 0) {
+    --end;
+  }
+  return start > 0 || end < str.length ? str.substring(start, end) : str;
+}
+
+
+export {
+  longestMatchCharsFromStart,
+  checkLanguageId,
+  trim,
+  trimLeft,
+  trimRight
+};
