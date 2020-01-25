@@ -164,8 +164,7 @@ endsnippet`,
       ]
     ];
 
-    const TEST_VAR_FILES = ["/home/corvo/.vim/common.vim"];
-    ScriptFunc.initVimVar(TEST_VAR_FILES);
+    ScriptFunc.initVSCodeVar(new Map([["author", "corvo"]])),
 
     TEST_CASE.forEach(([_t, _s]) => {
       const txt = _t as string;
