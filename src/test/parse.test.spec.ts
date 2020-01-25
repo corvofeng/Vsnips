@@ -1,34 +1,57 @@
 import * as ScriptFunc from "../script_tpl";
-import { parse } from "../parse";
+import { parse, Snippet } from "../parse";
 import { setLogLevel } from "../kv_store";
-import { InitLogger, Logger } from "../logger";
-
-// suite("Parser Tests", function() {
-//   test("Somethins 1", function() {
-//     parse("hello world");
-//   });
-// });
-
-// This is for unittest.
+import { InitLogger } from "../logger";
+import { expect } from "chai";
 
 describe("Parse ultisnips", () => {
-  const TEST_CASE = [
-    // simple snippets
-    `snippet gitig "Git add will ignore this"
+  beforeEach(done => {
+    setLogLevel("WARN");
+    InitLogger();
+    done();
+  });
+
+  it("parser", () => {
+    const TEST_CASE = [
+      // simple snippets
+      [
+        `snippet gitig "Git add will ignore this"
 ####### XXX: Can't GIT add [START] #########
 $1
 ####### XXX: Can't GIT add  [END]  #########
 endsnippet
-`,
-    // snippets with python
-    `snippet ifmain "ifmain" b
-if __name__ == \`!p snip.rv = get_quoting_style(snip)\`__main__\`!p snip.rv = get_quoting_style(snip)\`:
-  \${1:\${VISUAL:main()}}
-  \${2:\${VISUAL}}
-endsnippet`,
+      `,
+        new Snippet(
+          "gitig",
+          "Git add will ignore this",
+          "",
+          `####### XXX: Can't GIT add [START] #########
+$1
+####### XXX: Can't GIT add  [END]  #########`,
+          false
+        )
+      ],
 
-    // snippets with vim script
-    `snippet full_title "Python title fully"
+      // snippets with python
+      [
+        `snippet ifmain "ifmain" b
+if __name__ == \`!p snip.rv = get_quoting_style(snip)\`__main__\`!p snip.rv = get_quoting_style(snip)\`:
+    \${1:\${VISUAL:main()}}
+    \${2:\${VISUAL}}
+endsnippet`,
+        new Snippet(
+          "ifmain",
+          "ifmain",
+          "b",
+          `if __name__ == "__main__":
+    \${1:\${VISUAL:main()}}
+    $2`
+        )
+      ],
+
+      // snippets with vim script
+      [
+        `snippet full_title "Python title fully"
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim: ts=4 sw=4 tw=99 et:
@@ -40,25 +63,64 @@ endsnippet`,
 """
 
 endsnippet`,
+        new Snippet(
+          "full_title",
+          "Python title fully",
+          "",
+          `#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# vim: ts=4 sw=4 tw=99 et:
 
-    `snippet title "Hexo post header" b
+"""
+@Date   : $CURRENT_MONTH_NAME $CURRENT_DATE, $CURRENT_YEAR
+@Author : corvo
+
+"""
+`
+        )
+      ],
+
+      [
+        `snippet title "Hexo post header" b
 ---
 layout: post
 title: \`!p snip.rv = get_markdown_title(snip)\`
 date: \`!v strftime("%Y-%m-%d %H:%M:%S")\`
 author: \`!v g:snips_author\`
 tags:
-description: ${3}
+description: \${3}
 categories: Docs
 photos:
 toc: true
 
 ---
 
-${0}
+\${0}
 endsnippet`,
+        new Snippet(
+          "title",
+          "Hexo post header",
+          "b",
+          `---
+layout: post
+title: \`!js js_markdown_title\`
+date: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE $CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND
+author: corvo
+tags:
+description: \${3}
+categories: Docs
+photos:
+toc: true
 
-    `snippet class "class with docstrings" b
+---
+
+\${0}`,
+          true
+        )
+      ],
+
+      [
+        `snippet class "class with docstrings" b
 class \${1:MyClass}(\${2:object}):
 
   \`!p snip.rv = triple_quotes(snip)\`\${3:Docstring for $1. }\`!p snip.rv = triple_quotes(snip)\`
@@ -80,20 +142,37 @@ write_init_body(args, t[2], snip)
     $0
 endsnippet`,
 
-    `snippet vbox "box" w
+        new Snippet(
+          "class",
+          "class with docstrings",
+          "b",
+          `class \${1:MyClass}(\${2:object}):
+
+  """\${3:Docstring for $1. }"""
+
+  def __init__(self$4):
+    """\${5:TODO: to be defined.}"""
+    $0`
+        )
+      ],
+
+      [
+        `snippet vbox "box" w
 \`!p snip.rv = get_simple_box(snip)\`
-endsnippet`
-  ];
-  it("parser", () => {
+endsnippet`,
+        new Snippet("vbox", "box", "w", "`!js js_get_simple_box`", true)
+      ]
+    ];
+
     const TEST_VAR_FILES = ["/home/corvo/.vim/common.vim"];
     ScriptFunc.initVimVar(TEST_VAR_FILES);
-    setLogLevel("WARN");
-    InitLogger();
 
-    TEST_CASE.forEach((txt: string) => {
-      const snippet = parse(txt);
-      Logger.info(snippet);
+    TEST_CASE.forEach(([_t, _s]) => {
+      const txt = _t as string;
+      const snip = _s as Snippet;
+      const snippet = parse(txt)[0];
+
+      expect(snippet).deep.eq(snip);
     });
   });
-  // parse(TEST_CASE[TEST_CASE.length - 1]);
 });

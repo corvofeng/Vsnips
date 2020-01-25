@@ -1,6 +1,7 @@
 import { Logger } from "./logger";
 import { VSnipContext } from "./vsnip_context";
 import * as ScriptFunc from "./script_tpl";
+import { trim } from "./util";
 // import * as vscode from "vscode";
 
 const VIM_SNIPPET = /^snippet ([^\s]*)\s*(?:"(.*?)"(.*))?\n((?:.|\n)*?)\nendsnippet$/gm;
@@ -16,12 +17,12 @@ class Snippet {
   // 将body体中的js函数进行求值处理.
   public hasJSScript: boolean;
 
-  constructor() {
-    this.prefix = "";
-    this.body = "";
-    this.descriptsion = "";
-    this.hasJSScript = false;
-    this.options = "";
+  constructor(prefix="",  description="",  options="", body="", hasJSScript=false,) {
+    this.prefix = prefix;
+    this.body = body;
+    this.descriptsion = description;
+    this.hasJSScript = hasJSScript;
+    this.options = options;
   }
 
   public get_snip_body(vsContext: VSnipContext) {
@@ -45,13 +46,14 @@ class Snippet {
 function parse(rawSnippets: string): Snippet[] {
   let res = null;
   const snips: Snippet[] = [];
+  Logger.debug("start parse", rawSnippets);
   while ((res = VIM_SNIPPET.exec(rawSnippets)) !== null) {
     const [, prefix, description, options, body] = res;
 
     const snip = new Snippet();
     snip.prefix = prefix;
     snip.body = normalizePlaceholders(body);
-    snip.options = options;
+    snip.options = trim(options, [' ']);
     [snip.body, snip.hasJSScript] = lexParser(snip.body);
     snip.descriptsion = description;
 
