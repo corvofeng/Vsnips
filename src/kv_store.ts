@@ -17,7 +17,7 @@
 // import { Logger } from "./logger";
 
 import * as jsLogger from "js-logger";
-import * as request from "request";
+// import * as request from "request";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -44,8 +44,6 @@ if (!fs.existsSync(VsnipDir)) {
 if (!fs.existsSync(UltiSnipsDir)) {
   fs.mkdirSync(UltiSnipsDir);
 }
-
-const DeafultLang = ["lua", "c", "cpp", "all", "javascript", "python"];
 
 /**
  * 存放snippet片段的文件夹
@@ -80,24 +78,6 @@ let DisplayStrategy: string = "ALL";
 let Trigers: string[] = [];
 
 let UserScriptFiles: string[] = [];
-
-function DownloadSnips() {
-  // Download snippets from: https://github.com/honza/vim-snippets
-  DeafultLang.forEach((lang: string) => {
-    const snipfile = path.join(UltiSnipsDir, lang + ".snippets");
-    if (!fs.existsSync(snipfile)) {
-      // eslint-disable-next-line
-      console.log("Create file: ", snipfile);
-      const file = fs.createWriteStream(snipfile);
-      request
-        .get(
-          `https://raw.githubusercontent.com/honza/vim-snippets/master/UltiSnips/${lang}.snippets`,
-        )
-        .pipe(file);
-    }
-  });
-}
-DownloadSnips();
 
 // 日志级别, NO表示不打印日志
 let LogLevel = "NO";

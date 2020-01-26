@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+import * as path from "path";
 import { Logger, InitLogger } from "./logger";
 import { generate, expandSnippet } from "./generate";
 import {
@@ -8,7 +9,6 @@ import {
   addSnipsDir,
   getVarfiles,
   addVarfiles,
-  clearSnipsDir,
   updateMultiWorkspaceSetting,
   addUserScriptFiles,
   setDisplayStrategy,
@@ -25,12 +25,12 @@ export async function activate(context: vscode.ExtensionContext) {
   setLogLevel(VsnipLogLvl);
   InitLogger();
 
-  Logger.info('Congratulations, your extension "Vsnips" is now active!');
+  Logger.info(`Congratulations, your extension "Vsnips" (${context.extensionPath}) is now active!`);
 
   const useDefaultSnips = conf.get("Vsnips.UseDefaultSnips", true);
-  if (!useDefaultSnips) {
-    Logger.warn("Currently we don't use the default snips dir.");
-    clearSnipsDir();
+  if(useDefaultSnips) {
+    const UltiSnipsDir = path.join(context.extensionPath, "Ultisnips");
+    addSnipsDir([UltiSnipsDir]);
   }
 
   // 添加snips文件夹
