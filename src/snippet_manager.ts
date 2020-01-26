@@ -60,8 +60,12 @@ export class SnippetManager {
       const fileContent = fs.readFileSync(snipFile, "utf8");
 
       // 如果 snippet中有extends语句, 根据 snippetsFilePath 查找同目录的 parent .snippets 文件
-      const fileSnippets = parse(fileContent);
-      snippets.push(...fileSnippets);
+      try {
+        const fileSnippets = parse(fileContent);
+        snippets.push(...fileSnippets);
+      } catch (error) {
+        Logger.error(`Parse ${snipFile} with error: ${error}`);
+      }
     });
 
     // Add the vdoc snippets for current file type, a little ugly.

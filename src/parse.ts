@@ -11,7 +11,7 @@ class Snippet {
   public prefix: string;
   public body: string;
   public descriptsion: string;
-  public options: string;
+  public vimOptions: string;
 
   // 标记snip中是否有js函数, 如果有js占位函数的, 需要在补全时再进行一次求值操作
   // 将body体中的js函数进行求值处理.
@@ -22,7 +22,13 @@ class Snippet {
     this.body = body;
     this.descriptsion = description;
     this.hasJSScript = hasJSScript;
-    this.options = options;
+    this.vimOptions = options;
+
+    Logger.debug(`prefix:  "${this.prefix}"`);
+    Logger.debug(`description: "${this.descriptsion}"`);
+    Logger.debug(`options: "${this.vimOptions}"`);
+    Logger.debug("body: ", this.body);
+    Logger.debug("hasJSScript: ", this.hasJSScript);
   }
 
   public get_snip_body(vsContext: VSnipContext) {
@@ -39,6 +45,7 @@ class Snippet {
     } else {
       rlt = this.body;
     }
+    Logger.debug("Get snippet", rlt);
     return rlt;
   }
 }
@@ -50,17 +57,20 @@ function parse(rawSnippets: string): Snippet[] {
   while ((res = VIM_SNIPPET.exec(rawSnippets)) !== null) {
     const [, prefix, description, options, body] = res;
 
-    const snip = new Snippet();
-    snip.prefix = prefix;
-    snip.body = normalizePlaceholders(body);
-    snip.options = trim(options, [' ']);
-    [snip.body, snip.hasJSScript] = lexParser(snip.body);
-    snip.descriptsion = description;
+    const _prefix = prefix;
+    const _b = normalizePlaceholders(body);
+    const _options = trim(options, [" "]);
+    const [_body, _hasJSScript] = lexParser(_b);
+    const _descriptsion  = description;
 
-    Logger.debug("prefix: ", snip.prefix);
-    Logger.debug("description: ", snip.descriptsion);
-    Logger.debug("body: ", snip.body);
-    Logger.debug("hasJSScript: ", snip.hasJSScript);
+    const snip = new Snippet(
+      _prefix,
+      _descriptsion,
+      _options,
+      _body,
+      _hasJSScript,
+    );
+
     snips.push(snip);
   }
   return snips;

@@ -149,6 +149,8 @@ function checkLanguageId(doc: vscode.TextDocument): string {
  *  trimAny('|hello| world  ', '| '); // => 'hello|world'
  */
 function trim(str: string, ch: string[]) {
+  if(str === undefined) return "";
+
   let start = 0;
   let end = str.length;
 
@@ -164,6 +166,7 @@ function trim(str: string, ch: string[]) {
 }
 
 function trimLeft(str: string, ch: string[]) {
+  if(str === undefined) return "";
   let start = 0;
   const end = str.length;
   while (start < end && ch.indexOf(str[start]) >= 0) {
@@ -174,6 +177,7 @@ function trimLeft(str: string, ch: string[]) {
 }
 
 function trimRight(str: string, ch: string[]) {
+  if(str === undefined) return "";
   const start = 0;
   let end = str.length;
   while (end > start && ch.indexOf(str[end - 1]) >= 0) {
