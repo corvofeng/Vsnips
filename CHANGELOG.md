@@ -1,5 +1,24 @@
 # Change Log
 
+## [0.3.4] - 2020-01-26
+
+- Add `vbox` support.
+- Modify travis ci.
+- Add options for display strategy and trigers.
+- Use eslint as linter.
+
+## [0.3.1] - 2020-01-24
+
+- Add syntax highlight for 'extends' keyword.
+- Merget some PR from [hikerpig](https://github.com/hikerpig).
+- Change CompletionItem behavior, only evaluates it when command is triggered.
+- Remove `triggerCharacters` that passed to registerCompletionItemProvider.
+
+## [0.2.9] - 2019-12-15
+
+- Add doc support for golang.
+- Fix some TypeScript parse error.
+
 ## [0.2.6] - 2019-11-27
 
 - Add doc support for Python and TypeScript.
