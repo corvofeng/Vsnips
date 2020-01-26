@@ -231,6 +231,7 @@ function initVimVar(varFiles: string[]) {
 }
 
 function initVSCodeVar(vscodeVars: Map<string, string>) {
+  Logger.info(VIM_VARS_MAP);
   vscodeVars.forEach((varValue: string, varKey: string) => {
     Logger.debug("Get VSCode var key:", varKey, "var value:", varValue);
     VIM_VARS_MAP.set(varKey, varValue);
@@ -245,6 +246,10 @@ function getVimVar(name: string, defaultValue: string = "") {
   }
 
   return VIM_VARS_MAP.get(name) || defaultValue;
+}
+
+function clearVimVar() {
+  VIM_VARS_MAP.clear();
 }
 
 function initTemplateFunc() {
@@ -289,4 +294,5 @@ export {
   initTemplateFunc,
   getTemplateFunc,
   initVSCodeVar,
+  clearVimVar,
 };

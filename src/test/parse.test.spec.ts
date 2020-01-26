@@ -8,6 +8,8 @@ describe("Parse ultisnips", () => {
   beforeEach(done => {
     setLogLevel("WARN");
     InitLogger();
+    // 需要删除变量设置
+    ScriptFunc.clearVimVar();
     done();
   });
 
@@ -164,14 +166,13 @@ endsnippet`,
       ]
     ];
 
-    ScriptFunc.initVSCodeVar(new Map([["author", "corvo"]])),
+    ScriptFunc.initVSCodeVar(new Map([["snips_author", "corvo"]])),
+      TEST_CASE.forEach(([_t, _s]) => {
+        const txt = _t as string;
+        const snip = _s as Snippet;
+        const snippet = parse(txt)[0];
 
-    TEST_CASE.forEach(([_t, _s]) => {
-      const txt = _t as string;
-      const snip = _s as Snippet;
-      const snippet = parse(txt)[0];
-
-      expect(snippet).deep.eq(snip);
-    });
+        expect(snippet).deep.eq(snip);
+      });
   });
 });
