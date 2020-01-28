@@ -213,12 +213,28 @@ describe("Tokenize", () => {
 
   it("Parse golang function", () => {
     const TEST_JS_AND_TS_FUNCS = [
-      [ // 简单的JS函数
+      [ // 简单的Go函数
         ["func add(x int, y int) int {", "golang"],
         [new GoFuncToken(
           "add",
           [new FuncArg("x", "int"), new FuncArg("y", "int")],
           [new FuncArg("", "int")],
+        )],
+      ],
+      [ // 没有参数的Go函数
+        ["func add() int {", "golang"],
+        [new GoFuncToken(
+          "add",
+          [],
+          [new FuncArg("", "int")],
+        )],
+      ],
+      [ // 没有返回值的Go函数
+        ["func add() {", "golang"],
+        [new GoFuncToken(
+          "add",
+          [],
+          [],
         )],
       ],
       [

@@ -199,13 +199,19 @@ function goTokenizer(defs: string): GoFuncToken | undefined {
     return undefined;
   }
   Logger.debug("Get match", match);
+  let tokArgs: string[] = [];
+  let tokRets: string[] = [];
   let [, tokType, sPointer, tokName, tokArgsRaw, tokRetRaw] = match;
   if (tokArgsRaw === undefined) {
-    Logger.warn(tokType, sPointer, tokName, tokArgsRaw, tokRetRaw);
-    return undefined;
+    // Logger.warn(tokType, sPointer, tokName, tokArgsRaw, tokRetRaw);
+    tokArgs = [];
+  } else {
+    tokArgs = tokArgsRaw.split(',');
   }
   if (tokRetRaw === undefined) {
-    tokRetRaw = '';
+    tokRets = [];
+  } else {
+    tokRets = tokRetRaw.split(',');
   }
 
   {
@@ -217,11 +223,9 @@ function goTokenizer(defs: string): GoFuncToken | undefined {
   }
 
   return new GoFuncToken(tokName,
-    GoFuncToken.constructArgFromTokens(tokArgsRaw.split(',')),
-    GoFuncToken.constructRetFromTokens(tokRetRaw.split(',')),
+    GoFuncToken.constructArgFromTokens(tokArgs),
+    GoFuncToken.constructRetFromTokens(tokRets),
   );
-
-  return undefined;
 }
 
 function parseTokenizer(defs: string, defsType: string) {
