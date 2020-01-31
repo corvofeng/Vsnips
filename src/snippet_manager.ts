@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { walkSync } from 'walk'
+import { walkSync } from 'walk';
 import { getSnipsDirs } from "./kv_store";
 import { parse, Snippet } from "./parse";
 import { Logger } from "./logger";
@@ -15,7 +15,7 @@ type SnipFileEntry = {
    * 相对于 SnipsDir 的路径
    */
   shortPath: string
-}
+};
 
 export class SnippetManager {
   /**
@@ -25,7 +25,7 @@ export class SnippetManager {
   /**
    * All `.snippet` in snips dirs
    */
-  protected snipFileEntries: SnipFileEntry[] = []
+  protected snipFileEntries: SnipFileEntry[] = [];
 
   public addLanguage(language: string) {
     if (!this.snippetsByLanguage.get(language)) {
@@ -37,8 +37,8 @@ export class SnippetManager {
   }
 
   public init() {
-    this.refreshSnipFilePaths()
-    this.initDefaultLanguage()
+    this.refreshSnipFilePaths();
+    this.initDefaultLanguage();
   }
 
   protected initDefaultLanguage() {
@@ -60,32 +60,32 @@ export class SnippetManager {
    * 为了避免多次遍历文件系统，此处提前全部遍历一遍，记录所有 snippet 文件路径
    */
   protected refreshSnipFilePaths() {
-    const fileEntries: SnipFileEntry[] = []
-    getSnipsDirs().forEach((snipDir) => {
+    const fileEntries: SnipFileEntry[] = [];
+    getSnipsDirs().forEach(snipDir => {
       walkSync(snipDir, {
         listeners: {
           names(base, names, next) {
-            const relToSnipDir = path.relative(snipDir, base)
-            const shouldIgnore = relToSnipDir[0] === '.' // ignore dot files like '.git'
+            const relToSnipDir = path.relative(snipDir, base);
+            const shouldIgnore = relToSnipDir[0] === "."; // ignore dot files like '.git'
             if (!shouldIgnore) {
               const localEntries = names
-                .filter((name) => {
-                  return path.extname(name) === '.snippets'
+                .filter(name => {
+                  return path.extname(name) === ".snippets";
                 })
-                .map((name) => {
+                .map(name => {
                   return {
                     fullPath: path.join(base, name),
-                    shortPath: path.join(relToSnipDir, name),
-                  }
-                })
-              fileEntries.push(...localEntries)
-              next()
+                    shortPath: path.join(relToSnipDir, name)
+                  };
+                });
+              fileEntries.push(...localEntries);
+              next();
             }
           }
         }
-      })
-    })
-    this.snipFileEntries = fileEntries
+      });
+    });
+    this.snipFileEntries = fileEntries;
   }
 
   /**
@@ -95,19 +95,19 @@ export class SnippetManager {
     const snippets: Snippet[] = [];
 
     const snippetFilePaths = this.snipFileEntries.reduce((out: string[], entry) => {
-      let shouldAdd = false
-      const { shortPath, fullPath } = entry
+      let shouldAdd = false;
+      const { shortPath, fullPath } = entry;
       if (shortPath.startsWith(fileType)) {
-        const rest = shortPath.substr(fileType.length)
+        const rest = shortPath.substr(fileType.length);
         // @see https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt#L522
-        if (['/', '_', '.'].includes(rest[0])) {
-          shouldAdd = true
+        if (["/", "_", "."].includes(rest[0])) {
+          shouldAdd = true;
         }
       }
       if (shouldAdd && fs.existsSync(fullPath)) {
-        out.push(fullPath)
+        out.push(fullPath);
       }
-      return out
+      return out;
     }, []);
 
     snippetFilePaths.forEach((snipFile) => {
