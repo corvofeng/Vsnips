@@ -12,7 +12,7 @@ import { getTrigers, getDisplayStrategy } from "./kv_store";
 // }
 
 export function generate(context: vscode.ExtensionContext) {
-  snippetManager.initDefaultLanguage();
+  snippetManager.init()
 
   const triger = getTrigers();
   const displayStrategy = getDisplayStrategy();

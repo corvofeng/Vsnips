@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { walkSync } from 'walk'
 import { getSnipsDirs } from "./kv_store";
 import { parse, Snippet } from "./parse";
 import { Logger } from "./logger";
@@ -8,11 +9,23 @@ export {
   Snippet,
 };
 
+type SnipFileEntry = {
+  fullPath: string
+  /**
+   * 相对于 SnipsDir 的路径
+   */
+  shortPath: string
+}
+
 export class SnippetManager {
   /**
    * 记录某语言已经解析过的 Snippet
    */
   protected snippetsByLanguage = new Map<string, Snippet[]>();
+  /**
+   * All `.snippet` in snips dirs
+   */
+  protected snipFileEntries: SnipFileEntry[] = []
 
   public addLanguage(language: string) {
     if (!this.snippetsByLanguage.get(language)) {
@@ -23,7 +36,12 @@ export class SnippetManager {
     }
   }
 
-  public initDefaultLanguage() {
+  public init() {
+    this.refreshSnipFilePaths()
+    this.initDefaultLanguage()
+  }
+
+  protected initDefaultLanguage() {
     this.addLanguage("all");
   }
 
@@ -38,22 +56,58 @@ export class SnippetManager {
   }
 
   /**
+   * 查找某语言的 snippet 文件需要稍微多一点的 pattern matching （见 doAddLanguageType）
+   * 为了避免多次遍历文件系统，此处提前全部遍历一遍，记录所有 snippet 文件路径
+   */
+  protected refreshSnipFilePaths() {
+    const fileEntries: SnipFileEntry[] = []
+    getSnipsDirs().forEach((snipDir) => {
+      walkSync(snipDir, {
+        listeners: {
+          names(base, names, next) {
+            const relToSnipDir = path.relative(snipDir, base)
+            const shouldIgnore = relToSnipDir[0] === '.' // ignore dot files like '.git'
+            if (!shouldIgnore) {
+              const localEntries = names
+                .filter((name) => {
+                  return path.extname(name) === '.snippets'
+                })
+                .map((name) => {
+                  return {
+                    fullPath: path.join(base, name),
+                    shortPath: path.join(relToSnipDir, name),
+                  }
+                })
+              fileEntries.push(...localEntries)
+              next()
+            }
+          }
+        }
+      })
+    })
+    this.snipFileEntries = fileEntries
+  }
+
+  /**
    * 遍历 snips dirs 寻找对应语言的 snippets 文件并解析
    */
   protected doAddLanguageType(fileType: string) {
     const snippets: Snippet[] = [];
-    const snippetFilePaths = getSnipsDirs().reduce((out: string[], snipDir) => {
-      const snipFileNames = [`${fileType}.snippets`];
-      for (let i = 0; i < snipFileNames.length; i++) {
-        const snipFile = path.join(snipDir, snipFileNames[i]);
-        Logger.info("Currently want search:", snipFile);
-        if (!fs.existsSync(snipFile)) {
-          Logger.warn(`The ${snipFile} not exists!!`);
-          continue;
+
+    const snippetFilePaths = this.snipFileEntries.reduce((out: string[], entry) => {
+      let shouldAdd = false
+      const { shortPath, fullPath } = entry
+      if (shortPath.startsWith(fileType)) {
+        const rest = shortPath.substr(fileType.length)
+        // @see https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt#L522
+        if (['/', '_', '.'].includes(rest[0])) {
+          shouldAdd = true
         }
-        out.push(snipFile);
       }
-      return out;
+      if (shouldAdd && fs.existsSync(fullPath)) {
+        out.push(fullPath)
+      }
+      return out
     }, []);
 
     snippetFilePaths.forEach((snipFile) => {
