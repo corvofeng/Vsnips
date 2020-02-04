@@ -19,7 +19,7 @@ import { USER_MODULE, jsParser } from "../user_script";
 
 describe("User script spec", () => {
   beforeEach(done => {
-    setLogLevel("DEBUG");
+    setLogLevel("WARNING");
     InitLogger();
     done();
   });

@@ -219,7 +219,13 @@ function vimRewrite(stmt: string) {
     stmt = ScriptFunc.getVimVar(variableName);
   } else if (expandPattern.test(stmt)) {
     const [, expandExpr] = expandPattern.exec(stmt) as RegExpExecArray;
-    Logger.info("Get expand expr", expandExpr);
+    Logger.debug("Get expand expr", expandExpr);
+    let func = ScriptFunc.getTemplateFunc('get_vim_expand');
+    try {
+      stmt = func(expandExpr);
+    } catch (error) {
+        Logger.error("Process vim expand", error);
+    }
   } else {
     Logger.warn("Can't parse", stmt);
   }
@@ -245,11 +251,11 @@ function jsFuncEval(snip: string, vsContext: VSnipContext) {
 
   let res = null;
   // eslint-disable-next-line
-  const JS_SNIP_FUNC_PATTERN = /`!js (\w+)\`/g;
+  const JS_SNIP_FUNC_PATTERN = /`!js (\w+)( \[.*\])?\`/g;
 
   while ((res = JS_SNIP_FUNC_PATTERN.exec(snip)) !== null) {
-    const [pattern, funcName] = res as RegExpExecArray;
-    Logger.info("Get js func", pattern, funcName);
+    const [pattern, funcName, funcArgs] = res as RegExpExecArray;
+    Logger.info("Get js func", pattern, funcName, funcArgs);
     // let func = (ScriptFunc as any)[func_name as string];
     const func = ScriptFunc.getTemplateFunc(funcName);
     if (func === null) {
@@ -258,7 +264,12 @@ function jsFuncEval(snip: string, vsContext: VSnipContext) {
     }
     let funcRlt = "";
     try {
-      funcRlt = func(vsContext);
+      let args: string[] = [];
+      if (funcArgs !== undefined) {
+        // eslint-disable-next-line
+        args = (eval(funcArgs) as string[]);
+      }
+      funcRlt = func.call(undefined, vsContext, ...args);
     } catch (e) {
       Logger.error("In js func", e);
       return snip;

@@ -12,9 +12,17 @@
  */
 
 import { expect } from "chai";
-import { var_parser, getVimVar, jsFuncDecorator } from "../script_tpl";
-import { InitLogger, Logger } from "../logger";
+import {
+  var_parser,
+  getVimVar,
+  jsFuncDecorator,
+  initTemplateFunc,
+  getTemplateFunc
+} from "../script_tpl";
+import { InitLogger } from "../logger";
 import { setLogLevel } from "../kv_store";
+import { VSnipContext } from "../vsnip_context";
+import * as vscode from "vscode";
 
 describe("Parse vim config", () => {
   beforeEach(done => {
@@ -77,6 +85,58 @@ describe("Parse vim config", () => {
     TEST_VARS.forEach(varDef => {
       const [fName, fArgs, ret] = varDef;
       expect(jsFuncDecorator(fName as string, fArgs as string[])).eq(ret);
+    });
+  });
+
+  it("Test vscode context", () => {
+    const ExampleVSCntext = new VSnipContext(
+      {
+        uri: vscode.Uri.parse("/home/corvo/Project/WebTools/README.md"),
+        fileName: "/home/corvo/Project/WebTools/README.md",
+        isUntitled: false,
+        languageId: "markdown",
+        version: 8,
+        isClosed: false,
+        isDirty: true,
+        eol: 1,
+        lineCount: 1
+      } as vscode.TextDocument,
+      {
+        line: 0,
+        character: 1
+      } as vscode.Position,
+      {} as vscode.CancellationToken,
+      {} as vscode.CompletionContext
+    );
+
+    initTemplateFunc();
+    const func = getTemplateFunc("js_markdown_title");
+    expect(func(ExampleVSCntext)).eq("README");
+  });
+
+  it("Test js_get_vim_expand", () => {
+    initTemplateFunc();
+    const func = getTemplateFunc("js_get_vim_expand");
+
+    const TEST_VARS = [
+      ["", "", ""],
+      ["/abc/def/my.txt", "%:p:h", "/abc/def"],
+      ["/abc/def/my.txt", "%:p:h:t", "def"],
+      ["/abc/def/my.txt", "%:r", "my"],
+    ];
+    TEST_VARS.forEach(([_fn, _arg, _rlt]) => {
+      const exampleVSCntext = new VSnipContext(
+        {
+          fileName: _fn,
+        } as vscode.TextDocument,
+        {
+          line: 0,
+          character: 1
+        } as vscode.Position,
+        {} as vscode.CancellationToken,
+        {} as vscode.CompletionContext
+      );
+      expect(func(exampleVSCntext, _arg)).eq(_rlt);
     });
   });
 });

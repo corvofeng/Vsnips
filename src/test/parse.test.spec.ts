@@ -3,6 +3,8 @@ import { parse, Snippet } from "../parse";
 import { setLogLevel } from "../kv_store";
 import { InitLogger } from "../logger";
 import { expect } from "chai";
+import { VSnipContext } from "../vsnip_context";
+import * as vscode from "vscode";
 
 describe("Parse ultisnips", () => {
   beforeEach(done => {
@@ -164,12 +166,18 @@ endsnippet`,
 endsnippet`,
         new Snippet("vbox", "box", "w", "`!js js_get_simple_box`", true)
       ],
-//       [
-//         `snippet cwfn "console with current filename"
-// console.log('[\${1:\`!v expand('%:r')\`}]', $2)
-// endsnippet`,
-//         new Snippet("cwfn", "console with current filename", "", "", true)
-//       ]
+      [
+        `snippet cwfn "console with current filename"
+console.log('[\${1:\`!v expand('%:r')\`}]', $2)
+endsnippet`,
+        new Snippet(
+          "cwfn",
+          "console with current filename",
+          "",
+          "console.log('[${1:`!js js_get_vim_expand [\"%:r\"]`}]', $2)",
+          true
+        )
+      ]
     ];
 
     ScriptFunc.initVSCodeVar(new Map([["snips_author", "corvo"]])),
@@ -180,5 +188,36 @@ endsnippet`,
 
         expect(snippet).deep.eq(snip);
       });
+  });
+  it("Test js func eval", () => {
+    // 测试带有参数的js函数
+    const ExampleVSCntext = new VSnipContext(
+      {
+        uri: vscode.Uri.parse("/home/corvo/Project/WebTools/README.md"),
+        fileName: "/home/corvo/Project/WebTools/README.md",
+        isUntitled: false,
+        languageId: "markdown",
+        version: 8,
+        isClosed: false,
+        isDirty: true,
+        eol: 1,
+        lineCount: 1
+      } as vscode.TextDocument,
+      {
+        line: 0,
+        character: 1
+      } as vscode.Position,
+      {} as vscode.CancellationToken,
+      {} as vscode.CompletionContext
+    );
+    const TEST_VARS = [
+      ["title: `!js js_markdown_title`", "title: README"],
+      ["console.log('[${1:`!js js_get_vim_expand [\"%:r\"]`}]', $2)", "console.log('[${1:README}]', $2)"]
+    ];
+    ScriptFunc.initTemplateFunc();
+    TEST_VARS.forEach(([_snip, _rlt]) => {
+      const snip = new Snippet("", "", "", _snip, true);
+      expect(snip.get_snip_body(ExampleVSCntext)).eq(_rlt);
+    });
   });
 });

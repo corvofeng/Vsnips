@@ -127,9 +127,83 @@ function js_python_doc(vsContext: VSnipContext) {
   if (rlt !== undefined) {
     snipData = rlt.getSnip(get_python_doc_style());
   }
-  return triple_quotes() + "\n" +
-    snipData + "\n" +
-    triple_quotes();
+  return triple_quotes() + "\n" + snipData + "\n" + triple_quotes();
+}
+
+function get_vim_expand(args: string) {
+  return jsFuncDecorator("js_get_vim_expand", [args]);
+}
+
+/**
+ * 展开expand变量, 请查看:
+ *   https://vim.fandom.com/wiki/Get_the_name_of_the_current_file
+ *   https://github.com/vim/vim/blob/master/runtime/doc/eval.txt#L4170
+ *   vim -c "help expand"
+ * 当前在VSCode中仅支持 '%'
+ *
+ *  Currently only support
+ * vsContext (VSnipContext): TODO
+ * expandArg (string): TODO
+ * Returns: TODO
+ */
+function js_get_vim_expand(vsContext: VSnipContext, expandArg: string) {
+  // 			%		current file name
+  // 		#		alternate file name
+  // 		#n		alternate file name n
+  // 		<cfile>		file name under the cursor
+  // 		<afile>		autocmd file name
+  // 		<abuf>		autocmd buffer number (as a String!)
+  // 		<amatch>	autocmd matched name
+  // 		<sfile>		sourced script file or function name
+  // 		<slnum>		sourced script line number or function
+  // 				line number
+  // 		<sflnum>	script file line number, also when in
+  // 				a function
+  // 		<cword>		word under the cursor
+  // 		<cWORD>		WORD under the cursor
+  // 		<client>	the {clientid} of the last received
+  // 				message |server2client()|
+  // 	Modifiers:
+  // 		:p		expand to full path
+  // 		:h		head (last path component removed)
+  // 		:t		tail (last path component only)
+  // 		:r		root (one extension removed)
+  // 		:e		extension only
+  Logger.debug("Get expand arg", expandArg);
+
+
+  let stmt = "";
+  const CUR_FILE_NAME="%";
+
+  if (expandArg.startsWith(CUR_FILE_NAME)) {  // %
+    stmt = vsContext.document.fileName;
+    const modifiers = expandArg.substr(CUR_FILE_NAME.length);
+    for(let i = 0; i < modifiers.length; i+=2) {
+      const modifer = modifiers.substr(i, 2);
+      switch (modifer) {
+        case ":p":
+          break;
+        case ":h":
+          stmt = path.dirname(stmt);
+          break;
+        case ":t":
+          stmt = path.basename(stmt);
+          break;
+        case ":r":
+          stmt = path.basename(stmt, path.extname(stmt));
+          break;
+        case ":e":
+          stmt = path.extname(stmt);
+          break;
+        default:
+          Logger.warn("Cant process:", modifer);
+          break;
+      }
+    }
+  } else {
+    Logger.warn("Currently not support expand arg", expandArg);
+  }
+  return stmt;
 }
 
 function js_typescript_doc(vsContext: VSnipContext) {
@@ -281,6 +355,8 @@ function initTemplateFunc() {
   BUILDIN_MODULE.set("js_get_simple_box", js_get_simple_box);
   BUILDIN_MODULE.set("js_go_doc", js_go_doc);
   BUILDIN_MODULE.set("get_go_doc", get_go_doc);
+  BUILDIN_MODULE.set("get_vim_expand", get_vim_expand);
+  BUILDIN_MODULE.set("js_get_vim_expand", js_get_vim_expand);
   jsParser(getUserScriptFiles());
 }
 
