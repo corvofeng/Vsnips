@@ -34,10 +34,26 @@ const  DOUBLE_QUOTES = "\"";
 
 const  VIM_VARS_MAP: Map<string, string> = new Map();
 
-// jsFuncDecorator 与jsFuncEval配合使用
-// jsFuncDecorator将函数指针转换为字符串装载
-function jsFuncDecorator(funcName: string) {
-  return `\`!js ${funcName}\``;
+/**
+ * jsFuncDecorator将函数指针转换为字符串装载
+ * 参数使用eval的主要原因是不想自己去处理转义字符带来的问题
+ *
+ * 参数为空, 直接返回装饰结果
+ * 参数不为空, 返回一个可以被eval解析的参数列表
+ *
+ * 示例:
+ *    参数: js_get_simple_box, []
+ *    返回值: `js js_get_simple_box`
+ *
+ *    参数: js_get_simple_box ["arg1", "arg2", "arg3"]
+ *    返回值: `!js js_get_simple_box ["arg1","arg2","arg3"]`
+ */
+function jsFuncDecorator(funcName: string, args: string[]=[]) {
+  if (args.length == 0) {
+    return `\`!js ${funcName}\``;
+  } else {
+    return `\`!js ${funcName} ["${args.join('","')}"]\``;
+  }
 }
 
 function get_quoting_style() {

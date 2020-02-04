@@ -12,13 +12,12 @@
  */
 
 import { expect } from "chai";
-import { var_parser, getVimVar } from "../script_tpl";
-import { InitLogger } from "../logger";
+import { var_parser, getVimVar, jsFuncDecorator } from "../script_tpl";
+import { InitLogger, Logger } from "../logger";
 import { setLogLevel } from "../kv_store";
 
-
 describe("Parse vim config", () => {
-  beforeEach((done) => {
+  beforeEach(done => {
     setLogLevel("WARN");
     InitLogger();
     done();
@@ -32,20 +31,52 @@ describe("Parse vim config", () => {
       [`let g:snips_author="corvo"`, "snips_author", "corvo"],
 
       // string with single quotes
-      [`let g:ale_echo_msg_error_str = 'Error'`, "ale_echo_msg_error_str", "Error"],
+      [
+        `let g:ale_echo_msg_error_str = 'Error'`,
+        "ale_echo_msg_error_str",
+        "Error"
+      ],
 
       // string with single quotes
-      [`let g:ale_cpp_clangtidy_options = "p ./build/"`, "ale_cpp_clangtidy_options", "p ./build/"],
+      [
+        `let g:ale_cpp_clangtidy_options = "p ./build/"`,
+        "ale_cpp_clangtidy_options",
+        "p ./build/"
+      ],
 
       // string with comments
-      [`let g:winManagerWindowLayout='NERDTree|TagList' "BufExplorer`, "winManagerWindowLayout", "NERDTree|TagList"],
+      [
+        `let g:winManagerWindowLayout='NERDTree|TagList' "BufExplorer`,
+        "winManagerWindowLayout",
+        "NERDTree|TagList"
+      ],
 
-      [`let g:ultisnips_python_style="google"       " python注释风格`, "ultisnips_python_style", "google"],
+      [
+        `let g:ultisnips_python_style="google"       " python注释风格`,
+        "ultisnips_python_style",
+        "google"
+      ]
     ];
-    TEST_VARS.forEach((varDef) => {
+    TEST_VARS.forEach(varDef => {
       const [express, key, value] = varDef;
       var_parser(express as string);
       expect(getVimVar(key as string) === value);
+    });
+  });
+
+  it("Test js func decorator", () => {
+    InitLogger();
+    const TEST_VARS = [
+      ["js_get_simple_box", [], "`!js js_get_simple_box`"],
+      [
+        "js_get_simple_box",
+        ["arg1", "arg2", "arg3"],
+        '`!js js_get_simple_box ["arg1","arg2","arg3"]`'
+      ]
+    ];
+    TEST_VARS.forEach(varDef => {
+      const [fName, fArgs, ret] = varDef;
+      expect(jsFuncDecorator(fName as string, fArgs as string[])).eq(ret);
     });
   });
 });
