@@ -190,6 +190,7 @@ function vimRewrite(stmt: string) {
   // 匹配时间打印函数
   const timeFuncPattern = /strftime\("(.+)"\)/;
   const variablePattern = /g:(\w*)/;
+  const expandPattern = /expand\(['"](.+)['"]\)/;
 
   if (timeFuncPattern.test(stmt)) {
     const [, tFmt] = timeFuncPattern.exec(stmt) as RegExpExecArray;
@@ -216,6 +217,11 @@ function vimRewrite(stmt: string) {
     const [, variableName] = variablePattern.exec(stmt) as RegExpExecArray;
     Logger.debug("Get var", variableName);
     stmt = ScriptFunc.getVimVar(variableName);
+  } else if (expandPattern.test(stmt)) {
+    const [, expandExpr] = expandPattern.exec(stmt) as RegExpExecArray;
+    Logger.info("Get expand expr", expandExpr);
+  } else {
+    Logger.warn("Can't parse", stmt);
   }
 
   return stmt;

@@ -10,6 +10,7 @@
  *      Author: corvo
  *=======================================================================
  */
+
 import { Logger } from "./logger";
 import * as fs from "fs";
 // import { jsFuncDecorator as funcDecorator } from "./script_tpl";
@@ -61,17 +62,6 @@ function jsParser(userScriptFiles: string[]) {
       USER_MODULE.set(funcName, (userJSFunc as any)[funcName]);
     });
   });
-}
-
-function main() {
-// 允许用户定义自己的函数
-  const testScriptfiles = ["./example/func.js"];
-  jsParser(testScriptfiles);
-  Logger.info("Get user module", USER_MODULE);
-}
-
-if (require.main === module) {
-  main();
 }
 
 export { jsParser, USER_MODULE };

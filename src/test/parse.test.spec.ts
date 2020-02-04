@@ -163,7 +163,13 @@ endsnippet`,
 \`!p snip.rv = get_simple_box(snip)\`
 endsnippet`,
         new Snippet("vbox", "box", "w", "`!js js_get_simple_box`", true)
-      ]
+      ],
+//       [
+//         `snippet cwfn "console with current filename"
+// console.log('[\${1:\`!v expand('%:r')\`}]', $2)
+// endsnippet`,
+//         new Snippet("cwfn", "console with current filename", "", "", true)
+//       ]
     ];
 
     ScriptFunc.initVSCodeVar(new Map([["snips_author", "corvo"]])),
