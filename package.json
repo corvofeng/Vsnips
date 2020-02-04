@@ -4,7 +4,7 @@
 	"description": "Ultisnips for vscode",
 	"icon": "images/icon.png",
 	"publisher": "corvofeng",
-	"version": "0.3.8",
+	"version": "0.3.9",
 	"engines": {
 		"vscode": "^1.35.0"
 	},
