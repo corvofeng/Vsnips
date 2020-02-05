@@ -1,7 +1,7 @@
 import { Logger } from "./logger";
 import { VSnipContext } from "./vsnip_context";
 import * as ScriptFunc from "./script_tpl";
-import { trim } from "./util";
+import { trim, replaceAll } from "./util";
 // import * as vscode from "vscode";
 
 const VIM_SNIPPET = /^snippet ([^\s]*)\s*(?:"(.*?)"(.*))?\n((?:.|\n)*?)\nendsnippet$/gm;
@@ -139,14 +139,6 @@ function lexParser(str: string): [string, boolean] {
     Logger.debug("After replace stmt", stmt, "we got: ", str);
   }
 
-  // string.replace函数调用一次只能替换一个, 需要全部替换
-  // Copy from: https://stackoverflow.com/a/55698996
-  function replaceAll(text: string, busca: string, reemplaza: string) {
-    while (text.toString().indexOf(busca) !== -1) {
-      text = text.toString().replace(busca, reemplaza);
-    }
-    return text;
-  }
   replaceMap.forEach((rlt, stmt) => {
     if (rlt.startsWith(`\`!js`)) {
       hasJSScript = true;
@@ -251,7 +243,7 @@ function jsFuncEval(snip: string, vsContext: VSnipContext) {
 
   let res = null;
   // eslint-disable-next-line
-  const JS_SNIP_FUNC_PATTERN = /`!js (\w+)( \[.*\])?\`/g;
+  const JS_SNIP_FUNC_PATTERN = /`!js (\w+)(\(.*\))?\`/g;
 
   while ((res = JS_SNIP_FUNC_PATTERN.exec(snip)) !== null) {
     const [pattern, funcName, funcArgs] = res as RegExpExecArray;
@@ -263,15 +255,15 @@ function jsFuncEval(snip: string, vsContext: VSnipContext) {
       return snip;
     }
     let funcRlt = "";
+
+    const funcWithCtx = func.bind(undefined, vsContext); // 没有this且默认第一个参数为vsContext
+    const stmt = `funcWithCtx(${funcArgs})`;
+    Logger.debug("Get func", stmt, funcWithCtx);
     try {
-      let args: string[] = [];
-      if (funcArgs !== undefined) {
-        // eslint-disable-next-line
-        args = (eval(funcArgs) as string[]);
-      }
-      funcRlt = func.call(undefined, vsContext, ...args);
+      // eslint-disable-next-line
+      funcRlt = eval(stmt);
     } catch (e) {
-      Logger.error("In js func", e);
+      Logger.error("In js func", e.message);
       return snip;
     }
     snip = snip.replace(pattern, funcRlt);

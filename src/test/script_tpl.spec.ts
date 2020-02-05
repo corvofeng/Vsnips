@@ -79,8 +79,13 @@ describe("Parse vim config", () => {
       [
         "js_get_simple_box",
         ["arg1", "arg2", "arg3"],
-        '`!js js_get_simple_box ["arg1","arg2","arg3"]`'
-      ]
+        '`!js js_get_simple_box("arg1","arg2","arg3")`'
+      ],
+      [
+        "js_get_simple_box",
+        [`arg with "quote"`],
+        '`!js js_get_simple_box("arg with \\"quote\\"")`'
+      ],
     ];
     TEST_VARS.forEach(varDef => {
       const [fName, fArgs, ret] = varDef;

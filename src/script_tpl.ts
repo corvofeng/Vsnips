@@ -20,7 +20,7 @@ import { getUserScriptFiles } from "./kv_store";
 import { parseTokenizer } from "./doc_parse/tokenize";
 import { BoxWatcher, Box } from "./box/box";
 import { VSnipWatcherArray } from "./vsnip_watcher";
-import { trim } from "./util";
+import { trim, escapeDoubleQuote, escapeReverseSlash } from "./util";
 import { Position, Range } from "vscode";
 import { PyFuncToken } from "./doc_parse/token_python";
 import { TsFuncToken } from "./doc_parse/token_typescript";
@@ -46,13 +46,22 @@ const  VIM_VARS_MAP: Map<string, string> = new Map();
  *    返回值: `js js_get_simple_box`
  *
  *    参数: js_get_simple_box ["arg1", "arg2", "arg3"]
- *    返回值: `!js js_get_simple_box ["arg1","arg2","arg3"]`
+ *    返回值: `!js js_get_simple_box("arg1","arg2","arg3")`
+ *
+ *    对于参数中含有`"`的情况, 进行转义 例如参数:
+ *    参数: js_get_simple_box ['arg with "quote"`]
+ *    返回值: js_get_simple_box('arg with \"quote\"`)
  */
 function jsFuncDecorator(funcName: string, args: string[]=[]) {
   if (args.length == 0) {
     return `\`!js ${funcName}\``;
   } else {
-    return `\`!js ${funcName} ["${args.join('","')}"]\``;
+    args.forEach(function(part, index, theArray) {
+      theArray[index] = escapeDoubleQuote(
+       escapeReverseSlash(part) // 必须先转义反斜线, 再转义双引号
+      );
+    });
+    return `\`!js ${funcName}("${args.join('","')}")\``;
   }
 }
 

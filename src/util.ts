@@ -185,12 +185,46 @@ function trimRight(str: string, ch: string[]) {
   }
   return start > 0 || end < str.length ? str.substring(start, end) : str;
 }
+/**
+ * 转义字符串中的`\`
+ *  例如原始的字符串为:
+ *    `This is a slash \\!`
+ *  将其引号转义之后得到的字符串为:
+ *    `This is a slash \\\\!`
+ */
+function escapeReverseSlash(str: string): string {
+  // 注意, 这里不能使用replaceAll, 因为替换过去的字符含有原字符, 会出现死循环
+  return str.replace(/\\/g, '\\\\');
+}
 
+/**
+ * 转义字符串中的`"`
+ *  例如原始的字符串为:
+ *    `Have you read, "The Jungle"?`
+ *  将其引号转义之后得到的字符串为:
+ *    `Have you read, \"The Jungle\"?`
+ */
+function escapeDoubleQuote(str: string): string {
+  // 注意, 这里不能使用replaceAll, 因为替换过去的字符含有原字符, 会出现死循环
+  return str.replace(/"/g, '\\"');
+}
+
+// string.replace函数调用一次只能替换一个, 需要全部替换
+// Copy from: https://stackoverflow.com/a/55698996
+function replaceAll(text: string, busca: string, reemplaza: string) {
+  while (text.toString().indexOf(busca) !== -1) {
+    text = text.toString().replace(busca, reemplaza);
+  }
+  return text;
+}
 
 export {
   longestMatchCharsFromStart,
   checkLanguageId,
   trim,
   trimLeft,
-  trimRight,
+  escapeDoubleQuote,
+  escapeReverseSlash,
+  replaceAll,
+  trimRight
 };
