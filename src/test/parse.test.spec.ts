@@ -177,6 +177,18 @@ endsnippet`,
           "console.log('[${1:`!js js_get_vim_expand(\"%:r\")`}]', $2)",
           true
         )
+      ],
+      [
+        `snippet ,, "ldots" iA
+, \\ldots, $0
+endsnippet`,
+        new Snippet(
+          ",,",
+          "ldots",
+          "iA",
+          ", \\ldots, $0",
+          false
+        )
       ]
     ];
 
@@ -212,7 +224,10 @@ endsnippet`,
     );
     const TEST_VARS = [
       ["title: `!js js_markdown_title`", "title: README"],
-      ["console.log('[${1:`!js js_get_vim_expand(\"%:r\")`}]', $2)", "console.log('[${1:README}]', $2)"]
+      [
+        "console.log('[${1:`!js js_get_vim_expand(\"%:r\")`}]', $2)",
+        "console.log('[${1:README}]', $2)"
+      ]
     ];
     ScriptFunc.initTemplateFunc();
     TEST_VARS.forEach(([_snip, _rlt]) => {
