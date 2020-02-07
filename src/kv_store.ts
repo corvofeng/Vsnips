@@ -20,6 +20,7 @@ import * as jsLogger from "js-logger";
 // import * as request from "request";
 import * as fs from "fs";
 import * as path from "path";
+import { Snippet } from "./parse";
 
 // 用户当前的可以放置配置文件的位置
 // Copy from: https://stackoverflow.com/a/26227660
@@ -78,6 +79,10 @@ let DisplayStrategy: string = "ALL";
 let Trigers: string[] = [];
 
 let UserScriptFiles: string[] = [];
+
+let AUTO_TRIGGERED_SNIPS: Snippet[] = [];
+
+let ENABLE_AUTO_TRIGGER: boolean = false;
 
 // 日志级别, NO表示不打印日志
 let LogLevel = "NO";
@@ -190,6 +195,21 @@ function getTrigers(): string[] {
   return Trigers;
 }
 
+function addAutoTriggeredSnips(snip: Snippet) {
+  AUTO_TRIGGERED_SNIPS.push(snip);
+}
+
+function getAutoTriggeredSnips(): Snippet[] {
+  return AUTO_TRIGGERED_SNIPS;
+}
+
+function setEnableAutoTrigger(eat: boolean) {
+  ENABLE_AUTO_TRIGGER = eat;
+}
+function getEnableAutoTrigger(): boolean {
+  return ENABLE_AUTO_TRIGGER;
+}
+
 export {
   // VsnipDir,
   // UltiSnipsDir,
@@ -207,5 +227,9 @@ export {
   getDisplayStrategy,
   setTrigers,
   getTrigers,
+  addAutoTriggeredSnips,
+  getAutoTriggeredSnips,
+  setEnableAutoTrigger,
+  getEnableAutoTrigger,
   updateMultiWorkspaceSetting,
 };

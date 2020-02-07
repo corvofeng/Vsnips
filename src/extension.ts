@@ -12,12 +12,15 @@ import {
   updateMultiWorkspaceSetting,
   addUserScriptFiles,
   setDisplayStrategy,
-  setTrigers
+  setTrigers,
+  getAutoTriggeredSnips,
+  setEnableAutoTrigger
 } from "./kv_store";
 import { snippetManager, Snippet } from './snippet_manager';
 import { initVimVar, initTemplateFunc, initVSCodeVar } from "./script_tpl";
 import { checkLanguageId } from "./util";
 import { VSnipWatcherArray } from "./vsnip_watcher";
+import { VSnipContext } from "./vsnip_context";
 
 export async function activate(context: vscode.ExtensionContext) {
   const conf = vscode.workspace.getConfiguration();
@@ -32,6 +35,10 @@ export async function activate(context: vscode.ExtensionContext) {
     const UltiSnipsDir = path.join(context.extensionPath, "Ultisnips");
     addSnipsDir([UltiSnipsDir]);
   }
+
+  // 是否启用对于'A'这种选项的支持
+  const enableAutoTrigger = conf.get("Vsnips.EnableAutoTrigger", true);
+  setEnableAutoTrigger(enableAutoTrigger);
 
   // 添加snips文件夹
   const vsnipDirs = conf.get("Vsnips.SnipsDir", []);
@@ -125,7 +132,35 @@ export async function activate(context: vscode.ExtensionContext) {
   // Watcher才会被触发,
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument(e => {
-      if (VSnipWatcherArray.length === 0) {
+      const autoTriggeredSnips = getAutoTriggeredSnips();
+      let isComplete = false;
+      if (VSnipWatcherArray.length === 0 && autoTriggeredSnips.length === 0) {
+        return;
+      }
+
+      // 确认editor属于当前文档
+      const editor = vscode.window.activeTextEditor;
+      if(editor == undefined || editor.document != e.document) {
+        Logger.warn("Can't process the correct editor");
+        return;
+      }
+
+      // 处理auto triggered snippets
+      autoTriggeredSnips.forEach((snip) => {
+        if (isComplete) {
+          return;
+        }
+
+        isComplete =  snip.get_snip_in_auto_triggered(
+          new VSnipContext(
+            e.document,
+            editor.selection.end
+          ),
+          editor
+        );
+      });
+
+      if (isComplete) {
         return;
       }
       if (VSnipWatcherArray.length > 1) {

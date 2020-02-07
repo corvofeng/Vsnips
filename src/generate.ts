@@ -3,7 +3,7 @@ import { Snippet } from "./parse";
 import * as vscode from "vscode";
 import { VSnipContext } from "./vsnip_context";
 import { snippetManager } from './snippet_manager';
-import { getTrigers, getDisplayStrategy } from "./kv_store";
+import { getTrigers, getDisplayStrategy, addAutoTriggeredSnips, getEnableAutoTrigger } from "./kv_store";
 
 // function ultisnipsToJSON(ultisnips: string) {
 //   const snippets = parse(ultisnips);
@@ -59,6 +59,11 @@ export function generate(context: vscode.ExtensionContext) {
             if (!shouldAdd) {
               return;
             }
+          }
+
+          // 将一些具有立刻触发的snip收集起来, 只有在支持'AutoTrigger'时才允许
+          if(getEnableAutoTrigger() && snip.isAutoTriggered()) {
+            addAutoTriggeredSnips(snip);
           }
 
           const completionItem = new vscode.CompletionItem(snip.prefix, vscode.CompletionItemKind.Snippet);

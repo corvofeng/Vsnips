@@ -78,6 +78,11 @@
 					],
 					"default": "NO"
 				},
+				"Vsnips.EnableAutoTrigger": {
+					"type": "boolean",
+					"description": "Wheather to enable auto trigger, it is powerful but not recommanded",
+					"default": false
+				},
 				"Vsnips.DisplayStrategy": {
 					"type": "string",
 					"description": "The Vsnip's display strategy",

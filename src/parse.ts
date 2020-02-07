@@ -2,7 +2,7 @@ import { Logger } from "./logger";
 import { VSnipContext } from "./vsnip_context";
 import * as ScriptFunc from "./script_tpl";
 import { trim, replaceAll } from "./util";
-// import * as vscode from "vscode";
+import * as vscode from "vscode";
 
 const VIM_SNIPPET = /^snippet ([^\s]*)\s*(?:"(.*?)"(.*))?\n((?:.|\n)*?)\nendsnippet$/gm;
 
@@ -17,12 +17,15 @@ class Snippet {
   // 将body体中的js函数进行求值处理.
   public hasJSScript: boolean;
 
+  private isChanging: boolean;
+
   constructor(prefix="",  description="",  options="", body="", hasJSScript=false,) {
     this.prefix = prefix;
     this.body = body;
     this.descriptsion = description;
     this.hasJSScript = hasJSScript;
     this.vimOptions = options;
+    this.isChanging = false;
 
     Logger.debug(`prefix:  "${this.prefix}"`);
     Logger.debug(`description: "${this.descriptsion}"`);
@@ -30,15 +33,23 @@ class Snippet {
     Logger.debug("body: ", this.body);
     Logger.debug("hasJSScript: ", this.hasJSScript);
   }
+  public isAutoTriggered() {
+    return this.vimOptions.includes("A");
+  }
+  public isWordBoundary() {
+    return this.vimOptions.includes("w");
+  }
+
+  // i   In-word expansion - By default a snippet is expanded only if the tab
+  //   trigger is the first word on the line or is preceded by one or more
+  //   whitespace characters. A snippet with this option is expanded
+  //   regardless of the preceding character. In other words, the snippet can
+  //   be triggered in the middle of a word.
+  public isInWordExpansion() {
+    return this.vimOptions.includes("i");
+  }
 
   public get_snip_body(vsContext: VSnipContext) {
-    // if(this.options.includes('w')) {
-    //   console.log("Get txt", vsContext.getTextByShift(-1));
-    //   if(!vsContext.getTextByShift(-1).includes(this.prefix)) {
-    //     Logger.warn("The ", this.prefix, "must have all prefix");
-    //     return '';
-    //   }
-    // }
     let rlt = "";
     if (this.hasJSScript) {
       rlt = jsFuncEval(this.body, vsContext);
@@ -47,6 +58,58 @@ class Snippet {
     }
     Logger.debug("Get snippet", rlt);
     return rlt;
+  }
+
+  /**
+   * 获取由自动触发生成的snip, 不管你有没有看懂代码, 任何修改都建议重写一份
+   * vsContext (VSnipContext): TODO
+   * editor (vscode.TextEditor): TODO
+   * Returns: TODO
+   */
+  public get_snip_in_auto_triggered(vsContext: VSnipContext, editor: vscode.TextEditor): boolean {
+    if (this.isChanging) { // 防止出现修改死循环
+      this.isChanging = false;
+      return false;
+    }
+    Logger.debug("Start check", this.prefix, "Get currently context", vsContext);
+    const curLine = trim(vsContext.getTextByShift(-1), ['\n']);
+    Logger.debug("Get txt", curLine);
+    if(this.isWordBoundary()) { // 必须完整出现字符串
+      if(!curLine.includes(this.prefix)) {
+        Logger.warn("The ", this.prefix, "must have all prefix");
+        return false;
+      }
+      if(this.isInWordExpansion()) { // 必须出现在开头或是一行的中间, 且字符串后面有空格
+        const offset = vsContext.position.character;
+        if (curLine[offset + 1] !== " " && curLine.length > this.prefix.length) {
+          Logger.warn("Can't make snip with options 'i'", curLine, this.prefix);
+          return false;
+        }
+      }
+    } else {
+      // 这里直接返回的主要原因是防止有人误用'A'这一选项,
+      // 有可能会导致vscode出现不可预知的问题.
+      Logger.warn("The snip", this, "must with options 'w'");
+      return false;
+    }
+
+    const rlt = this.get_snip_body(vsContext);
+    if(rlt === "") { // 必须获取到对应的结果
+      return false;
+    }
+
+    const pos = vsContext.position;
+    let content = rlt;
+    let range = new vscode.Range(
+      new vscode.Position(pos.line, pos.character - this.prefix.length+1),
+      new vscode.Position(pos.line, pos.character + 1),
+    );
+    Logger.debug("Start change range", range);
+
+    editor.insertSnippet(new vscode.SnippetString(content), range, { undoStopBefore: false, undoStopAfter: false });
+    this.isChanging = true;
+
+    return true;
   }
 }
 
