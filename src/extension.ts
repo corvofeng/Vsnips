@@ -94,9 +94,9 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerTextEditorCommand(
       'Vsnips.show_available_snippets',
-      (editor) => {
+      async (editor) => {
         const langId = editor.document.languageId;
-        const items: Array<vscode.QuickPickItem & { snippet: Snippet }> = snippetManager.getSnippets(langId).map((snippet) => {
+        const items: Array<vscode.QuickPickItem & { snippet: Snippet }> = (await snippetManager.getSnippets(langId)).map((snippet) => {
           return {
             label: snippet.prefix,
             detail: snippet.descriptsion,

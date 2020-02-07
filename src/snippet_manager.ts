@@ -27,10 +27,17 @@ export class SnippetManager {
    */
   protected snipFileEntries: SnipFileEntry[] = [];
 
+  private snippetsIsAdded = new Map<string, Promise<boolean>>();
+
   public addLanguage(language: string) {
     if (!this.snippetsByLanguage.get(language)) {
-      Logger.info("Repush the " + language + "from local dir");
-      this.doAddLanguageType(language);
+      Logger.info("Start repush the", language, "from local dir");
+
+      this.snippetsIsAdded.set(language, new Promise<boolean>((resolve, reject) => {
+        this.doAddLanguageType(language);
+        Logger.info(" End  repush the", language, "from local dir");
+        resolve(true);
+      }));
     } else {
       Logger.debug(language, "has been added");
     }
@@ -49,10 +56,20 @@ export class SnippetManager {
    * 根据语言查询可用 snippets,
    * `all.snippets` 可以被所有语言使用
    */
-  public getSnippets(language: string) {
+  public async getSnippets(language: string) {
     const snippetsOfLanguage = this.snippetsByLanguage.get(language) || [];
     const snippetsOfAll = this.snippetsByLanguage.get("all") || [];
-    return snippetsOfAll.concat(snippetsOfLanguage);
+    return new Promise<Snippet[]>((resolve, reject)=> {
+      const isAdded = this.snippetsIsAdded.get(language);
+      if(isAdded === undefined) {
+        reject("The " + language + " does't add yet");
+        return;
+      }
+      // 只有在当前语言全部添加完成后, 才返回
+      isAdded.then(() => {
+        resolve(snippetsOfAll.concat(snippetsOfLanguage));
+      });
+    });
   }
 
   /**

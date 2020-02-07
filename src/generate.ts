@@ -21,10 +21,10 @@ export function generate(context: vscode.ExtensionContext) {
   const provider = vscode.languages.registerCompletionItemProvider(
     { scheme: "file" },
     {
-      provideCompletionItems(document, position, token, context) {
+      async provideCompletionItems(document, position, token, context) {
         Logger.debug("Get completion item", document, position);
 
-        const snippets = snippetManager.getSnippets(document.languageId);
+        const snippets = await snippetManager.getSnippets(document.languageId);
         if (!snippets.length) {
           return [];
         }
