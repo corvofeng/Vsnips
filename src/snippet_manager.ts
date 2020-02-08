@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import * as vscode from "vscode";
 import { walkSync } from 'walk';
 import { getSnipsDirs } from "./kv_store";
 import { parse, Snippet } from "./parse";
@@ -33,9 +34,11 @@ export class SnippetManager {
     if (!this.snippetsByLanguage.get(language)) {
       Logger.info("Start repush the", language, "from local dir");
 
-      this.snippetsIsAdded.set(language, new Promise<boolean>((resolve, reject) => {
+      this.snippetsIsAdded.set(language, new Promise<boolean>((resolve) => {
+        vscode.window.setStatusBarMessage("Start add languate " + language);
         this.doAddLanguageType(language);
         Logger.info(" End  repush the", language, "from local dir");
+        vscode.window.setStatusBarMessage(" End  add languate " + language);
         resolve(true);
       }));
     } else {
