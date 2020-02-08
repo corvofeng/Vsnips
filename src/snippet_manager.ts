@@ -57,8 +57,6 @@ export class SnippetManager {
    * `all.snippets` 可以被所有语言使用
    */
   public async getSnippets(language: string) {
-    const snippetsOfLanguage = this.snippetsByLanguage.get(language) || [];
-    const snippetsOfAll = this.snippetsByLanguage.get("all") || [];
     return new Promise<Snippet[]>((resolve, reject)=> {
       const isAdded = this.snippetsIsAdded.get(language);
       if(isAdded === undefined) {
@@ -67,6 +65,8 @@ export class SnippetManager {
       }
       // 只有在当前语言全部添加完成后, 才返回
       isAdded.then(() => {
+        const snippetsOfLanguage = this.snippetsByLanguage.get(language) || [];
+        const snippetsOfAll = this.snippetsByLanguage.get("all") || [];
         resolve(snippetsOfAll.concat(snippetsOfLanguage));
       });
     });
