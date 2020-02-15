@@ -48,8 +48,8 @@ endsnippet`,
           "ifmain",
           "b",
           `if __name__ == "__main__":
-    \${1:\${VISUAL:main()}}
-    $2`
+    \${1:\${TM_SELECTED_TEXT:main()}}
+    \${2:\${TM_SELECTED_TEXT}}`
         )
       ],
 

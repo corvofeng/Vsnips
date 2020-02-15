@@ -289,15 +289,28 @@ function vimRewrite(stmt: string) {
 }
 
 function normalizePlaceholders(str: string) {
-  const visualPlaceholder = /\${(\d):\${VISUAL}}/;
-  if (visualPlaceholder.test(str)) {
-    const data = visualPlaceholder.exec(str) as RegExpExecArray;
-    const n = data[1];
-    Logger.debug("Get visual data", data, n);
-    return str.replace(visualPlaceholder, `$${n}`);
-  } else {
-    return str;
+  const visualPlaceholder = /\${(\d):\${VISUAL(?::(.*))?}}/gm;
+  let res = null;
+  const replaceMap = new Map();
+  while ((res = visualPlaceholder.exec(str)) !== null) {
+    const [data, number, default_value] = res;
+    const n = number;
+    let replaceTxt = "";
+    if (default_value) {
+      // str = `$${${n}:$${$$TM_SELECTED_TEXT:main()}}`;
+      replaceTxt = `\${${n}:\${TM_SELECTED_TEXT:${default_value}}}`;
+    } else {
+      replaceTxt = `\${${n}:\${TM_SELECTED_TEXT}}`;
+    }
+    Logger.debug("Get visual data", data, replaceTxt);
+    replaceMap.set(data, replaceTxt);
   }
+
+  replaceMap.forEach((replaceTxt, data) => {
+    str = replaceAll(str, data, replaceTxt);
+  });
+
+  return str;
 }
 
 // 获得snip中的js函数, 并调用该函数名对应的函数指针.
