@@ -103,7 +103,7 @@ endsnippet
 ## Have done
 
 - [x] Auto download the Ultisnips
-- [x] Multi languate completions support
+- [x] Multi language completions support
 - [x] Allow user add their own Ultisnips.
     - [x] From Ultisnips to VScode snippets.
     - [x] Support strftime

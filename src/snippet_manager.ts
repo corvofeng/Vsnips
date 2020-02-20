@@ -35,10 +35,10 @@ export class SnippetManager {
       Logger.info("Start repush the", language, "from local dir");
 
       this.snippetsIsAdded.set(language, new Promise<boolean>((resolve) => {
-        vscode.window.setStatusBarMessage("[Vsnips]: Start add languate " + language);
+        vscode.window.setStatusBarMessage("[Vsnips]: Start add language " + language);
         this.doAddLanguageType(language);
         Logger.info(" End  repush the", language, "from local dir");
-        vscode.window.setStatusBarMessage("[Vsnips]: End  add languate " + language);
+        vscode.window.setStatusBarMessage("[Vsnips]: End  add language " + language);
         resolve(true);
       }));
     } else {
