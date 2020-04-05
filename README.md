@@ -4,7 +4,9 @@
 
 ![](./images/icon.png)
 
-[中文文档](./README-zh_CN.md)
+Please: refer to the docs: [https://vsnips.corvo.fun/](https://vsnips.corvo.fun/zh/intro/)
+
+[中文文档](https://vsnips.corvo.fun/zh/intro/)
 
 Allow user use Ultisnips in vscode.
 
