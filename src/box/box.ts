@@ -206,7 +206,7 @@ class Box {
     let e = ch.range.end;
 
     // Issue-#24: fix the chinese box input.
-    if (s.line == e.line && e.character - s.character + 1 == ch.text.length) {
+    if (s.line == e.line && e.character - s.character + 1 == ch.text.length && ch.text.length > 1) {
       Logger.debug("This is input method events(IME)");
       return false;
     }
