@@ -7,6 +7,7 @@
 Please: refer to the docs: [https://vsnips.corvo.fun/](https://vsnips.corvo.fun/zh/intro/)
 
 [中文文档](https://vsnips.corvo.fun/zh/intro/)
+[国内访问文档, 七牛cdn加速](https://vsnips.rawforcorvofeng.cn/)
 
 Allow user use Ultisnips in vscode.
 
