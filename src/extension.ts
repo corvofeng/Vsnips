@@ -73,7 +73,23 @@ export async function activate(context: vscode.ExtensionContext) {
   Logger.info("Get user trigers:", displayStrategy);
   setTrigers(trigers);
 
-  generate(context);
+  var inTestMode: Boolean = false;
+  try {
+    // https://github.com/microsoft/vscode/issues/102323
+    // https://github.com/microsoft/vscode/issues/95926
+    // introduced in 1.47.0, compatible code!!!
+    if ((context as any).extensionMode === (vscode as any).ExtensionMode.Test) {
+      inTestMode = true;
+    }
+  } catch (error) {
+    Logger.error("Get error", error);
+  }
+
+  if(inTestMode) {
+    Logger.info("This is in test mode, do not generate context");
+  } else {
+    generate(context);
+  }
 
   // 如果从一开始就解析所有的snippet文件, 势必会造成vscode启动卡顿的问题
   // 这里采取一种替换方案, 当用户打开某种语言的文件时, 才会解析对应的snippets文件
