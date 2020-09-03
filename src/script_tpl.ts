@@ -74,6 +74,10 @@ function get_quoting_style() {
   return DOUBLE_QUOTES;
 }
 
+function triple_quotes_handle_trailing(quoting_style: string) {
+  return quoting_style.repeat(3);
+}
+
 function triple_quotes() {
   const style = getVimVar("ultisnips_python_triple_quoting_style");
   if (!style) {
@@ -366,6 +370,7 @@ function initTemplateFunc() {
   BUILDIN_MODULE.set("get_go_doc", get_go_doc);
   BUILDIN_MODULE.set("get_vim_expand", get_vim_expand);
   BUILDIN_MODULE.set("js_get_vim_expand", js_get_vim_expand);
+  BUILDIN_MODULE.set("triple_quotes_handle_trailing", triple_quotes_handle_trailing);
   jsParser(getUserScriptFiles());
 }
 

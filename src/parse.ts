@@ -1,8 +1,10 @@
 import { Logger } from "./logger";
 import { VSnipContext } from "./vsnip_context";
 import * as ScriptFunc from "./script_tpl";
-import { trim, replaceAll } from "./util";
+import { trim, replaceAll, argsToList } from "./util";
 import * as vscode from "vscode";
+import { parseTokenizer } from "./doc_parse/tokenize";
+import { unionWith } from "eslint-visitor-keys";
 
 const VIM_SNIPPET = /^snippet ([^\s]*)\s*(?:"(.*?)"(.*))?\n((?:.|\n)*?)\nendsnippet$/gm;
 
@@ -217,25 +219,33 @@ function pythonRewrite(stmt: string) {
   Logger.debug("Wanna rewrite python", stmt);
 
   const funcNamePattern = /(\w+)\(snip\)/;
+  const funcWithArgsPattern = /(\w+)\(snip(,.*)\)/;
+  let funcName:string, argListStr: string = "";
 
   if (funcNamePattern.test(stmt)) {
-    const [, funcName] = funcNamePattern.exec(stmt) as RegExpExecArray;
+    [, funcName] = funcNamePattern.exec(stmt) as RegExpExecArray;
     Logger.debug("Get func name", funcName);
-    const func = ScriptFunc.getTemplateFunc(funcName);
-    if (func === undefined) {
-      Logger.warn("Can't get function", funcName, "please check");
-      return "";
-    }
-
-    try {
-      return func();
-    } catch (e) {
-      Logger.error("In python func:", funcName, ", has error", e);
-      return "";
-    }
+  } else if (funcWithArgsPattern.test(stmt)) {
+    [, funcName, argListStr] = funcWithArgsPattern.exec(stmt) as RegExpExecArray;
+    Logger.debug("Get func name", funcName, "arg list", argListStr);
+  } else {
+    funcName = "UnknowFunc";
   }
 
-  return stmt;
+  const func = ScriptFunc.getTemplateFunc(funcName);
+  let result = stmt;
+
+  if (func === undefined) {
+    Logger.warn("Can't get function", funcName, "please check");
+    return result;
+  }
+
+  try {
+    result = func.apply(undefined, argsToList(argListStr));
+  } catch (e) {
+    Logger.error("In python func:", funcName, ", has error", e.message);
+  }
+  return result;
 }
 
 function vimRewrite(stmt: string) {

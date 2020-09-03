@@ -218,6 +218,30 @@ function replaceAll(text: string, busca: string, reemplaza: string) {
   return text;
 }
 
+/**
+ * 将函数的参数列表转换成数组
+ *  因为使用了eval处理值获得, 所以该函数只能处理类js的参数列表
+ * 使用eval的原因主要是为了省略复杂的逻辑判断代码, 简单的split会有问题:
+ *  例如, 当你的参数列表是下面这样时
+ *    `, "he,llo"`
+ *  第一项`,`会正常解析, 但是参数`he,llo`则会出现解析问题.
+ *
+ * args (string): TODO
+ * Returns: TODO
+ */
+function argsToList(args: string): any[] {
+  if (args === "") return [];
+  args = trim(args, [" ", ","]);
+  let data = [];
+  try {
+    // eslint-disable-next-line
+    data = eval(`[${args}]`);
+  } catch (error) {
+    Logger.error("parse prameters", error);
+  }
+  return data;
+}
+
 export {
   longestMatchCharsFromStart,
   checkLanguageId,
@@ -226,5 +250,6 @@ export {
   escapeDoubleQuote,
   escapeReverseSlash,
   replaceAll,
+  argsToList,
   trimRight
 };

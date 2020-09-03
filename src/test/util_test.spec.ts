@@ -1,6 +1,6 @@
 import { setLogLevel } from "../kv_store";
 import { InitLogger } from "../logger";
-import { trim, escapeDoubleQuote, escapeReverseSlash } from "../util";
+import { trim, escapeDoubleQuote, escapeReverseSlash, argsToList } from "../util";
 import { expect } from "chai";
 
 describe("Test utils", () => {
@@ -41,6 +41,17 @@ describe("Test utils", () => {
     ];
     TEST_CASE.forEach(([_in, _out]) => {
       expect(escapeReverseSlash(_in)).eq(_out);
+    });
+  });
+  it("Test argsToList", () => {
+    const TEST_CASE = [
+      [``, []],
+      [`, "hello"`, ["hello"]],
+      [`, "hello",`, ["hello"]],
+      [`, "he,llo",`, ["he,llo"]],
+    ];
+    TEST_CASE.forEach(([_in, _out]) => {
+      expect(argsToList(_in as string)).to.eql(_out);
     });
   });
 });

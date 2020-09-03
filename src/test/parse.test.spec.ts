@@ -16,7 +16,7 @@ describe("Parse ultisnips", () => {
   });
 
   it("parser", () => {
-    const TEST_CASE = [
+    let TEST_CASE = [
       // simple snippets
       [
         `snippet gitig "Git add will ignore this"
@@ -189,10 +189,25 @@ endsnippet`,
           ", \\ldots, $0",
           false
         )
-      ]
+      ],
+      [
+        `snippet " "triple quoted string (double quotes)" b
+"""
+\${1:\${VISUAL:doc}}
+\`!p triple_quotes_handle_trailing(snip, '"')\`
+endsnippet`,
+        new Snippet(
+          "\"",
+          "triple quoted string (double quotes)",
+          "b",
+          "\"\"\"\n${1:${TM_SELECTED_TEXT:doc}}\n\"\"\"",
+          false
+        )
+      ],
     ];
 
     ScriptFunc.initVSCodeVar(new Map([["snips_author", "corvo"]])),
+      // TEST_CASE = TEST_CASE.slice(-1);
       TEST_CASE.forEach(([_t, _s]) => {
         const txt = _t as string;
         const snip = _s as Snippet;
