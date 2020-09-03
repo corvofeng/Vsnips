@@ -7,6 +7,7 @@ import { setLogLevel } from "../../kv_store";
 import { FuncArg } from "../../doc_parse/token_obj";
 import { TsFuncToken } from "../../doc_parse/token_typescript";
 import { GoFuncToken } from "../../doc_parse/token_go";
+import { PyFuncToken } from "../../doc_parse/token_python";
 
 describe("Token obj", () => {
   beforeEach((done) => {
@@ -47,7 +48,7 @@ describe("Token obj", () => {
       [["eggs: obj=None"], [new FuncArg("eggs", "obj", "None")]],
     ];
     TEST_CASES.forEach((c) => {
-      const funcArgs = TsFuncToken.constructArgFromTokens(c[0] as string[]);
+      const funcArgs = PyFuncToken.constructArgFromTokens(c[0] as string[]);
       const a1 = funcArgs[0];
       const a2: FuncArg = c[1][0] as any;
       expect(a1).deep.equal(a2);
