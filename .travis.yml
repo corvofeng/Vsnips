@@ -11,6 +11,9 @@ node_js:
 #   - node out/script_tpl.js
 #   - npm run test_base
 
+env:
+  global:
+    - PACKAGE_VERSION=`node -p -e 'require("./package.json").version'`
 
 install:
   - |
@@ -28,3 +31,27 @@ script:
     echo ">>> Run sample integration test"
     yarn && yarn compile && yarn lint && yarn test
 cache: yarn
+
+before_deploy:
+  ## 全局安装vsce
+  - npm install -g vsce
+  ## 打包vscode插件
+  - vsce package
+
+# 部署命令
+deploy:
+  ## github的releases page页面
+  - provider: releases
+    ## 授权的token
+    api_key: ${GITHUB_OAUTH_TOKEN}
+    ## 指定文件&&文件类型
+    file_glob: true
+    file: "*.vsix"
+    skip_cleanup: true
+    ## 重命名文件，PACKAGE_VERSION即是上面获取到的package.json里的version字段
+    name: "Vsnips-${PACKAGE_VERSION}"
+    email: corvofeng@gmail.com
+    ## 发布到github的哪个项目，以及限定只有打了tag的情况下，才会触发部署操作。
+    on:
+      repo: corvofeng/Vsnips
+      tags: true
