@@ -3,8 +3,6 @@ import { VSnipContext } from "./vsnip_context";
 import * as ScriptFunc from "./script_tpl";
 import { trim, replaceAll, argsToList } from "./util";
 import * as vscode from "vscode";
-import { parseTokenizer } from "./doc_parse/tokenize";
-import { unionWith } from "eslint-visitor-keys";
 
 const VIM_SNIPPET = /^snippet ([^\s]*)\s*(?:"(.*?)"(.*))?\n((?:.|\n)*?)\nendsnippet$/gm;
 
