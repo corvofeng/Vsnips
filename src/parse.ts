@@ -251,7 +251,7 @@ function vimRewrite(stmt: string) {
   Logger.debug("Wanna rewrite vim", stmt);
 
   // 匹配时间打印函数
-  const timeFuncPattern = /strftime\("(.+)"\)/;
+  const timeFuncPattern = /strftime\(['"](.+)['"]\)/;
   const variablePattern = /g:(\w*)/;
   const expandPattern = /expand\(['"](.+)['"]\)/;
 
