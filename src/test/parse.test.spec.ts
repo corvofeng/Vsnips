@@ -204,6 +204,20 @@ endsnippet`,
           false
         )
       ],
+
+      // TODO: Add support for `get_comment_format`
+      [
+        `snippet todo "TODO comment" bw
+\`!p snip.rv=get_comment_format()[0]\` \${2:TODO}: \${3: <\${4:\`!v strftime('%d-%m-%y')\`}\${5:, \`!v g:snips_author\`}>} \`!p snip.rv=get_comment_format()[2]\`
+endsnippet`,
+        new Snippet(
+          "todo",
+          "TODO comment",
+          "bw",
+          "!p snip.rv=get_comment_format()[0] ${2:TODO}: ${3: <${4:$CURRENT_DATE-$CURRENT_MONTH-%y}${5:, corvo}>} !p snip.rv=get_comment_format()[2]",
+          false,
+        ),
+      ]
     ];
 
     ScriptFunc.initVSCodeVar(new Map([["snips_author", "corvo"]])),
