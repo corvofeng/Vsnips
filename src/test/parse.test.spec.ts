@@ -214,7 +214,7 @@ endsnippet`,
           "todo",
           "TODO comment",
           "bw",
-          "!p snip.rv=get_comment_format()[0] ${2:TODO}: ${3: <${4:$CURRENT_DATE-$CURRENT_MONTH-%y}${5:, corvo}>} !p snip.rv=get_comment_format()[2]",
+          "!p snip.rv=get_comment_format()[0] ${2:TODO}: ${3: <${4:$CURRENT_DATE-$CURRENT_MONTH-$CURRENT_YEAR_SHORT}${5:, corvo}>} !p snip.rv=get_comment_format()[2]",
           false,
         ),
       ]

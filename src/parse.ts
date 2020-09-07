@@ -263,6 +263,7 @@ function vimRewrite(stmt: string) {
     //   https://code.visualstudio.com/docs/editor/userdefinedsnippets#_variables
     const replaceTable = [
       ["%Y", "$CURRENT_YEAR"],
+      ["%y", "$CURRENT_YEAR_SHORT"],
       ["%B", "$CURRENT_MONTH_NAME"],
       ["%b", "$CURRENT_MONTH_NAME_SHORT"],
       ["%m", "$CURRENT_MONTH"],
