@@ -128,7 +128,6 @@
 		"compile": "tsc -p ./",
 		"lint": "eslint src --ext .ts",
 		"watch": "tsc -watch -p ./",
-		"postinstall": "node ./node_modules/vscode/bin/install",
 		"test": "yarn run compile && node ./node_modules/vscode/bin/test"
 	},
 	"devDependencies": {
