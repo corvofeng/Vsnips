@@ -96,18 +96,23 @@ function getLogLevel() {
     case "NO":
       break;
     case "DEBUG":
+      // @ts-ignore
       lvl = jsLogger.DEBUG;
       break;
     case "INFO":
+      // @ts-ignore
       lvl = jsLogger.INFO;
       break;
     case "WARN":
+      // @ts-ignore
       lvl = jsLogger.WARN;
       break;
     case "ERROR":
+      // @ts-ignore
       lvl = jsLogger.ERROR;
       break;
     default:
+      // @ts-ignore
       lvl = jsLogger.ERROR;
       break;
   }

@@ -16,7 +16,7 @@
 // Github: jonnyreeves/js-logger
 //      master  => test-src/typescript-consumer/index.ts
 import * as jsLogger from "js-logger";
-import { ILogger } from "js-logger/src/types";
+import { ILogger } from "js-logger";
 import { getLogFile, getLogLevel } from "./kv_store";
 import * as fs from "fs";
 
@@ -79,6 +79,7 @@ function InitLogger() {
       VsnipsStream.write(formatLog);
     });
   } else {
+    // @ts-ignore
     myLogger.setLevel(jsLogger.ERROR);
   }
 }
