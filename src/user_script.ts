@@ -21,10 +21,11 @@ import * as ScriptFunc from "./script_tpl";
 const USER_MODULE = new Map();
 
 function jsParser(userScriptFiles: string[]) {
-  Logger.info("Current parse the user js file");
+  Logger.info("Current parse the user js file", userScriptFiles);
 
   userScriptFiles.forEach((jsFile) => {
-    if (!fs.existsSync(jsFile)) {
+    const stats = fs.statSync(jsFile);
+    if (!stats.isFile()) {
       Logger.warn(`The ${jsFile} not exists, stop parse js file!!`);
       return;
     }
