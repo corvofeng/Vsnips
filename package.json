@@ -132,24 +132,24 @@
 		"test": "yarn run compile && node ./node_modules/vscode/bin/test"
 	},
 	"devDependencies": {
+		"@types/node": "^12.12.0",
+		"@types/vscode": "^1.34.0",
 		"@types/chai": "^4.2.5",
 		"@types/glob": "^7.1.1",
-		"@types/mocha": "^2.2.48",
-		"@types/node": "^10.12.21",
+		"@types/mocha": "^5.2.6",
 		"@types/request": "^2.48.2",
 		"@types/walk": "^2.3.0",
-		"@typescript-eslint/eslint-plugin": "^2.17.0",
-		"@typescript-eslint/parser": "^2.17.0",
+		"@typescript-eslint/eslint-plugin": "^4.16.0",
+		"@typescript-eslint/parser": "^4.16.0",
 		"chai": "^4.2.0",
-		"eslint": "^6.8.0",
+		"eslint": "^7.21.0",
 		"glob": "^7.1.6",
-		"mocha": "^6.2.2",
+		"mocha": "^6.1.4",
 		"ts-node": "^8.5.2",
-		"typescript": "^3.3.1",
-		"vscode": "^1.1.28"
+		"typescript": "^4.3.5"
 	},
 	"dependencies": {
-		"js-logger": "^1.6.0",
+		"js-logger": "^1.6.1",
 		"walk": "^2.3.14"
 	},
 	"__metadata": {
