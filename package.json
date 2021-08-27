@@ -139,7 +139,6 @@
 		"@types/vscode": "^1.34.0",
 		"@types/walk": "^2.3.0",
 		"@typescript-eslint/eslint-plugin": "^4.16.0",
-		"@vscode/test-electron": "^1.6.1",
 		"@typescript-eslint/parser": "^4.16.0",
 		"chai": "^4.2.0",
 		"eslint": "^7.21.0",
