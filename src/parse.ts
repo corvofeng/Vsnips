@@ -99,8 +99,8 @@ class Snippet {
     }
 
     const pos = vsContext.position;
-    let content = rlt;
-    let range = new vscode.Range(
+    const content = rlt;
+    const range = new vscode.Range(
       new vscode.Position(pos.line, pos.character - this.prefix.length+1),
       new vscode.Position(pos.line, pos.character + 1),
     );
@@ -239,6 +239,7 @@ function pythonRewrite(stmt: string) {
   }
 
   try {
+    // eslint-disable-next-line
     result = func.apply(undefined, argsToList(argListStr));
   } catch (e) {
     Logger.error("In python func:", funcName, ", has error", e.message);
@@ -284,7 +285,7 @@ function vimRewrite(stmt: string) {
   } else if (expandPattern.test(stmt)) {
     const [, expandExpr] = expandPattern.exec(stmt) as RegExpExecArray;
     Logger.debug("Get expand expr", expandExpr);
-    let func = ScriptFunc.getTemplateFunc('get_vim_expand');
+    const func = ScriptFunc.getTemplateFunc('get_vim_expand');
     try {
       stmt = func(expandExpr);
     } catch (error) {
@@ -324,7 +325,7 @@ function normalizePlaceholders(str: string) {
 
 // 获得snip中的js函数, 并调用该函数名对应的函数指针.
 function jsFuncEval(snip: string, vsContext: VSnipContext) {
-  Logger.info("In js Func eval");
+  Logger.debug("In js Func eval");
 
   let res = null;
   // eslint-disable-next-line
@@ -336,7 +337,7 @@ function jsFuncEval(snip: string, vsContext: VSnipContext) {
     // let func = (ScriptFunc as any)[func_name as string];
     const func = ScriptFunc.getTemplateFunc(funcName);
     if (func === null) {
-      Logger.warn("Can't get js function", funcName, "please check");
+      Logger.warn(`Can't get js function ${funcName} please check`);
       return snip;
     }
     let funcRlt = "";

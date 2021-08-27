@@ -35,7 +35,7 @@ export function generate(context: vscode.ExtensionContext) {
         // everything until previous whitespace, and that is our contextWord.
         let range = document.getWordRangeAtPosition(position);
         if (!range) {
-          let match = prevContentInLine.match(/\S*$/);
+          const match = prevContentInLine.match(/\S*$/);
           const charPos = (match as RegExpMatchArray).index || 0;
           range = new vscode.Range(position.line, charPos, position.line, position.character);
 
@@ -46,7 +46,7 @@ export function generate(context: vscode.ExtensionContext) {
         }
         const contextWord = document.getText(range);
 
-        let compleItems: Array<vscode.CompletionItem> = [];
+        const compleItems: Array<vscode.CompletionItem> = [];
         snippets.forEach(snip => {
           if (displayStrategy === "PREFIX") { // 前缀匹配
             let shouldAdd = false;

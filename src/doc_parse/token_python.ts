@@ -11,10 +11,10 @@ class PyFuncToken extends FuncToken {
    * @param tokens
    */
   static constructArgFromTokens(tokens: Array<string>): Array<FuncArg> {
-    let argList: Array<FuncArg> = [];
+    const argList: Array<FuncArg> = [];
     tokens.forEach(tok => {
       const tokPattern = /^(\**\w+)(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?/;
-      let [, argName, argType, argDefault] = tokPattern.exec(
+      const [, argName, argType, argDefault] = tokPattern.exec(
         tok
       ) as RegExpExecArray;
 

@@ -74,6 +74,8 @@ function checkLanguageId(doc: vscode.TextDocument): string {
     ["dart", "dart"],
     ["diff", "diff"],
     ["dockerfile", "dockerfile", "(?:dockerfile|Dockerfile)"],
+    ["tex", "tex"],
+    ["latex", "tex"],
     ["fs", "fsharp"],
     ["go", "go"],
     ["groovy", "groovy"],

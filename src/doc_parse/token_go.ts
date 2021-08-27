@@ -3,7 +3,7 @@ import { trim } from "../util";
 
 class GoFuncToken extends FuncToken {
   static constructArgFromTokens(tokens: Array<string>): Array<FuncArg> {
-    let argList: Array<FuncArg> = [];
+    const argList: Array<FuncArg> = [];
     tokens.forEach(tok => {
       const [argName, argType] = trim(tok, [" "]).split(" ");
       argList.push(new FuncArg(argName, argType, ""));
@@ -13,9 +13,9 @@ class GoFuncToken extends FuncToken {
   }
 
   static constructRetFromTokens(tokens: Array<string>): Array<FuncArg> {
-    let argList: Array<FuncArg> = [];
+    const argList: Array<FuncArg> = [];
     tokens.forEach(tok => {
-      let ret = trim(tok, [" ", "\n"]).split(" ");
+      const ret = trim(tok, [" ", "\n"]).split(" ");
       if (ret.length === 1) {
         argList.push(new FuncArg("", ret[0], ""));
       } else if (ret.length === 2) {

@@ -27,14 +27,14 @@ const myLogger: ILogger = jsLogger.get("Vsnips");
 
 function ObjectToString(input: object | string): string {
   if (input instanceof Object) {
-    let ret = JSON.stringify(input);
+    const ret = JSON.stringify(input);
     if (ret !== '{}') {
       return JSON.stringify(input);
     }
 
-    let nextTry = new Map();
+    const nextTry = new Map();
     Object.keys(input).forEach((key: string) => {
-      let val = (input as any)[key];
+      const val = (input as any)[key];
       // 如果val的类型是函数
       if (typeof val === 'function') {
         nextTry.set(key, val.name);
@@ -57,9 +57,9 @@ function ObjectToString(input: object | string): string {
  *
  */
 function InitLogger() {
-  let VsnipsStream = fs.createWriteStream(getLogFile(), { flags: "a" });
+  const VsnipsStream = fs.createWriteStream(getLogFile(), { flags: "a" });
 
-  let lvl = getLogLevel();
+  const lvl = getLogLevel();
 
   if (lvl !== undefined) {
     myLogger.setLevel(lvl);
@@ -69,9 +69,9 @@ function InitLogger() {
         .map(ObjectToString)
         .join(" ");
 
-      let today = new Date();
-      let date = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + today.getDate();
-      let time = ('0' + today.getHours()).slice(-2) + ":" + ('0' + today.getMinutes()).slice(-2) + ":" + ('0' + today.getSeconds()).slice(-2);
+      const today = new Date();
+      const date = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + today.getDate();
+      const time = ('0' + today.getHours()).slice(-2) + ":" + ('0' + today.getMinutes()).slice(-2) + ":" + ('0' + today.getSeconds()).slice(-2);
 
       const formatLog = `${date} ${time}: [${context.level.name[0]}] ${msg}\n`;
       // eslint-disable-next-line

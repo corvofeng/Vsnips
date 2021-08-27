@@ -59,11 +59,11 @@ class FuncToken {
   }
 
   static constructRetFromTokens(tokens: Array<string>): Array<FuncArg> {
-    let retList: Array<FuncArg> = [];
+    const retList: Array<FuncArg> = [];
     if (tokens.length === 0) {
       return retList;
     }
-    let retType = tokens[0];
+    const retType = tokens[0];
 
     if (tokens.length > 1) {
       Logger.warn("The ts return type length is bigger than 1: ", tokens);

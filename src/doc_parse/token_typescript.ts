@@ -6,12 +6,14 @@ class TsFuncToken extends FuncToken {
    * @param tokens
    */
   static constructArgFromTokens(tokens: Array<string>): Array<FuncArg> {
-    let argList: Array<FuncArg> = [];
+    const argList: Array<FuncArg> = [];
     tokens.forEach(tok => {
       const tokPattern = /^((?:\.\.\.)?\w+\??)(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?/;
-      let [, argName, argType, argDefault] = tokPattern.exec(
+      const [, argNameRaw, argTypeRaw, argDefault] = tokPattern.exec(
         tok
       ) as RegExpExecArray;
+      let argName = argNameRaw;
+      let argType= argTypeRaw;
 
       if (argName.startsWith("...")) {
         // 以'...'开头的参数, 说明是不定参数

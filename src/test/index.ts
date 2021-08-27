@@ -11,6 +11,7 @@
 // a possible error to the callback or null if none.
 
 // import * as testRunner from "vscode/lib/testrunner";
+import { runTests } from "@vscode/test-electron";
 
 import * as path from "path";
 import * as Mocha from "mocha";

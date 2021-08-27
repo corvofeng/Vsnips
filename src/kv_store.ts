@@ -80,7 +80,7 @@ let Trigers: string[] = [];
 
 let UserScriptFiles: string[] = [];
 
-let AUTO_TRIGGERED_SNIPS: Snippet[] = [];
+const AUTO_TRIGGERED_SNIPS: Snippet[] = [];
 
 let ENABLE_AUTO_TRIGGER: boolean = false;
 

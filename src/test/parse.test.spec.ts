@@ -16,7 +16,7 @@ describe("Parse ultisnips", () => {
   });
 
   it("parser", () => {
-    let TEST_CASE = [
+    const TEST_CASE = [
       // simple snippets
       [
         `snippet gitig "Git add will ignore this"

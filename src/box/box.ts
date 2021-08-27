@@ -13,7 +13,7 @@ class BoxWatcher extends VSnipWatcher {
   }
 
   onUpdate(changes: readonly vscode.TextDocumentContentChangeEvent[]): void {
-    let ordChanges = [...changes];
+    const ordChanges = [...changes];
 
     Logger.debug("Get update", ordChanges);
     if (this.box.blockChanged) { // 防止循环调用
@@ -24,7 +24,7 @@ class BoxWatcher extends VSnipWatcher {
     let hasChange = false;
     ordChanges.forEach(ch => {
       Logger.debug(this.editor.document.getText(ch.range));
-      let makeChange = this.box.doChange(ch);
+      const makeChange = this.box.doChange(ch);
       if (makeChange) {
         hasChange = true;
       }
@@ -142,7 +142,7 @@ class Box {
   public initSnip(leftUpPos: vscode.Position) {
 
     // 实际保存的snip字符串不包括$1这种占位符
-    let snipArr = [];
+    const snipArr = [];
     this.boxContents.push(this.prefix + this.leftUp + this.up.repeat(2) + this.rightUp);
     snipArr.push(this.boxContents[0]);
 
@@ -163,10 +163,10 @@ class Box {
 
   public render(edit: vscode.TextEditorEdit) {
     // Logger.debug(vsContext.position)
-    let pos = this.leftUpPos;
+    const pos = this.leftUpPos;
 
     this.boxContents.forEach((content, i) => {
-      let range = new vscode.Range(
+      const range = new vscode.Range(
         new vscode.Position(pos.line + i, 0),
         new vscode.Position(pos.line + i, content.length + 1),
       );
@@ -202,8 +202,8 @@ class Box {
       Logger.info("remove current watcher");
       return false;
     }
-    let s = ch.range.start;
-    let e = ch.range.end;
+    const s = ch.range.start;
+    const e = ch.range.end;
 
     // Issue-#24: fix the chinese box input.
     if (s.line == e.line && e.character - s.character + 1 == ch.text.length && ch.text.length > 1) {
@@ -226,18 +226,18 @@ class Box {
           );
           this.boxContents = newBoxContnts;
         } else {  // 行内删除, 只修改当前行
-          let oldLine = this.boxContents[s.line - this.leftUpPos.line];
+          const oldLine = this.boxContents[s.line - this.leftUpPos.line];
           this.boxContents[s.line - this.leftUpPos.line] = oldLine.slice(0, s.character) + oldLine.slice(e.character);
         }
       } else {
         Logger.warn("Could find what changes does in:", ch);
       }
     } else { // ch.text != ""
-      let arr = ch.text.split('\n');
+      const arr = ch.text.split('\n');
 
       // 插入行的左右两侧字符串
-      let lineLeft = this.boxContents[s.line - this.leftUpPos.line].slice(0, s.character);
-      let lineRight = this.boxContents[s.line - this.leftUpPos.line].slice(s.character);
+      const lineLeft = this.boxContents[s.line - this.leftUpPos.line].slice(0, s.character);
+      const lineRight = this.boxContents[s.line - this.leftUpPos.line].slice(s.character);
 
       if (arr.length === 1) {
         this.boxContents[s.line - this.leftUpPos.line] = lineLeft + arr[0] + lineRight;
@@ -289,14 +289,14 @@ class Box {
       Logger.warn(`Current line(${maxLen}) is larger than ${this.lineLimit}`);
     }
 
-    let contentLen = maxLen - this.prefix.length - this.left.length - this.right.length;
+    const contentLen = maxLen - this.prefix.length - this.left.length - this.right.length;
 
     // 开始构建新的内容
-    let newContents = [];
+    const newContents = [];
     // 添加首行
     newContents.push(`${this.prefix}${this.leftUp}${this.up.repeat(contentLen)}${this.rightUp}`);
     for (let i = 1; i < this.boxContents.length - 1; i++) {
-      let content = this.boxContents[i];
+      const content = this.boxContents[i];
       newContents.push(
         content + ' '.repeat(contentLen - content.length + this.prefix.length + this.left.length) + this.right
       );

@@ -28,12 +28,13 @@ function pythonTokenizer(defs: string): PyFuncToken | undefined {
     return undefined;
   }
 
-  let [, tokType, tokName, tokArgsRaw, tokRet] = match;
+  const [, tokType, tokName, tokArgsRaw, tokRetRaw] = match;
   if (tokArgsRaw === undefined) {
-    Logger.warn(tokType, tokName, tokArgsRaw, tokRet);
+    Logger.warn(tokType, tokName, tokArgsRaw, tokRetRaw);
     return undefined;
   }
 
+  let tokRet = tokRetRaw;
   const tokArgs = tokenizeParameterString(tokArgsRaw);
 
   if (tokRet !== undefined) {
@@ -157,11 +158,12 @@ function tsTokenizer(defs: string): TsFuncToken | undefined {
     Logger.info("Can't get token in:", defs);
     return undefined;
   }
-  let [, tokType, tokName, tokArgsRaw, tokRet] = match;
+  const [, tokType, tokName, tokArgsRaw, tokRetRaw] = match;
   if (tokArgsRaw === undefined) {
-    Logger.warn(tokType, tokName, tokArgsRaw, tokRet);
+    Logger.warn(tokType, tokName, tokArgsRaw, tokRetRaw);
     return undefined;
   }
+  let tokRet = tokRetRaw;
 
   // 正则中解析出的tokRet是带有开头的冒号的
   if (tokRet !== undefined) {
@@ -201,7 +203,7 @@ function goTokenizer(defs: string): GoFuncToken | undefined {
   Logger.debug("Get match", match);
   let tokArgs: string[] = [];
   let tokRets: string[] = [];
-  let [, tokType, sPointer, tokName, tokArgsRaw, tokRetRaw] = match;
+  const [, tokType, sPointer, tokName, tokArgsRaw, tokRetRaw] = match;
   if (tokArgsRaw === undefined) {
     // Logger.warn(tokType, sPointer, tokName, tokArgsRaw, tokRetRaw);
     tokArgs = [];

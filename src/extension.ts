@@ -73,7 +73,7 @@ export async function activate(context: vscode.ExtensionContext) {
   Logger.info("Get user trigers:", displayStrategy);
   setTrigers(trigers);
 
-  var inTestMode: Boolean = false;
+  let inTestMode: Boolean = false;
   try {
     // https://github.com/microsoft/vscode/issues/102323
     // https://github.com/microsoft/vscode/issues/95926
@@ -112,6 +112,7 @@ export async function activate(context: vscode.ExtensionContext) {
       'Vsnips.show_available_snippets',
       async (editor) => {
         const langId = editor.document.languageId;
+        Logger.info(`Get ${langId} available snippet`);
         const items: Array<vscode.QuickPickItem & { snippet: Snippet }> = (await snippetManager.getSnippets(langId)).map((snippet) => {
           return {
             label: snippet.prefix,
@@ -137,8 +138,8 @@ export async function activate(context: vscode.ExtensionContext) {
   //  允许用户编辑snippets, 此操作将会打开新的window.
   context.subscriptions.push(
     vscode.commands.registerCommand("Vsnips.edit_vsnips", () => {
-      let settingFile = updateMultiWorkspaceSetting();
-      let uri = vscode.Uri.file(settingFile);
+      const settingFile = updateMultiWorkspaceSetting();
+      const uri = vscode.Uri.file(settingFile);
       vscode.commands.executeCommand("vscode.openFolder", uri, true);
     })
   );
