@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { walkSync } from 'walk';
-import { getSnipsDirs } from "./kv_store";
+import { getIgnoredSnippets, getSnipsDirs } from "./kv_store";
 import { parse, Snippet } from "./parse";
 import { Logger } from "./logger";
 
@@ -136,24 +136,46 @@ export class SnippetManager {
       // 如果 snippet中有extends语句, 根据 snippetsFilePath 查找同目录的 parent .snippets 文件
       try {
         const fileSnippets = parse(fileContent);
-        snippets.push(...fileSnippets);
+        const ignoredSnippets = getIgnoredSnippets();
+        fileSnippets.forEach((snipItem) => {
+          let isIgnored = false;
+          ignoredSnippets.forEach((ignoredSnippet) => {
+            const [file, prefix] = ignoredSnippet.split(':');
+            if (snipFile === file && snipItem.prefix === prefix) {
+              isIgnored = true;
+              return;
+            }
+          });
+
+          if (isIgnored) {
+            Logger.info(`The ${snipFile} ${snipItem.prefix} has been ignored`);
+            return ;
+          } else {
+            snippets.push(snipItem);
+          }
+        });
       } catch (error) {
         Logger.error(`Parse ${snipFile} with error: ${error}`);
       }
     });
-
-    // Add the vdoc snippets for current file type, a little ugly.
-    const vdocSnipContent = `snippet vdoc "${fileType} doc"\n` +
-      `\`!p snip.rv = get_${fileType}_doc(snip)\`\n` +
-      `endsnippet`;
-    const vdocSnippet = parse(vdocSnipContent)[0];
-    snippets.push(vdocSnippet);
-
-    const vboxSnipContent = `snippet vbox "box" w\n` +
-        `\`!p snip.rv = get_simple_box(snip)\`\n` +
-        `endsnippet`;
-    const vboxSnippet = parse(vboxSnipContent)[0];
-    snippets.push(vboxSnippet);
+    if (fileType === 'all') {
+      const vboxSnipContent = `snippet vbox "A nice box with the current comment symbol" w\n` +
+          `\`!p snip.rv = get_simple_box(snip)\`\n` +
+          `endsnippet`;
+      const vboxSnippet = parse(vboxSnipContent)[0];
+      snippets.push(vboxSnippet);
+    } else {
+      // Add the vdoc snippets for current file type, a little ugly.
+      // 允许自己添加
+      const vdocSnipContent = `snippet doc "Auto make ${fileType} doc"\n` +
+        `\`!p snip.rv = get_${fileType}_doc(snip)\`\n` +
+        `endsnippet\nsnippet vdoc "Auto make ${fileType} doc"\n` +
+        `\`!p snip.rv = get_${fileType}_doc(snip)\`\n` +
+        `endsnippet
+      `;
+      const vdocSnippet = parse(vdocSnipContent);
+      snippets.push(...vdocSnippet);
+    }
 
     this.snippetsByLanguage.set(fileType, snippets);
   }

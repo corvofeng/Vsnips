@@ -26,6 +26,7 @@ export function generate(context: vscode.ExtensionContext) {
 
         const snippets = await snippetManager.getSnippets(document.languageId);
         if (!snippets.length) {
+          Logger.warn(`Can't find any snippets for ${document.languageId}`);
           return [];
         }
 

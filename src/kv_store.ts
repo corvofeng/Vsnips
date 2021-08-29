@@ -84,6 +84,8 @@ const AUTO_TRIGGERED_SNIPS: Snippet[] = [];
 
 let ENABLE_AUTO_TRIGGER: boolean = false;
 
+let IgnoredSnippets: string[] = [];
+
 // 日志级别, NO表示不打印日志
 let LogLevel = "NO";
 function setLogLevel(level: string) {
@@ -141,6 +143,10 @@ function getVarfiles(): string[] {
 
 function addVarfiles(files: string[]) {
   VarFiles = VarFiles.concat(files);
+}
+
+function addIgnoredSnippets(ignoredSnippets: string[]) {
+  IgnoredSnippets = IgnoredSnippets.concat(ignoredSnippets);
 }
 
 /**
@@ -215,6 +221,10 @@ function getEnableAutoTrigger(): boolean {
   return ENABLE_AUTO_TRIGGER;
 }
 
+function getIgnoredSnippets(): string[] {
+  return IgnoredSnippets;
+}
+
 export {
   // VsnipDir,
   // UltiSnipsDir,
@@ -236,5 +246,7 @@ export {
   getAutoTriggeredSnips,
   setEnableAutoTrigger,
   getEnableAutoTrigger,
+  addIgnoredSnippets,
+  getIgnoredSnippets,
   updateMultiWorkspaceSetting,
 };

@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import * as path from "path";
+import *as fs from 'fs';
 import { Logger, InitLogger } from "./logger";
 import { generate, expandSnippet } from "./generate";
 import {
@@ -14,7 +15,8 @@ import {
   setDisplayStrategy,
   setTrigers,
   getAutoTriggeredSnips,
-  setEnableAutoTrigger
+  setEnableAutoTrigger,
+  addIgnoredSnippets,
 } from "./kv_store";
 import { snippetManager, Snippet } from './snippet_manager';
 import { initVimVar, initTemplateFunc, initVSCodeVar } from "./script_tpl";
@@ -25,15 +27,15 @@ import { VSnipContext } from "./vsnip_context";
 export async function activate(context: vscode.ExtensionContext) {
   const conf = vscode.workspace.getConfiguration();
   const VsnipLogLvl = conf.get("Vsnips.LogLevel", "NO");
+  const UltiSnipsdDefaultDir = path.join(context.extensionPath, "Ultisnips");
   setLogLevel(VsnipLogLvl);
   InitLogger();
 
   Logger.info(`Congratulations, your extension "Vsnips" (${context.extensionPath}) is now active!`);
 
   const useDefaultSnips = conf.get("Vsnips.UseDefaultSnips", true);
-  if(useDefaultSnips) {
-    const UltiSnipsDir = path.join(context.extensionPath, "Ultisnips");
-    addSnipsDir([UltiSnipsDir]);
+  if (useDefaultSnips) {
+    addSnipsDir([UltiSnipsdDefaultDir]);
   }
 
   // 是否启用对于'A'这种选项的支持
@@ -72,6 +74,23 @@ export async function activate(context: vscode.ExtensionContext) {
   const trigers = conf.get("Vsnips.trigers", []);
   Logger.info("Get user trigers:", displayStrategy);
   setTrigers(trigers);
+
+  // 我们可能不希望使用某些文件中的配置, 因此做个过滤, 将其中的片段忽略
+  const ignoredSnippets: string[] = conf.get("Vsnips.IgnoredSnippets", []);
+  Logger.info("Get ignored snippets: ", ignoredSnippets);
+  ignoredSnippets.forEach((ignoredSnippet) => {
+    const realPath = ignoredSnippet.replace("{DEFAULT_PATH}", UltiSnipsdDefaultDir);
+    const snipDatas = realPath.split(':');
+    if (snipDatas.length !== 2) {
+      Logger.warn(`${realPath} Can't be parsed`);
+      return;
+    }
+    if (fs.existsSync(snipDatas[0])) {
+      addIgnoredSnippets([realPath]);
+    } else {
+      Logger.warn(`${snipDatas[0]} is not exists`);
+    }
+  });
 
   let inTestMode: Boolean = false;
   try {
@@ -190,7 +209,6 @@ export async function activate(context: vscode.ExtensionContext) {
       VSnipWatcherArray[0].onUpdate(e.contentChanges);
     })
   );
-
 }
 
 // this method is called when your extension is deactivated

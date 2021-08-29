@@ -104,6 +104,18 @@
 					"description": "User's defined trigers, it is powerful but not recommanded",
 					"default": []
 				},
+				"Vsnips.IgnoredSnippets": {
+					"type": "array",
+					"description": "Sometimes we don't need the old vim snippets",
+					"items": {
+						"type": "string"
+					},
+					"default": [
+						"{DEFAULT_PATH}/all.snippets:box",
+						"{DEFAULT_PATH}/all.snippets:bbox",
+						"{DEFAULT_PATH}/python.snippets:doc"
+					]
+				},
 				"Vsnips.VScodeVars": {
 					"type": "object",
 					"description": "Vars in VSCode",
