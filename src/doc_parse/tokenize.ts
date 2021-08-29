@@ -24,7 +24,7 @@ function pythonTokenizer(defs: string): PyFuncToken | undefined {
   const definitionPattern = /(def|class)\s+(\w+)\s*\(([\s\S]*)\)\s*(->\s*[\w\[\], \.]*)?:\s*$/;
   const match = definitionPattern.exec(defs) as RegExpExecArray;
   if (match === null) {
-    Logger.info("Can't get token in:", defs);
+    Logger.debug("Can't get token in:", defs);
     return undefined;
   }
 
@@ -155,7 +155,7 @@ function tsTokenizer(defs: string): TsFuncToken | undefined {
   const definitionPattern = /(function)\s+(\w+)\s*\(([\s\S]*)\)\s*(:\s*[\w\|\[\], \.]*)?(?:\s*\{\s*\n*)?$/;
   const match = definitionPattern.exec(defs) as RegExpExecArray;
   if (match === null) {
-    Logger.info("Can't get token in:", defs);
+    Logger.debug("Can't get token in:", defs);
     return undefined;
   }
   const [, tokType, tokName, tokArgsRaw, tokRetRaw] = match;
@@ -197,7 +197,7 @@ function goTokenizer(defs: string): GoFuncToken | undefined {
   const match = definitionPattern.exec(defs) as RegExpExecArray;
 
   if (match === null) {
-    Logger.info("Can't get token in:", defs);
+    Logger.debug("Can't get token in:", defs);
     return undefined;
   }
   Logger.debug("Get match", match);
