@@ -69,6 +69,13 @@
 				"Vsnips.LogLevel": {
 					"type": "string",
 					"description": "The Vsnip's LogLevel",
+					"enumDescriptions": [
+						"Log nothing",
+						"Log with full detail",
+						"Log with info level",
+						"Log with warn level",
+						"Log with error level"
+					],
 					"enum": [
 						"NO",
 						"DEBUG",
