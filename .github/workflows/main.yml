@@ -5,6 +5,7 @@ on:
 
 # copy from 
 # https://www.eliostruyf.com/publishing-vscode-extensions-github-actions/
+# https://github.com/marketplace/actions/vscode-plugin-release-action
 name: Deploy Extension
 jobs:
   deploy:

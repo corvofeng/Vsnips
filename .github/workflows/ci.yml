@@ -1,5 +1,6 @@
 on: [push]
 
+# copy from: https://dev.to/shaimendel/vs-code-extension-building-auto-ci-cd-with-github-actions-2dmf
 name: Vsnips Test
 jobs:
   build:
