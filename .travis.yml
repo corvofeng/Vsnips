@@ -58,3 +58,10 @@ deploy:
     on:
       repo: corvofeng/Vsnips
       tags: true
+
+  - provider: script
+    script: vsce publish -p $VSCE_TOKEN
+    skip_cleanup: true
+    on:
+      repo: corvofeng/Vsnips
+      tags: true
