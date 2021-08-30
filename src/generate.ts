@@ -3,7 +3,7 @@ import { Snippet } from "./parse";
 import * as vscode from "vscode";
 import { VSnipContext } from "./vsnip_context";
 import { snippetManager } from './snippet_manager';
-import { getTrigers, getDisplayStrategy, addAutoTriggeredSnips, getEnableAutoTrigger } from "./kv_store";
+import { getTrigers, getDisplayStrategy, addAutoTriggeredSnips, getEnableAutoTrigger, getLabelPrefix } from "./kv_store";
 
 // function ultisnipsToJSON(ultisnips: string) {
 //   const snippets = parse(ultisnips);
@@ -69,7 +69,7 @@ export function generate(context: vscode.ExtensionContext) {
 
           const completionItem = new vscode.CompletionItem(snip.prefix, vscode.CompletionItemKind.Snippet);
           completionItem.insertText = '';  // 有必要将插入字符设置为空, 在command调用时根本不需要此字符串.
-          completionItem.label = `Vsnips-${snip.prefix}: ${snip.descriptsion}`;
+          completionItem.label = `${getLabelPrefix()}${snip.prefix}: ${snip.descriptsion}`;
           completionItem.detail = `Vsnips-${snip.prefix}: ${ snip.descriptsion }`;
           completionItem.filterText = completionItem.detail;
           completionItem.sortText = completionItem.detail;

@@ -16,6 +16,7 @@ import {
   setTrigers,
   getAutoTriggeredSnips,
   setEnableAutoTrigger,
+  setLabelPrefix,
   addIgnoredSnippets,
 } from "./kv_store";
 import { snippetManager, Snippet } from './snippet_manager';
@@ -41,6 +42,9 @@ export async function activate(context: vscode.ExtensionContext) {
   // 是否启用对于'A'这种选项的支持
   const enableAutoTrigger = conf.get("Vsnips.EnableAutoTrigger", true);
   setEnableAutoTrigger(enableAutoTrigger);
+
+  const labelPrefix = conf.get("Vsnips.LabelPrefix", "");
+  setLabelPrefix(labelPrefix);
 
   // 添加snips文件夹
   const vsnipDirs = conf.get("Vsnips.SnipsDir", []);

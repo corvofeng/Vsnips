@@ -71,6 +71,11 @@ let VarFiles: string[] = [
 let DisplayStrategy: string = "ALL";
 
 /**
+ * Prefix
+ */
+let LabelPrefix: string = "";
+
+/**
  * 用户自定义的触发键位, 示例: ['v', 'V']
  *
  * 不推荐用户自定义, 会导致其他补全功能失效, 请查看:
@@ -135,6 +140,13 @@ function clearSnipsDir() {
 
 function addSnipsDir(dirNames: string[]) {
   SearchDirs = SearchDirs.concat(dirNames);
+}
+
+function setLabelPrefix(labelPrefix: string) {
+  LabelPrefix = labelPrefix;
+}
+function getLabelPrefix() {
+  return LabelPrefix;
 }
 
 function getVarfiles(): string[] {
@@ -248,5 +260,7 @@ export {
   getEnableAutoTrigger,
   addIgnoredSnippets,
   getIgnoredSnippets,
+  setLabelPrefix,
+  getLabelPrefix,
   updateMultiWorkspaceSetting,
 };

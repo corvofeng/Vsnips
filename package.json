@@ -99,6 +99,11 @@
 					],
 					"default": "ALL"
 				},
+				"Vsnips.LabelPrefix": {
+					"type": "string",
+					"description": "The snippets's label prefix",
+					"default": ""
+				},
 				"Vsnips.trigers": {
 					"type": "array",
 					"description": "User's defined trigers, it is powerful but not recommanded",
