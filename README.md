@@ -1,6 +1,6 @@
 # Vsnips
 
-[![Build Status](https://travis-ci.com/corvofeng/Vsnips.svg?branch=master)](https://travis-ci.com/corvofeng/Vsnips)
+[![.github/workflows/ci.yml](https://github.com/corvofeng/Vsnips/actions/workflows/ci.yml/badge.svg)](https://github.com/corvofeng/Vsnips/actions/workflows/ci.yml)
 
 ![](./images/icon.png)
 
