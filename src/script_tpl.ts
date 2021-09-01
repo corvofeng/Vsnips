@@ -90,6 +90,14 @@ function triple_quotes() {
   }
 }
 
+function get_comment_format() {
+  return jsFuncDecorator("js_comment_format");
+}
+function js_comment_format(vsContext: VSnipContext) {
+  const fn = vsContext.document.fileName;
+  return path.basename(fn, path.extname(fn));
+}
+
 function get_markdown_title() {
   return jsFuncDecorator("js_markdown_title");
 }
@@ -371,6 +379,8 @@ function initTemplateFunc() {
   BUILDIN_MODULE.set("get_vim_expand", get_vim_expand);
   BUILDIN_MODULE.set("js_get_vim_expand", js_get_vim_expand);
   BUILDIN_MODULE.set("triple_quotes_handle_trailing", triple_quotes_handle_trailing);
+  BUILDIN_MODULE.set("get_comment_format", get_comment_format);
+  BUILDIN_MODULE.set("js_comment_format", js_comment_format);
   jsParser(getUserScriptFiles());
 }
 

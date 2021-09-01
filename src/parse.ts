@@ -212,13 +212,19 @@ function lexParser(str: string): [string, boolean] {
   return [str, hasJSScript];
 }
 
+/**
+ * .. version_changed: 2021-09-01 增加对形如`!p snip.rv=get_comment_format()[0]`结构的支持
+ * stmt (string): TODO
+ * Returns: TODO
+ */
 function pythonRewrite(stmt: string) {
   // 用于处理这一类字符串: `!p snip.rv = get_quoting_style(snip)`
   Logger.debug("Wanna rewrite python", stmt);
 
   const funcNamePattern = /(\w+)\(snip\)/;
   const funcWithArgsPattern = /(\w+)\(snip(,.*)\)/;
-  let funcName:string, argListStr: string = "";
+  const funcWithPostSelector= /(\w+)\((.*)\)\[(\d*)\]/; // !p snip.rv=get_comment_format()[0]
+  let funcName:string, argListStr: string = "", postSelector: string = "";
 
   if (funcNamePattern.test(stmt)) {
     [, funcName] = funcNamePattern.exec(stmt) as RegExpExecArray;
@@ -226,24 +232,36 @@ function pythonRewrite(stmt: string) {
   } else if (funcWithArgsPattern.test(stmt)) {
     [, funcName, argListStr] = funcWithArgsPattern.exec(stmt) as RegExpExecArray;
     Logger.debug("Get func name", funcName, "arg list", argListStr);
+  } else if (funcWithPostSelector.test(stmt)) {
+    [, funcName, argListStr, postSelector] = funcWithPostSelector.exec(stmt) as RegExpExecArray;
+    Logger.debug("Get func name", funcName, "arg list", argListStr, "post selector", postSelector);
   } else {
     funcName = "UnknowFunc";
   }
 
   const func = ScriptFunc.getTemplateFunc(funcName);
-  let result = stmt;
+  let result: string = stmt;
 
   if (func === undefined) {
-    Logger.warn("Can't get function", funcName, "please check");
+    Logger.warn(`Can't get function for '${stmt}' please check.`);
     return result;
   }
 
   try {
     // eslint-disable-next-line
     result = func.apply(undefined, argsToList(argListStr));
+    if(postSelector !== "") {
+      let inner = result.slice(1, -1);
+      if (!inner.endsWith(')')) { // 类似`js js_get_simple_box`, 需要补好末尾的括号
+        inner = inner + '()';
+      }
+      result = `\`${inner}[${postSelector}]\``;
+    }
   } catch (e) {
     Logger.error("In python func:", funcName, ", has error", e.message);
   }
+
+
   return result;
 }
 

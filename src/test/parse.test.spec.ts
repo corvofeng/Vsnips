@@ -214,14 +214,14 @@ endsnippet`,
           "todo",
           "TODO comment",
           "bw",
-          "!p snip.rv=get_comment_format()[0] ${2:TODO}: ${3: <${4:$CURRENT_DATE-$CURRENT_MONTH-$CURRENT_YEAR_SHORT}${5:, corvo}>} !p snip.rv=get_comment_format()[2]",
-          false,
+          "`!js js_comment_format()[0]` ${2:TODO}: ${3: <${4:$CURRENT_DATE-$CURRENT_MONTH-$CURRENT_YEAR_SHORT}${5:, corvo}>} `!js js_comment_format()[2]`",
+          true,
         ),
       ]
     ];
 
     ScriptFunc.initVSCodeVar(new Map([["snips_author", "corvo"]])),
-      // TEST_CASE = TEST_CASE.slice(-1);
+      // TEST_CASE.slice(-1).forEach(([_t, _s]) => {
       TEST_CASE.forEach(([_t, _s]) => {
         const txt = _t as string;
         const snip = _s as Snippet;
@@ -256,7 +256,8 @@ endsnippet`,
       [
         "console.log('[${1:`!js js_get_vim_expand(\"%:r\")`}]', $2)",
         "console.log('[${1:README}]', $2)"
-      ]
+      ],
+      ["title: `!js js_comment_format()[0]`", "title: `!js js_comment_format()[0]`"],
     ];
     ScriptFunc.initTemplateFunc();
     TEST_VARS.forEach(([_snip, _rlt]) => {
