@@ -52,7 +52,7 @@ class Snippet {
   public get_snip_body(vsContext: VSnipContext) {
     let rlt = "";
     if (this.hasJSScript) {
-      rlt = jsFuncEval(this.body, vsContext);
+      [rlt, ] = lexParser(this.body, vsContext);
     } else {
       rlt = this.body;
     }
@@ -141,7 +141,7 @@ function parse(rawSnippets: string): Snippet[] {
 
 // 这部分代码用于实现从vim 或是 python函数 => js函数的转换
 // 主要应用了正则替换.
-function lexParser(str: string): [string, boolean] {
+function lexParser(str: string, vsContext?: VSnipContext): [string, boolean] {
   // 检查所有(``)包裹的部分, 并确保里面没有嵌套(`)
   // 不允许多行包含多行
   // eslint-disable-next-line
@@ -193,6 +193,10 @@ function lexParser(str: string): [string, boolean] {
         replaceMap.set(stmt, rlt);
         break;
       case FT_JAVASCRIPT:
+        if(vsContext) {
+          rlt = jsFuncEval(func, vsContext);
+          replaceMap.set(stmt, rlt);
+        }
         break;
 
       default:
@@ -345,33 +349,54 @@ function normalizePlaceholders(str: string) {
 function jsFuncEval(snip: string, vsContext: VSnipContext) {
   Logger.debug("In js Func eval");
 
-  let res = null;
   // eslint-disable-next-line
-  const JS_SNIP_FUNC_PATTERN = /`!js (\w+)(\(.*\))?\`/g;
+  let res = null;
+  let [pattern, funcName, funcArgs, postSelector] = "";
+  let selector = null;
+  const JS_SNIP_FUNC_PATTERN = /!js (\w+)(\(.*\))?/;
+  const JS_SNIP_FUNC_PATTERN_WITH_SELECTOR = /!js (\w+)(\(.*\))?\[(\d*)\]/;
 
-  while ((res = JS_SNIP_FUNC_PATTERN.exec(snip)) !== null) {
-    const [pattern, funcName, funcArgs] = res as RegExpExecArray;
-    Logger.info("Get js func", pattern, funcName, funcArgs);
-    // let func = (ScriptFunc as any)[func_name as string];
-    const func = ScriptFunc.getTemplateFunc(funcName);
-    if (func === null) {
-      Logger.warn(`Can't get js function ${funcName} please check`);
-      return snip;
-    }
-    let funcRlt = "";
+  if (JS_SNIP_FUNC_PATTERN_WITH_SELECTOR.test(snip)) {
+    [pattern, funcName, funcArgs, postSelector] = JS_SNIP_FUNC_PATTERN_WITH_SELECTOR.exec(snip)as RegExpExecArray;
+  }else if (JS_SNIP_FUNC_PATTERN.test(snip)) {
+    [pattern, funcName, funcArgs] = JS_SNIP_FUNC_PATTERN.exec(snip) as RegExpExecArray;
+  }
+  if (pattern === "" || funcName === "") {
+    return snip;
+  }
+  Logger.info("Get js func", pattern, funcName, funcArgs, postSelector);
 
+  const func = ScriptFunc.getTemplateFunc(funcName);
+  if (func === null) {
+    Logger.warn(`Can't get js function ${funcName} please check`);
+    return snip;
+  }
+
+  if (postSelector && !isNaN(parseInt(postSelector))) {
+    selector = parseInt(postSelector);
+  }
+  if(funcArgs) {
+    funcArgs = funcArgs.slice(1, -1); // 去掉开头与结尾的括号
+  }
+
+  let funcRlt = "";
+  {
     const funcWithCtx = func.bind(undefined, vsContext); // 没有this且默认第一个参数为vsContext
     const stmt = `funcWithCtx(${funcArgs})`;
     Logger.debug("Get func", stmt, funcWithCtx);
     try {
       // eslint-disable-next-line
       funcRlt = eval(stmt);
+      if (selector != null && Number.isInteger(selector)) {
+        funcRlt = funcRlt[selector];
+      }
     } catch (e) {
       Logger.error("In js func", e.message);
       return snip;
     }
-    snip = snip.replace(pattern, funcRlt);
   }
+  snip = snip.replace(pattern, funcRlt);
+
   return snip;
 }
 

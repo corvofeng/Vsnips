@@ -53,8 +53,11 @@ function checkLanguageId(doc: vscode.TextDocument): string {
   }
 
   if (doc.uri.scheme === "gitfs" || doc.uri.path.endsWith(".git")) {
-    Logger.warn(`The ${doc.uri.path} didn't get the proper lauguageId, VSnips will try to find it.`);
-  } else { // 其他情况不做处理
+    Logger.warn(
+      `The ${doc.uri.path} didn't get the proper lauguageId, VSnips will try to find it.`
+    );
+  } else {
+    // 其他情况不做处理
     Logger.info(`The ${doc.uri.path} didn't get lauguageId`);
     return doc.languageId;
   }
@@ -118,13 +121,15 @@ function checkLanguageId(doc: vscode.TextDocument): string {
   ];
 
   let p = doc.uri.path;
-  if (p.endsWith(".git")) { // remove '.git'
+  if (p.endsWith(".git")) {
+    // remove '.git'
     p = p.substring(0, p.length - 4);
   }
   let languageId = doc.languageId;
 
   for (const [ext, langId, regexp] of mappings) {
-    if (regexp) { // 如果有正则, 以正则匹配为准
+    if (regexp) {
+      // 如果有正则, 以正则匹配为准
       if (regexp.match(p)) {
         languageId = langId;
         break;
@@ -141,6 +146,100 @@ function checkLanguageId(doc: vscode.TextDocument): string {
 }
 
 /**
+ * 获取某个语言对应的注释字符
+ *
+ * Returns a 4-element tuple (first_line, middle_lines, end_line, indent)
+ *  representing the comment format for the current file.
+ *
+ * https://github.com/honza/vim-snippets/blob/master/pythonx/vimsnippets.py#L66
+ *
+ * :py3 import vimsnippets; print( vimsnippets.create_mappings())
+ *
+ *  mappings = [
+ *    ["bat", "bat"],
+ *  ]
+ *
+ *   for l in mappings:
+ *    subprocess.run('''vim  -c "set ft={}" -c "py3 import vimsnippets; print(vimsnippets.create_mappings())"  -c "wq" /tmp/xxx'''.format(l[1]), shell=True)
+ *    with open('/tmp/comment.txt', 'r') as f:
+ *        fmt = f.read()
+ *    fmt = fmt.replace('(', '[')
+ *    fmt = fmt.replace(')', ']')
+ *    print("[\"{}\", {}],".format(l[1], fmt))
+ *
+ * /home/corvo/.CoolVim/plugged/vim-snippets/pythonx/vimsnippets.py
+ *  def create_mappings():
+ *   fmt = get_comment_format()
+ *   with open('/tmp/comment.txt', 'w') as f:
+ *       f.write('{}'.format(fmt))
+ * doc (vscode.TextDocument): TODO
+ * Returns: TODO
+ */
+function getLanguageComments(doc: vscode.TextDocument): string[] {
+  const mappings = [
+    // 前半部分是比较常见的语言, 需要手动修正
+    ["bat", ["::", "::", "::", ""]],
+    ["c", ["/*", "*", "*/", " "]],
+    ["cs", ["/*", "*", "*/", " "]],
+    ["cpp", ["/*", "*", "*/", " "]],
+    ["diff", ["#", "#", "#", ""]],
+    ["objc", ["/*", "*", "*/", " "]],
+    ["dockerfile", ["#", "#", "#", ""]],
+    ["html", ["<!--", "    ", "-->", ""]],
+    ["java", ["//", "//", "//", ""]],
+    ["javascript", ["//", "//", "//", ""]],
+    ["tex", ["%", "%", "%", ""]],
+    ["typescript", ["//", "//", "//", ""]],
+    ["typescriptreact", ["//", "//", "//", ""]],
+    ["go", ["//", "//", "//", ""]],
+    ["makefile", ["#", "#", "#", ""]],
+    ["markdown", ["<!--", "    ", "-->", ""]],
+    ["python", ["#", "#", "#", ""]],
+    ["lua", ["--", "--", "--", ""]],
+    ["yaml", ["#", "#", "#", ""]],
+    ["xml", ["<!--", "    ", "-->", ""]],
+    ["shellscript", ["#", "#", "#", ""]],
+
+    ["clojure", [";", ";", ";", ""]],
+    ["coffeescript", ["-", "-", "-", ""]],
+    ["css", ["/*", "*", "*/", " "]],
+    ["dart", ["-", "-", "-", ""]],
+    ["fsharp", ["-", "-", "-", ""]],
+    ["groovy", ["//", "//", "//", ""]],
+    ["hlsl", ["-", "-", "-", ""]],
+    ["ini", ["-", "-", "-", ""]],
+    ["jsonc", ["-", "-", "-", ""]],
+    ["javascriptreact", ["//", "//", "//", ""]],
+    ["less", ["//", "//", "//", ""]],
+    ["log", ["-", "-", "-", ""]],
+    ["objc", ["/*", "*", "*/", " "]],
+    ["objcpp", ["-", "-", "-", ""]],
+    ["perl.6", ["#", "#", "#", ""]],
+    ["perl", ["#", "#", "#", ""]],
+    ["php", ["/*", "*", "*/", " "]],
+    ["perl", ["#", "#", "#", ""]],
+    ["powershell", ["-", "-", "-", ""]],
+    ["pug", ["-", "-", "-", ""]],
+    ["r", ["#", "#", "#", ""]],
+    ["ruby", ["#", "#", "#", ""]],
+    ["rust", ["//", "//", "//", ""]],
+    ["scala", ["//", "//", "//", ""]],
+    ["scss", ["//", "//", "//", ""]],
+    ["sql", ["/*", "*", "*/", " "]],
+    ["swift", ["/*", "*", "*/", " "]],
+    ["vb", ["' -", "'  ", "'  ", ""]],
+  ];
+  const langId = checkLanguageId(doc);
+
+  for (const [lang, comments] of mappings) {
+    if (langId == lang) {
+      return comments as string[];
+    }
+  }
+  return [];
+}
+
+/**
  * str (string): TODO
  * ch (string[]): TODO
  * Returns: TODO
@@ -151,7 +250,7 @@ function checkLanguageId(doc: vscode.TextDocument): string {
  *  trimAny('|hello| world  ', '| '); // => 'hello|world'
  */
 function trim(str: string, ch: string[]) {
-  if(str === undefined) return "";
+  if (str === undefined) return "";
 
   let start = 0;
   let end = str.length;
@@ -168,7 +267,7 @@ function trim(str: string, ch: string[]) {
 }
 
 function trimLeft(str: string, ch: string[]) {
-  if(str === undefined) return "";
+  if (str === undefined) return "";
   let start = 0;
   const end = str.length;
   while (start < end && ch.indexOf(str[start]) >= 0) {
@@ -179,7 +278,7 @@ function trimLeft(str: string, ch: string[]) {
 }
 
 function trimRight(str: string, ch: string[]) {
-  if(str === undefined) return "";
+  if (str === undefined) return "";
   const start = 0;
   let end = str.length;
   while (end > start && ch.indexOf(str[end - 1]) >= 0) {
@@ -196,7 +295,7 @@ function trimRight(str: string, ch: string[]) {
  */
 function escapeReverseSlash(str: string): string {
   // 注意, 这里不能使用replaceAll, 因为替换过去的字符含有原字符, 会出现死循环
-  return str.replace(/\\/g, '\\\\');
+  return str.replace(/\\/g, "\\\\");
 }
 
 /**
@@ -253,5 +352,6 @@ export {
   escapeReverseSlash,
   replaceAll,
   argsToList,
-  trimRight
+  trimRight,
+  getLanguageComments,
 };

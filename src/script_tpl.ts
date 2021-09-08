@@ -20,7 +20,7 @@ import { getUserScriptFiles } from "./kv_store";
 import { parseTokenizer } from "./doc_parse/tokenize";
 import { BoxWatcher, Box } from "./box/box";
 import { VSnipWatcherArray } from "./vsnip_watcher";
-import { trim, escapeDoubleQuote, escapeReverseSlash } from "./util";
+import { trim, escapeDoubleQuote, escapeReverseSlash, getLanguageComments } from "./util";
 import { Position, Range } from "vscode";
 import { PyFuncToken } from "./doc_parse/token_python";
 import { TsFuncToken } from "./doc_parse/token_typescript";
@@ -94,8 +94,7 @@ function get_comment_format() {
   return jsFuncDecorator("js_comment_format");
 }
 function js_comment_format(vsContext: VSnipContext) {
-  const fn = vsContext.document.fileName;
-  return path.basename(fn, path.extname(fn));
+  return getLanguageComments(vsContext.document);
 }
 
 function get_markdown_title() {

@@ -257,9 +257,10 @@ endsnippet`,
         "console.log('[${1:`!js js_get_vim_expand(\"%:r\")`}]', $2)",
         "console.log('[${1:README}]', $2)"
       ],
-      ["title: `!js js_comment_format()[0]`", "title: `!js js_comment_format()[0]`"],
+      ["title: `!js js_comment_format()[0]`", "title: <!--"],
     ];
     ScriptFunc.initTemplateFunc();
+    // TEST_VARS.slice(-1).forEach(([_snip, _rlt]) => {
     TEST_VARS.forEach(([_snip, _rlt]) => {
       const snip = new Snippet("", "", "", _snip, true);
       expect(snip.get_snip_body(ExampleVSCntext)).eq(_rlt);
