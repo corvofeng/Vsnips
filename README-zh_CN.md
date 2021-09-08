@@ -104,12 +104,12 @@ endsnippet
 - [x] snippets语法高亮
 - [x] 对于用户自定义Javascript函数的支持
 - [x] 支持类似`autoDocstring`的功能, 允许增加各种形式的Python注释以及增加TypeScript注释
+- [x] 支持Golang的函数注释
 
 
 ## 正在开发的功能
 
 - [ ] 支持`extends`与`priority`语句
-- [ ] 支持Golang的函数注释
 
 ## 一些可能无法支持的功能
 

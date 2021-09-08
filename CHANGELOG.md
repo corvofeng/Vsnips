@@ -1,5 +1,32 @@
 # Change Log
 
+## [0.5.3] - 2021-09-08
+
+- Make upgrade for vscode.
+- Fix user script checker.
+- Change travis-ci to github action.
+- Ignored some old snippets.
+- Update the default snippets.
+- Add support for get_comment_format.
+
+
+## [0.4.9] - 2020-09-06
+
+- Fix the VISUAL placeholder.
+- Add support for python with args.
+- Add support for vsce publish.
+- Add support for CURRENT_YEAR_SHORT.
+
+## [0.4.2] - 2020-02-08
+
+- Fix golang doc with empty arg and ret.
+- Add ultisnips snippet filetype matching logic to SnippetManager
+- Add support for js func args
+- Add new testcase for parser
+- Add support for auto trigger, `not recommanded` #16
+- Only display snippets only after adding.
+- Add message in the status bar
+
 ## [0.3.4] - 2020-01-26
 
 - Add `vbox` support.

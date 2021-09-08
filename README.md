@@ -116,11 +116,11 @@ endsnippet
 - [x] Syntax highlight for snippets
 - [x] Allow user define their own functions
 - [x] Support autoDocstring for Python and TypeScript.
+- [x] Add support for golang function comments.
 
 ## Doing
 
 - [ ] Support extends and priority in Ultisnips
-- [ ] Add support for golang function comments.
 
 ### May not work
 
