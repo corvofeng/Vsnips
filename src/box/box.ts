@@ -1,7 +1,8 @@
 import { VSnipWatcher, VSnipWatcherArray } from "../vsnip_watcher";
 import * as vscode from "vscode";
 import { Logger } from "../logger";
-import { trimRight } from "../util";
+import { trimRight, uuidv4 } from "../util";
+import { VSnipsCodelensProider } from "../codelens_provider";
 
 class BoxWatcher extends VSnipWatcher {
 
@@ -44,6 +45,7 @@ class BoxWatcher extends VSnipWatcher {
   }
 
   init(leftUpPos: vscode.Position) {
+    this.box.blockChanged = true;
     return this.box.initSnip(leftUpPos);
   }
 }
@@ -90,6 +92,8 @@ class Box {
   rightBottomPos: vscode.Position;
   blockChanged: boolean;
 
+  // 用来标识当前box的codelen, 以便未来能移除该Codelens
+  codeLensHash: string;
 
   // ``rv = '┌' + '─'.repeat(t[0].length + 2) + '┐'``
   // │ $1 │
@@ -132,11 +136,23 @@ class Box {
     this.leftUpPos = new vscode.Position(0, 0);
     this.rightBottomPos = new vscode.Position(0, 0);
     this.blockChanged = false;
+    this.codeLensHash = uuidv4()
   }
 
   // 读取已经存在的box片段
   static readExists() {
     // return new Box();
+  }
+
+  private syncCodeLens(): vscode.CodeLens {
+    const codeLens = new vscode.CodeLens(new vscode.Range(this.leftUpPos, this.rightBottomPos))
+    codeLens.command = {
+        title: "VSnips box indicator",
+        tooltip: "It will dispear after you leave the box",
+        command: "",
+        arguments: []
+    };
+    return codeLens;
   }
 
   public initSnip(leftUpPos: vscode.Position) {
@@ -158,7 +174,14 @@ class Box {
     this.blockChanged = true;
 
     Logger.debug("Create box with", this.leftUpPos, this.rightBottomPos);
+    VSnipsCodelensProider.addCodelens(this.codeLensHash, this.syncCodeLens());
     return snipArr.join('\n');
+  }
+  public destroySnip() {
+    // 表明此次修改完成, 需要移除监听
+    VSnipsCodelensProider.removeCodelens(this.codeLensHash);
+    VSnipWatcherArray.popWatcher();
+    Logger.info("remove current watcher");
   }
 
   public render(edit: vscode.TextEditorEdit) {
@@ -188,13 +211,11 @@ class Box {
   // 返回此次是否进行了修改
   public doChange(ch: vscode.TextDocumentContentChangeEvent): boolean {
     // 此次修改不在box内部, 不做任何处理, 任何对第一行以及最后一行所做的改动, 都将被视为离开了box内部
-    // 此举是为了防止出现异常
+    // 此举故意做的比较灵敏, 是为了防止出现异常
     if (ch.range.start.line <= this.leftUpPos.line ||
       ch.range.end.line >= this.rightBottomPos.line) {
       Logger.warn("Can't process change outside box:", ch, this.leftUpPos, this.rightBottomPos);
-      // 同时也表明此次修改完成, 移除监听
-      VSnipWatcherArray.shift();
-      Logger.info("remove current watcher");
+      this.destroySnip();
       return false;
     }
     const s = ch.range.start;

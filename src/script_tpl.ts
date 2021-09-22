@@ -308,7 +308,7 @@ function js_get_simple_box(vsContext: VSnipContext) {
   Logger.info("Register a new box watcher");
 
   // 注册监听事件
-  VSnipWatcherArray.push(boxWatcher);
+  VSnipWatcherArray.addWatcher(boxWatcher);
   return snip;
 }
 
