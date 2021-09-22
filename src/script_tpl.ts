@@ -290,13 +290,14 @@ function js_get_simple_box(vsContext: VSnipContext) {
   }
   Logger.info(`Get box prefix: "${prefix}"`);
 
-  // 删除前缀, 因为之后会重新创建
+  // 删除前缀, 因为之后会重新创建, 删除前缀的工作应该在后续注册监听事件之前
   if (prefix !== "") {
     const editor = vsContext.getActiveEditor();
     if (editor !== undefined) {
       const startPos = new Position(vsContext.position.line, 0);
       const endPos = vsContext.position;
       editor.edit((te) => {
+        Logger.info(`delete the prefix "${prefix}"`);
         te.delete(new Range(startPos, endPos));
       });
     }
@@ -307,8 +308,7 @@ function js_get_simple_box(vsContext: VSnipContext) {
 
   Logger.info("Register a new box watcher");
 
-  // 注册监听事件
-  VSnipWatcherArray.push(boxWatcher);
+  VSnipWatcherArray.addWatcher(boxWatcher);
   return snip;
 }
 

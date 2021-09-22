@@ -167,6 +167,25 @@ describe("Box change", () => {
     expect(simpleBox.boxContents).deep.eq(newContent);
   });
 
+  it("Modify head line", () => {
+    // 在box前面做修改
+
+    const ch = new MyEvent(
+      new vscode.Range(
+        new vscode.Position(0, 0),
+        new vscode.Position(0, 0),
+      ),
+      0,
+      0,
+      "\n",
+    );
+    simpleBox.doChange(ch);
+    // console.log(simpleBox.boxContents);
+    // expect(simpleBox.boxContents).deep.eq(newContent);
+  });
+
+
+
   it("Test box without prefix", () => {
     const oldContent = [
       "┌──┐",

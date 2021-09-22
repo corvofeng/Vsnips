@@ -76,7 +76,29 @@ abstract class VSnipWatcher {
     // onRegister(context: vscode.ExtensionContext): void;
     // onDeRegister(context: vscode.ExtensionContext): void;
 }
-const VSnipWatcherArray: VSnipWatcher[] = [];
+class VSnipWatchers {
+    private vsnipWatcher: VSnipWatcher[];
+
+    constructor() {
+        this.vsnipWatcher = [];
+    }
+    size(): number {
+        return this.vsnipWatcher.length;
+    }
+    firstWatcher(): VSnipWatcher {
+        return this.vsnipWatcher[0];
+    }
+
+    addWatcher(watcher: VSnipWatcher) {
+        this.vsnipWatcher.push(watcher);
+    }
+    popWatcher(): VSnipWatcher | undefined {
+        return this.vsnipWatcher.pop();
+    }
+
+}
+
+const VSnipWatcherArray = new VSnipWatchers();
 
 
 export { VSnipWatcher, VSnipWatcherArray };

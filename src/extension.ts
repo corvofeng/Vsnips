@@ -1,9 +1,11 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+
 import * as path from "path";
 import *as fs from 'fs';
 import { Logger, InitLogger } from "./logger";
+import { VSnipsCodelensProider } from "./codelens_provider";
 import { generate, expandSnippet } from "./generate";
 import {
   setLogLevel,
@@ -63,7 +65,7 @@ export async function activate(context: vscode.ExtensionContext) {
   addUserScriptFiles(userScriptFiles);
 
   // 添加VSCode变量
-  const vscodeVars= new Map<string, string>(Object.entries(conf.get("Vsnips.VScodeVars", {})));
+  const vscodeVars = new Map<string, string>(Object.entries(conf.get("Vsnips.VScodeVars", {})));
   Logger.info("Get vscode variables: ", vscodeVars);
   initVSCodeVar(vscodeVars);
 
@@ -108,7 +110,7 @@ export async function activate(context: vscode.ExtensionContext) {
     Logger.error("Get error", error);
   }
 
-  if(inTestMode) {
+  if (inTestMode) {
     Logger.info("This is in test mode, do not generate context");
   } else {
     generate(context);
@@ -174,13 +176,13 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidChangeTextDocument(e => {
       const autoTriggeredSnips = getAutoTriggeredSnips();
       let isComplete = false;
-      if (VSnipWatcherArray.length === 0 && autoTriggeredSnips.length === 0) {
+      if (VSnipWatcherArray.size() === 0 && autoTriggeredSnips.length === 0) {
         return;
       }
 
       // 确认editor属于当前文档
       const editor = vscode.window.activeTextEditor;
-      if(editor == undefined || editor.document != e.document) {
+      if (editor == undefined || editor.document != e.document) {
         Logger.warn("Can't process the correct editor");
         return;
       }
@@ -191,7 +193,7 @@ export async function activate(context: vscode.ExtensionContext) {
           return;
         }
 
-        isComplete =  snip.get_snip_in_auto_triggered(
+        isComplete = snip.get_snip_in_auto_triggered(
           new VSnipContext(
             e.document,
             editor.selection.end
@@ -203,17 +205,19 @@ export async function activate(context: vscode.ExtensionContext) {
       if (isComplete) {
         return;
       }
-      if (VSnipWatcherArray.length > 1) {
+      if (VSnipWatcherArray.size() > 1) {
         Logger.warn("There are two active VsnipWatcher, please check");
       }
-      if (VSnipWatcherArray[0].getEditor().document !== e.document) {
+      if (VSnipWatcherArray.firstWatcher().getEditor().document !== e.document) {
         return;
       }
-      Logger.debug("Call a watcher", VSnipWatcherArray[0]);
-      VSnipWatcherArray[0].onUpdate(e.contentChanges);
+      Logger.debug("Call a watcher", VSnipWatcherArray.firstWatcher());
+      VSnipWatcherArray.firstWatcher().onUpdate(e.contentChanges);
     })
   );
+
+  vscode.languages.registerCodeLensProvider("*", VSnipsCodelensProider);
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
