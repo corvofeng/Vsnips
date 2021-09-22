@@ -187,15 +187,10 @@ class Box {
   // change的内容解析请查看`src/vsnip_watcher.ts`
   // 返回此次是否进行了修改
   public doChange(ch: vscode.TextDocumentContentChangeEvent): boolean {
-    if (ch.range.start.isEqual(this.leftUpPos)) {
-      Logger.info("Modify the head pos");
-
-      this.syncRightBottom();
-      return false;
-    }
-    if (ch.range.start.line < this.leftUpPos.line ||
+    // 此次修改不在box内部, 不做任何处理, 任何对第一行以及最后一行所做的改动, 都将被视为离开了box内部
+    // 此举是为了防止出现异常
+    if (ch.range.start.line <= this.leftUpPos.line ||
       ch.range.end.line >= this.rightBottomPos.line) {
-      // 此次修改不在box内部, 不做任何处理
       Logger.warn("Can't process change outside box:", ch, this.leftUpPos, this.rightBottomPos);
       // 同时也表明此次修改完成, 移除监听
       VSnipWatcherArray.shift();
