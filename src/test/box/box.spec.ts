@@ -180,7 +180,7 @@ describe("Box change", () => {
       "\n",
     );
     simpleBox.doChange(ch);
-    console.log(simpleBox.boxContents);
+    // console.log(simpleBox.boxContents);
     // expect(simpleBox.boxContents).deep.eq(newContent);
   });
 

@@ -136,7 +136,7 @@ class Box {
     this.leftUpPos = new vscode.Position(0, 0);
     this.rightBottomPos = new vscode.Position(0, 0);
     this.blockChanged = false;
-    this.codeLensHash = uuidv4()
+    this.codeLensHash = uuidv4();
   }
 
   // 读取已经存在的box片段
@@ -145,7 +145,7 @@ class Box {
   }
 
   private syncCodeLens(): vscode.CodeLens {
-    const codeLens = new vscode.CodeLens(new vscode.Range(this.leftUpPos, this.rightBottomPos))
+    const codeLens = new vscode.CodeLens(new vscode.Range(this.leftUpPos, this.rightBottomPos));
     codeLens.command = {
         title: "VSnips box indicator",
         tooltip: "It will dispear after you leave the box",

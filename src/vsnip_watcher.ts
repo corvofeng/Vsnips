@@ -93,7 +93,7 @@ class VSnipWatchers {
         this.vsnipWatcher.push(watcher);
     }
     popWatcher(): VSnipWatcher | undefined {
-        return this.vsnipWatcher.pop()
+        return this.vsnipWatcher.pop();
     }
 
 }
