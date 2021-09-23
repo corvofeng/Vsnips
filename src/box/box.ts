@@ -175,7 +175,7 @@ class Box {
     this.syncRightBottom();
 
     if (this.prefix == "") {
-      // 初始化成功后, VScode的编辑器帮我们将snip渲染到了文本框中, 
+      // 初始化成功后, VScode的编辑器帮我们将snip渲染到了文本框中,
       // 所以这里的状态表明完成了同步
       this.blockSynced = true;
     } else {
