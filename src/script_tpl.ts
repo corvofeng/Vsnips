@@ -290,25 +290,36 @@ function js_get_simple_box(vsContext: VSnipContext) {
   }
   Logger.info(`Get box prefix: "${prefix}"`);
 
-  // 删除前缀, 因为之后会重新创建
-  if (prefix !== "") {
-    const editor = vsContext.getActiveEditor();
-    if (editor !== undefined) {
-      const startPos = new Position(vsContext.position.line, 0);
-      const endPos = vsContext.position;
-      editor.edit((te) => {
-        te.delete(new Range(startPos, endPos));
-      });
-    }
-  }
+  // let deletePromise = undefined;
+  // 删除前缀, 因为之后会重新创建, 删除前缀的工作应该在后续注册监听事件之前
+  // if (prefix !== "") {
+  //   const editor = vsContext.getActiveEditor();
+  //   if (editor !== undefined) {
+  //     const startPos = new Position(vsContext.position.line, 0);
+  //     const endPos = vsContext.position;
+  //     deletePromise = new Promise((resolve) => {
+  //       editor.edit((te) => {
+  //         Logger.info(`delete the prefix "${prefix}"`);
+  //         te.delete(new Range(startPos, endPos));
+  //         resolve(undefined);
+  //       });
+  //     });
+  //   }
+  // }
 
   const boxWatcher = new BoxWatcher(e, new Box((prefix)));
   const snip = boxWatcher.init(new Position(vsContext.position.line, 0));
 
   Logger.info("Register a new box watcher");
 
-  // 注册监听事件
   VSnipWatcherArray.addWatcher(boxWatcher);
+  // // 注册监听事件
+  // if (deletePromise === undefined) {
+  // } else {
+  //   deletePromise.then(() =>{
+  //     VSnipWatcherArray.addWatcher(boxWatcher);
+  //   });
+  // }
   return snip;
 }
 

@@ -18,6 +18,7 @@ class BoxWatcher extends VSnipWatcher {
 
     Logger.debug("Get update", ordChanges);
     if (this.box.blockChanged) { // 防止循环调用
+      Logger.debug("This is in changed, so drop it.");
       this.box.blockChanged = false;
       return;
     }
