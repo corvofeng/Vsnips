@@ -1,8 +1,9 @@
 # Vsnips
 
-[![Build Status](https://travis-ci.com/corvofeng/Vsnips.svg?branch=master)](https://travis-ci.com/corvofeng/Vsnips)
+[![.github/workflows/ci.yml](https://github.com/corvofeng/Vsnips/actions/workflows/ci.yml/badge.svg)](https://github.com/corvofeng/Vsnips/actions/workflows/ci.yml)
 
-![](./images/icon.png)
+![](./images/vimeo.png)
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
 允许用户在VScode中使用UltiSnips语法的代码片段.
 

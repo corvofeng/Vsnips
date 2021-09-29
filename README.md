@@ -2,7 +2,8 @@
 
 [![.github/workflows/ci.yml](https://github.com/corvofeng/Vsnips/actions/workflows/ci.yml/badge.svg)](https://github.com/corvofeng/Vsnips/actions/workflows/ci.yml)
 
-![](./images/icon.png)
+![](./images/vimeo.png)
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
 Please: refer to the docs: [https://vsnips.corvo.fun/](https://vsnips.corvo.fun/zh/intro/)
 
