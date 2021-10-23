@@ -118,6 +118,7 @@ function checkLanguageId(doc: vscode.TextDocument): string {
     ["vb", "vb"],
     ["xml", "xml"],
     ["yaml", "yaml"],
+    ["nim", "nim"],
   ];
 
   let p = doc.uri.path;
@@ -135,13 +136,14 @@ function checkLanguageId(doc: vscode.TextDocument): string {
         break;
       }
     } else {
-      if (p.endsWith(ext)) {
+      if (p.endsWith('.'+ext)) {
         languageId = langId;
         break;
       }
     }
   }
 
+  Logger.info("Get language id", languageId);
   return languageId;
 }
 
