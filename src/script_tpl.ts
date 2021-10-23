@@ -316,15 +316,19 @@ function var_parser(data: string) {
   // 只匹配let开头的语句, 并且要求只能是数字或是字符串
   // 数字可以不带引号, 字符串必须用单引号或是双引号包裹
   // eslint-disable-next-line
-  const VIM_VARS_PATERN = /^let g:(\w+)\s*=\s*(\d*|"[^\"]*"|"[^\"]*")?(?:\s*\"[^\"]*)?$/gm;
+  const VIM_VARS_PATERN = /^let g:(\w+)\s*=\s*(\d*|"[^\"]*"|'[^\']*')?(?:\s*\"[^\"]*)?$/gm;
   let res = null;
 
   while ((res = VIM_VARS_PATERN.exec(data)) !== null) {
     const [, key, value] = res as RegExpExecArray;
-    // Logger.debug(key, value, res);
-    // 正则表达式中的value带有"或是", 需要去掉
-    VIM_VARS_MAP.set(key, value.replace(/[""]+/g, ""));
+    if(value) {
+      // 正则表达式中的value带有"或是", 需要去掉
+      VIM_VARS_MAP.set(key, trim(value, ['"', "'"]));
+    } else {
+      Logger.warn(`Cant' prase variables "${key} ${value} ${res}"`);
+    }
   }
+  return true;
 }
 
 // 读取给定文件中的vim变量
@@ -335,7 +339,7 @@ function initVimVar(varFiles: string[]) {
       const data = fs.readFileSync(file, "utf8");
       var_parser(data);
     } catch (error) {
-      Logger.error("Can\"t parse the var file: ", file);
+      Logger.error("Can\"t parse the var file: ", file, error);
     }
   });
 }

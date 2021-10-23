@@ -17,9 +17,10 @@ import {
   getVimVar,
   jsFuncDecorator,
   initTemplateFunc,
+  initVimVar,
   getTemplateFunc
 } from "../script_tpl";
-import { InitLogger } from "../logger";
+import { Logger, InitLogger } from "../logger";
 import { setLogLevel } from "../kv_store";
 import { VSnipContext } from "../vsnip_context";
 import * as vscode from "vscode";
@@ -34,7 +35,7 @@ describe("Parse vim config", () => {
   it("Test read vim config", () => {
     const TEST_VARS = [
       // only number
-      [`let g:ale_set_loclist = 1`, "ale_set_loclist", 1],
+      [`let g:ale_set_loclist = 1`, "ale_set_loclist", '1'],
 
       [`let g:snips_author="corvo"`, "snips_author", "corvo"],
 
@@ -63,12 +64,19 @@ describe("Parse vim config", () => {
         `let g:ultisnips_python_style="google"       " python注释风格`,
         "ultisnips_python_style",
         "google"
+      ],
+      [`let g:fzf_action = {
+  \\ 'ctrl-t': 'tab split',
+  \\ 'ctrl-s': 'split',
+  \\ 'ctrl-v': 'vsplit' }]`,
+        'fzf_action',
+        ''
       ]
     ];
     TEST_VARS.forEach(varDef => {
       const [express, key, value] = varDef;
-      var_parser(express as string);
-      expect(getVimVar(key as string) === value);
+      expect(var_parser(express as string) === true);
+      expect(getVimVar(key as string)).to.equal(value);
     });
   });
 
@@ -92,6 +100,13 @@ describe("Parse vim config", () => {
       expect(jsFuncDecorator(fName as string, fArgs as string[])).eq(ret);
     });
   });
+
+  // Test some files
+  // it("Test vscode context", () => {
+  //   setLogLevel("DEBUG");
+  //   InitLogger();
+  //   initVimVar(["/home/corvo/.vim/nvim-init.vim"]);
+  // }),
 
   it("Test vscode context", () => {
     const ExampleVSCntext = new VSnipContext(
