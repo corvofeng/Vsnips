@@ -119,6 +119,7 @@ function checkLanguageId(doc: vscode.TextDocument): string {
     ["xml", "xml"],
     ["yaml", "yaml"],
     ["nim", "nim"],
+    ["rkt", "racket"],
   ];
 
   let p = doc.uri.path;
