@@ -4,7 +4,7 @@
 	"description": "Ultisnips for vscode",
 	"icon": "images/vimeo.png",
 	"publisher": "corvofeng",
-	"version": "0.5.5",
+	"version": "0.5.6",
 	"engines": {
 		"vscode": "^1.35.0"
 	},
