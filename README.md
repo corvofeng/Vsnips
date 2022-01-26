@@ -11,7 +11,7 @@ Please: refer to the docs: [https://vsnips.corvo.fun/](https://vsnips.corvo.fun/
 
 * [国内访问文档, 七牛cdn加速](https://vsnips.rawforcorvofeng.cn/)
 
-Allow user use Ultisnips in vscode.
+Allows you to use Ultisnips in vscode.
 
 > It is under development, although I can't guarantee that
 > all ultisnips functions can be used in vscode, I will try my best.
@@ -29,12 +29,13 @@ For details of Ultisnips, please refer [here][1].
 
 ![ultisnips][2].
 
-It's easy to write an UltiSnips sippets, for example, in `Python`,
+It's easy to write an UltiSnips snippets, for example, in `Python`,
 I usually use `import IPython; IPython.embed()` for debugging.
 And you could write snippts like this:
 
+`python.snippets`
+
 ```snippets
-# Atention, this code must be put in python.snippets for `Python` code.
 snippet dbg "Use IPython to debug"
 # ---------- XXX: Can't GIT add [START] ---------- #
 import IPython
@@ -43,37 +44,35 @@ IPython.embed(using=False)
 endsnippet
 ```
 
-The UltiSnips snippet bej  `snippet`, end with `endsnippets`
-
-The whole snippst is surrounded with `snippet` and `endsnippets`,
+The whole snippst is surrounded with `snippet` and `endsnippet`,
 while the `dbg` is the triger, and `"Use IPython to debug"` is
-description for this snippet. At my vim:
+description for this snippet. This is what it looks like when you use the snippet:
 
 ![3][3]
 
 ## VScode snippets
 
-In VScode, there is an origin [snippets syntax][4] to manage your own snippets. But I found it may not very easy to use:
+VScode has it's own implementation for [snippets][4] which lets you create your own. But I found it difficult to use and lacking in feature set, for example:
 
 1. If there is a multi-line snippet, `json` is not very well for storing.
-2. It's hard for many PC sync the snippets. Because of this, there have been too many snippets extensions for different languages, like, [C/C++ Snippets][5], [Bootstrap 3 Snippets][6].
+2. It's hard for many PC sync the snippets. Because of this, there is already too many snippet extensions for different languages, like, [C/C++ Snippets][5], [Bootstrap 3 Snippets][6].
 
 I do not mean that it's bad for different language having their own extension.
-But you must admit that if you wanna add snippets for a language,
+But you must admit that if you want to  add snippets for a language,
 you need to learn how to write an extension and how to add snippets.
-and what's most important is that if you are an Vimer, you had to
+and what's most important is that if you are an vimmer, you had to
 write snippets for these two editors, which bothers me.
 
 
 ## How to use Vsnips
 
-> This plugin base on the [snippet api][8] in VScode, weather
+> This plugin based on the [snippet api][8] in VScode, whether
 > you have used UltiSnips or not, it's easy to start.
 > I have adapted some UltiSnips snippets to VScode and used it by default.
 
 If you have already use UltiSnips, and even have your own snippets,
 you can add own snippets dir in settings, and use the variable in `VarFiles`
-after set that.
+to set that.
 
 ```json
 {
@@ -105,7 +104,7 @@ snippet full_title "Python title fully"
 endsnippet
 ```
 
-## Have done
+## Completed Tasks
 
 - [x] Auto download the Ultisnips
 - [x] Multi language completions support
@@ -119,7 +118,7 @@ endsnippet
 - [x] Support autoDocstring for Python and TypeScript.
 - [x] Add support for golang function comments.
 
-## Doing
+## Work in Progress
 
 - [ ] Support extends and priority in Ultisnips
 
