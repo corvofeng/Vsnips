@@ -39,11 +39,11 @@ const VsnipDir = path.join(UserLocalDir, "Vsnips");
 const UltiSnipsDir = path.join(VsnipDir, "Ultisnips");
 
 if (!fs.existsSync(VsnipDir)) {
-  fs.mkdirSync(VsnipDir);
+  fs.mkdirSync(VsnipDir, { recursive: true });
 }
 
 if (!fs.existsSync(UltiSnipsDir)) {
-  fs.mkdirSync(UltiSnipsDir);
+  fs.mkdirSync(UltiSnipsDir, { recursive: true });
 }
 
 /**
