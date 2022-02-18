@@ -174,7 +174,6 @@
 	},
 	"dependencies": {
 		"js-logger": "^1.6.1",
-		"vsce": "^2.5.3",
 		"walk": "^2.3.14"
 	},
 	"__metadata": {
