@@ -17,10 +17,9 @@ import {
   getVimVar,
   jsFuncDecorator,
   initTemplateFunc,
-  initVimVar,
   getTemplateFunc
 } from "../script_tpl";
-import { Logger, InitLogger } from "../logger";
+import { InitLogger } from "../logger";
 import { setLogLevel } from "../kv_store";
 import { VSnipContext } from "../vsnip_context";
 import * as vscode from "vscode";

@@ -58,7 +58,7 @@ function ObjectToString(input: object | string): string {
  */
 function InitLogger() {
 
-  let VsnipsStream: fs.WriteStream | null = null;  
+  let VsnipsStream: fs.WriteStream | null = null;
   if (!isInBrowser()) {
     initLogDir();
     VsnipsStream = fs.createWriteStream(getLogFile(), { flags: "a" });

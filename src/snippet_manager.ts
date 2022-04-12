@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { getIgnoredSnippets, getSnipsDirs, isInBrowser } from "./kv_store";
@@ -35,12 +34,13 @@ export class SnippetManager {
     if (!this.snippetsByLanguage.get(language)) {
       Logger.info("Start repush the", language, "from local dir");
 
-      this.snippetsIsAdded.set(language, new Promise<boolean>(async (resolve) => {
+      this.snippetsIsAdded.set(language, new Promise<boolean>((resolve) => {
         vscode.window.setStatusBarMessage("[Vsnips]: Start add language " + language);
-        await this.doAddLanguageType(language);
-        Logger.info(" End  repush the", language, "from local dir");
-        vscode.window.setStatusBarMessage("[Vsnips]: End  add language " + language);
-        resolve(true);
+        this.doAddLanguageType(language).then(() => {
+          Logger.info(" End  repush the", language, "from local dir");
+          vscode.window.setStatusBarMessage("[Vsnips]: End  add language " + language);
+          resolve(true);
+        });
       }));
     } else {
       Logger.debug(language, "has been added");
@@ -103,10 +103,10 @@ export class SnippetManager {
     getSnipsDirs().forEach(async (snipDir) => {
       for (const [name, type] of await vscode.workspace.fs.readDirectory(vscode.Uri.file(snipDir))) {
         if (type !== vscode.FileType.File) {
-          continue
+          continue;
         }
         if (path.extname(name) !== ".snippets") {
-          continue
+          continue;
         }
         Logger.debug("Found snippet file:", path.join(snipDir, name));
 
@@ -117,8 +117,8 @@ export class SnippetManager {
             uri: vscode.Uri.file(path.join(snipDir, name)),
             shortPath: path.join(relToSnipDir, name)
           }
-        )
-      };
+        );
+      }
     });
     this.snipFileEntries = fileEntries;
   }
@@ -131,7 +131,7 @@ export class SnippetManager {
 
     const snippetFilePaths = await this.snipFileEntries.reduce(async (_out: Promise<vscode.Uri[]>, entry) => {
       let shouldAdd = false;
-      const { shortPath, uri, fullPath } = entry;
+      const { shortPath, uri } = entry;
       if (shortPath.startsWith(fileType)) {
         const rest = shortPath.substr(fileType.length);
         // @see https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt#L522
@@ -155,7 +155,7 @@ export class SnippetManager {
     Logger.info(`Put all snippets for: ${fileType} in ${snippetFilePaths}`);
 
     snippetFilePaths.forEach(async (uri) => {
-      const snipFile = uri.toString()
+      const snipFile = uri.toString();
       const rawContent = await vscode.workspace.fs.readFile(uri);
       const fileContent = String.fromCharCode(...rawContent);
 
