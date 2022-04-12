@@ -2,7 +2,9 @@
 
 [![.github/workflows/ci.yml](https://github.com/corvofeng/Vsnips/actions/workflows/ci.yml/badge.svg)](https://github.com/corvofeng/Vsnips/actions/workflows/ci.yml)
 
-[Click here to install Vsnips](https://corvo.myseu.cn/vscode/corvofeng.Vsnips)
+Click here to install Vsnips:
+
+[![](./images/download.png)](https://corvo.myseu.cn/vscode/corvofeng.Vsnips)
 
 OR
 
