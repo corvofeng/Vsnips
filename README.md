@@ -2,6 +2,17 @@
 
 [![.github/workflows/ci.yml](https://github.com/corvofeng/Vsnips/actions/workflows/ci.yml/badge.svg)](https://github.com/corvofeng/Vsnips/actions/workflows/ci.yml)
 
+[Click here to install Vsnips](vscode:extension/corvofeng.Vsnips)
+
+OR
+
+```
+ext install corvofeng.Vsnips
+```
+
+> (news)2022-04-12, we support vscode web extension, and you can install it when you use `vscode.dev` or `github.dev`.
+
+
 ![](./images/vimeo.png)
 <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
@@ -16,10 +27,6 @@ Allows you to use Ultisnips in vscode.
 > It is under development, although I can't guarantee that
 > all ultisnips functions can be used in vscode, I will try my best.
 > Please feel free to give an issue or pull requests.
-
-```
-ext install corvofeng.Vsnips
-```
 
 ![Vsnips][7]
 
