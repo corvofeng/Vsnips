@@ -23,5 +23,8 @@ jobs:
       - name: Install the dependencies
         run: yarn && yarn compile
 
+      - name: build web extension
+        run yarn vscode:prepublish-web
+
       - name: Publish
         run: vsce publish -p ${{ secrets.VSCE_TOKEN }}

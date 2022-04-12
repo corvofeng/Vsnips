@@ -20,6 +20,8 @@ import {
   setEnableAutoTrigger,
   setLabelPrefix,
   addIgnoredSnippets,
+  setIsInBrowser,
+  isInBrowser,
 } from "./kv_store";
 import { snippetManager, Snippet } from './snippet_manager';
 import { initVimVar, initTemplateFunc, initVSCodeVar } from "./script_tpl";
@@ -30,11 +32,15 @@ import { VSnipContext } from "./vsnip_context";
 export async function activate(context: vscode.ExtensionContext) {
   const conf = vscode.workspace.getConfiguration();
   const VsnipLogLvl = conf.get("Vsnips.LogLevel", "NO");
-  const UltiSnipsdDefaultDir = path.join(context.extensionPath, "Ultisnips");
+  const UltiSnipsdDefaultDir = path.join(context.extensionUri.fsPath, "Ultisnips");
+  if(typeof fs.existsSync === 'function') {
+    setIsInBrowser(false);
+  } else {
+    setIsInBrowser(true);
+  }
+  Logger.info(`Congratulations, your extension "Vsnips" (${context.extensionUri}) is now active! In browser: ${isInBrowser()}`);
   setLogLevel(VsnipLogLvl);
   InitLogger();
-
-  Logger.info(`Congratulations, your extension "Vsnips" (${context.extensionPath}) is now active!`);
 
   const useDefaultSnips = conf.get("Vsnips.UseDefaultSnips", true);
   if (useDefaultSnips) {
@@ -91,11 +97,8 @@ export async function activate(context: vscode.ExtensionContext) {
       Logger.warn(`${realPath} Can't be parsed`);
       return;
     }
-    if (fs.existsSync(snipDatas[0])) {
-      addIgnoredSnippets([realPath]);
-    } else {
-      Logger.warn(`${snipDatas[0]} is not exists`);
-    }
+    Logger.info(`get real path ${realPath}`);
+    addIgnoredSnippets([realPath]);
   });
 
   let inTestMode: Boolean = false;

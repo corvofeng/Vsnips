@@ -1,8 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { walkSync } from 'walk';
-import { getIgnoredSnippets, getSnipsDirs } from "./kv_store";
+import { getIgnoredSnippets, getSnipsDirs, isInBrowser } from "./kv_store";
 import { parse, Snippet } from "./parse";
 import { Logger } from "./logger";
 
@@ -12,6 +11,8 @@ export {
 
 type SnipFileEntry = {
   fullPath: string
+
+  uri: vscode.Uri
   /**
    * 相对于 SnipsDir 的路径
    */
@@ -30,13 +31,13 @@ export class SnippetManager {
 
   private snippetsIsAdded = new Map<string, Promise<boolean>>();
 
-  public addLanguage(language: string) {
+  public async addLanguage(language: string) {
     if (!this.snippetsByLanguage.get(language)) {
       Logger.info("Start repush the", language, "from local dir");
 
-      this.snippetsIsAdded.set(language, new Promise<boolean>((resolve) => {
+      this.snippetsIsAdded.set(language, new Promise<boolean>(async (resolve) => {
         vscode.window.setStatusBarMessage("[Vsnips]: Start add language " + language);
-        this.doAddLanguageType(language);
+        await this.doAddLanguageType(language);
         Logger.info(" End  repush the", language, "from local dir");
         vscode.window.setStatusBarMessage("[Vsnips]: End  add language " + language);
         resolve(true);
@@ -46,13 +47,17 @@ export class SnippetManager {
     }
   }
 
-  public init() {
-    this.refreshSnipFilePaths();
-    this.initDefaultLanguage();
+  public async init(context: vscode.ExtensionContext) {
+    if (isInBrowser()) {
+      this.browserSnipFilePaths(context);
+    } else {
+      this.refreshSnipFilePaths();
+    }
+    await this.initDefaultLanguage();
   }
 
-  protected initDefaultLanguage() {
-    this.addLanguage("all");
+  protected async initDefaultLanguage() {
+    await this.addLanguage("all");
   }
 
   /**
@@ -60,9 +65,9 @@ export class SnippetManager {
    * `all.snippets` 可以被所有语言使用
    */
   public async getSnippets(language: string) {
-    return new Promise<Snippet[]>((resolve, reject)=> {
+    return new Promise<Snippet[]>((resolve, reject) => {
       const isAdded = this.snippetsIsAdded.get(language);
-      if(isAdded === undefined) {
+      if (isAdded === undefined) {
         reject("The " + language + " does't add yet");
         return;
       }
@@ -74,36 +79,46 @@ export class SnippetManager {
       });
     });
   }
+  protected browserSnipFilePaths(context: vscode.ExtensionContext) {
+    // 浏览器中的行为不同, 在浏览器中, 只有当前语言的 snippets 才会被添加
+    const availableLanguages = ['c', 'cpp', 'javascript', 'lua', 'python', 'tex', 'texmatch'];
+    const fileEntries: SnipFileEntry[] = [];
+    availableLanguages.forEach((lang) => {
+      const uri = vscode.Uri.joinPath(context.extensionUri, 'Ultisnips', `${lang}.snippets`);
+      fileEntries.push({
+        fullPath: uri.toString(),
+        uri: uri,
+        shortPath: `${lang}.snippets`
+      });
+    });
+    this.snipFileEntries = fileEntries;
+  }
 
   /**
    * 查找某语言的 snippet 文件需要稍微多一点的 pattern matching （见 doAddLanguageType）
    * 为了避免多次遍历文件系统，此处提前全部遍历一遍，记录所有 snippet 文件路径
    */
-  protected refreshSnipFilePaths() {
+  protected async refreshSnipFilePaths() {
     const fileEntries: SnipFileEntry[] = [];
-    getSnipsDirs().forEach(snipDir => {
-      walkSync(snipDir, {
-        listeners: {
-          names(base, names, next) {
-            const relToSnipDir = path.relative(snipDir, base);
-            const shouldIgnore = relToSnipDir[0] === "."; // ignore dot files like '.git'
-            if (!shouldIgnore) {
-              const localEntries = names
-                .filter(name => {
-                  return path.extname(name) === ".snippets";
-                })
-                .map(name => {
-                  return {
-                    fullPath: path.join(base, name),
-                    shortPath: path.join(relToSnipDir, name)
-                  };
-                });
-              fileEntries.push(...localEntries);
-              next();
-            }
-          }
+    getSnipsDirs().forEach(async (snipDir) => {
+      for (const [name, type] of await vscode.workspace.fs.readDirectory(vscode.Uri.file(snipDir))) {
+        if (type !== vscode.FileType.File) {
+          continue
         }
-      });
+        if (path.extname(name) !== ".snippets") {
+          continue
+        }
+        Logger.debug("Found snippet file:", path.join(snipDir, name));
+
+        const relToSnipDir = path.relative(snipDir, snipDir);
+        fileEntries.push(
+          {
+            fullPath: path.join(snipDir, name),
+            uri: vscode.Uri.file(path.join(snipDir, name)),
+            shortPath: path.join(relToSnipDir, name)
+          }
+        )
+      };
     });
     this.snipFileEntries = fileEntries;
   }
@@ -111,12 +126,12 @@ export class SnippetManager {
   /**
    * 遍历 snips dirs 寻找对应语言的 snippets 文件并解析
    */
-  protected doAddLanguageType(fileType: string) {
+  protected async doAddLanguageType(fileType: string) {
     const snippets: Snippet[] = [];
 
-    const snippetFilePaths = this.snipFileEntries.reduce((out: string[], entry) => {
+    const snippetFilePaths = await this.snipFileEntries.reduce(async (_out: Promise<vscode.Uri[]>, entry) => {
       let shouldAdd = false;
-      const { shortPath, fullPath } = entry;
+      const { shortPath, uri, fullPath } = entry;
       if (shortPath.startsWith(fileType)) {
         const rest = shortPath.substr(fileType.length);
         // @see https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt#L522
@@ -124,24 +139,36 @@ export class SnippetManager {
           shouldAdd = true;
         }
       }
-      if (shouldAdd && fs.existsSync(fullPath)) {
-        out.push(fullPath);
+      const out = await _out;
+
+      if (shouldAdd) {
+        try {
+          await vscode.workspace.fs.stat(uri);
+          out.push(uri);
+        } catch (error) {
+          Logger.error("Can't get snipfile stat", uri.toString(), error);
+        }
       }
       return out;
-    }, []);
+    }, Promise.resolve([]));
 
-    snippetFilePaths.forEach((snipFile) => {
-      const fileContent = fs.readFileSync(snipFile, "utf8");
+    Logger.info(`Put all snippets for: ${fileType} in ${snippetFilePaths}`);
+
+    snippetFilePaths.forEach(async (uri) => {
+      const snipFile = uri.toString()
+      const rawContent = await vscode.workspace.fs.readFile(uri);
+      const fileContent = String.fromCharCode(...rawContent);
 
       // 如果 snippet中有extends语句, 根据 snippetsFilePath 查找同目录的 parent .snippets 文件
       try {
         const fileSnippets = parse(fileContent);
         const ignoredSnippets = getIgnoredSnippets();
+        Logger.info(`Get ignored snippets ${ignoredSnippets}`);
         fileSnippets.forEach((snipItem) => {
           let isIgnored = false;
           ignoredSnippets.forEach((ignoredSnippet) => {
             const [file, prefix] = ignoredSnippet.split(':');
-            if (snipFile === file && snipItem.prefix === prefix) {
+            if (uri.fsPath === file && snipItem.prefix === prefix) {
               isIgnored = true;
               return;
             }
@@ -149,7 +176,7 @@ export class SnippetManager {
 
           if (isIgnored) {
             Logger.info(`The ${snipFile} ${snipItem.prefix} has been ignored`);
-            return ;
+            return;
           } else {
             snippets.push(snipItem);
           }
@@ -160,8 +187,8 @@ export class SnippetManager {
     });
     if (fileType === 'all') {
       const vboxSnipContent = `snippet vbox "A nice box with the current comment symbol" w\n` +
-          `\`!p snip.rv = get_simple_box(snip)\`\n` +
-          `endsnippet`;
+        `\`!p snip.rv = get_simple_box(snip)\`\n` +
+        `endsnippet`;
       const vboxSnippet = parse(vboxSnipContent)[0];
       snippets.push(vboxSnippet);
     } else {

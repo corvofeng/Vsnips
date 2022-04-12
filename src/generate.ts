@@ -3,7 +3,7 @@ import { Snippet } from "./parse";
 import * as vscode from "vscode";
 import { VSnipContext } from "./vsnip_context";
 import { snippetManager } from './snippet_manager';
-import { getTrigers, getDisplayStrategy, addAutoTriggeredSnips, getEnableAutoTrigger, getLabelPrefix } from "./kv_store";
+import { getTrigers, getDisplayStrategy, addAutoTriggeredSnips, getEnableAutoTrigger, getLabelPrefix, isInBrowser } from "./kv_store";
 
 // function ultisnipsToJSON(ultisnips: string) {
 //   const snippets = parse(ultisnips);
@@ -11,15 +11,19 @@ import { getTrigers, getDisplayStrategy, addAutoTriggeredSnips, getEnableAutoTri
 //   return snippets;
 // }
 
-export function generate(context: vscode.ExtensionContext) {
-  snippetManager.init();
+export async function generate(context: vscode.ExtensionContext) {
+  await snippetManager.init(context);
 
   const triger = getTrigers();
   const displayStrategy = getDisplayStrategy();
+  const selector = { scheme: "file" };
+  if (isInBrowser()) {
+    selector["scheme"] = "vscode-vfs";
+  }
 
   // 注册 completionItemProiver
   const provider = vscode.languages.registerCompletionItemProvider(
-    { scheme: "file" },
+    selector,
     {
       async provideCompletionItems(document, position, token, context) {
         Logger.debug("Get completion item", document, position);

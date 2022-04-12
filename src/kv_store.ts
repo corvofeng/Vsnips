@@ -22,35 +22,18 @@ import * as fs from "fs";
 import * as path from "path";
 import { Snippet } from "./parse";
 
-// 用户当前的可以放置配置文件的位置
-// Copy from: https://stackoverflow.com/a/26227660
-const UserLocalDir =
-  process.env.APPDATA ||
-  (process.platform === "darwin"
-    ? process.env.HOME + "/Library/Preferences"
-    : process.env.HOME + "/.local/share");
-// eslint-disable-next-line
-console.log("Get usre dir", UserLocalDir);
+let VsnipDir = "";
 
-// In linux, the default vsnips dir is in:
-//     ~/.local/share/Vsnips/
-const VsnipDir = path.join(UserLocalDir, "Vsnips");
-
-const UltiSnipsDir = path.join(VsnipDir, "Ultisnips");
-
-if (!fs.existsSync(VsnipDir)) {
-  fs.mkdirSync(VsnipDir, { recursive: true });
-}
-
-if (!fs.existsSync(UltiSnipsDir)) {
-  fs.mkdirSync(UltiSnipsDir, { recursive: true });
-}
+/**
+ * 判断是否在浏览器中
+ */
+let IsInBrowser = false;
 
 /**
  * 存放snippet片段的文件夹
  */
-let SearchDirs = [
-  UltiSnipsDir,
+let SearchDirs: string[] = [
+  // UltiSnipsDir,
   // path.join(process.env.HOME, '.vim', 'UltiSnips'),
   // '/home/corvo/.vim/UltiSnips',
   // '/home/corvo/.vim/plugged/vim-snippets/UltiSnips',
@@ -124,6 +107,26 @@ function getLogLevel() {
       break;
   }
   return lvl;
+}
+
+function initLogDir() {
+  // 用户当前的可以放置配置文件的位置
+  // Copy from: https://stackoverflow.com/a/26227660
+  const UserLocalDir =
+    process.env.APPDATA ||
+    (process.platform === "darwin"
+      ? process.env.HOME + "/Library/Preferences"
+      : process.env.HOME + "/.local/share");
+  // eslint-disable-next-line
+  console.log("Get usre dir", UserLocalDir);
+
+  // In linux, the default vsnips dir is in:
+  //     ~/.local/share/Vsnips/
+  VsnipDir = path.join(UserLocalDir, "Vsnips");
+
+ if (!fs.existsSync(VsnipDir)) {
+    fs.mkdirSync(VsnipDir, { recursive: true });
+  }
 }
 
 function getLogFile() {
@@ -236,12 +239,19 @@ function getEnableAutoTrigger(): boolean {
 function getIgnoredSnippets(): string[] {
   return IgnoredSnippets;
 }
+function setIsInBrowser(isBrowser: boolean) {
+  IsInBrowser = isBrowser;
+}
+function isInBrowser(): boolean {
+  return IsInBrowser;
+}
 
 export {
   // VsnipDir,
   // UltiSnipsDir,
   setLogLevel,
   getLogLevel,
+  initLogDir,
   getLogFile,
   getSnipsDirs,
   addSnipsDir,
@@ -263,4 +273,6 @@ export {
   setLabelPrefix,
   getLabelPrefix,
   updateMultiWorkspaceSetting,
+  setIsInBrowser,
+  isInBrowser,
 };

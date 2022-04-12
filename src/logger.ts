@@ -17,7 +17,7 @@
 //      master  => test-src/typescript-consumer/index.ts
 import * as jsLogger from "js-logger";
 import { ILogger } from "js-logger";
-import { getLogFile, getLogLevel } from "./kv_store";
+import { getLogFile, getLogLevel, initLogDir, isInBrowser } from "./kv_store";
 import * as fs from "fs";
 
 jsLogger.useDefaults();
@@ -57,7 +57,12 @@ function ObjectToString(input: object | string): string {
  *
  */
 function InitLogger() {
-  const VsnipsStream = fs.createWriteStream(getLogFile(), { flags: "a" });
+
+  let VsnipsStream: fs.WriteStream | null = null;  
+  if (!isInBrowser()) {
+    initLogDir();
+    VsnipsStream = fs.createWriteStream(getLogFile(), { flags: "a" });
+  }
 
   const lvl = getLogLevel();
 
@@ -76,7 +81,9 @@ function InitLogger() {
       const formatLog = `${date} ${time}: [${context.level.name[0]}] ${msg}\n`;
       // eslint-disable-next-line
       console.log(formatLog);
-      VsnipsStream.write(formatLog);
+      if (VsnipsStream) {
+        VsnipsStream.write(formatLog);
+      }
     });
   } else {
     // @ts-ignore
