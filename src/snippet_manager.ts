@@ -51,7 +51,7 @@ export class SnippetManager {
     if (isInBrowser()) {
       this.browserSnipFilePaths(context);
     } else {
-      this.refreshSnipFilePaths();
+      await this.refreshSnipFilePaths();
     }
     await this.initDefaultLanguage();
   }
@@ -100,7 +100,7 @@ export class SnippetManager {
    */
   protected async refreshSnipFilePaths() {
     const fileEntries: SnipFileEntry[] = [];
-    getSnipsDirs().forEach(async (snipDir) => {
+    await Promise.all(getSnipsDirs().map(async (snipDir) => {
       for (const [name, type] of await vscode.workspace.fs.readDirectory(vscode.Uri.file(snipDir))) {
         if (type !== vscode.FileType.File) {
           continue;
@@ -119,7 +119,7 @@ export class SnippetManager {
           }
         );
       }
-    });
+    }));
     this.snipFileEntries = fileEntries;
   }
 
