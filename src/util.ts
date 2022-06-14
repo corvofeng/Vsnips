@@ -354,11 +354,21 @@ function uuidv4() {
   });
 }
 
+// Copy from https://stackoverflow.com/a/64452744/5563477
+function assertIsError(error: unknown): asserts error is Error {
+    // assert(error instanceof Error);
+    // otherwise
+    if (!(error instanceof Error)) {
+        throw error;
+    }
+}
+
 export {
   longestMatchCharsFromStart,
   checkLanguageId,
   trim,
   trimLeft,
+  assertIsError,
   escapeDoubleQuote,
   escapeReverseSlash,
   replaceAll,

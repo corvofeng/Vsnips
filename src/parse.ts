@@ -1,7 +1,7 @@
 import { Logger } from "./logger";
 import { VSnipContext } from "./vsnip_context";
 import * as ScriptFunc from "./script_tpl";
-import { trim, replaceAll, argsToList } from "./util";
+import { trim, replaceAll, argsToList, assertIsError } from "./util";
 import * as vscode from "vscode";
 
 const VIM_SNIPPET = /^snippet ([^\s]*)\s*(?:"(.*?)"(.*))?\n((?:.|\n)*?)\nendsnippet$/gm;
@@ -261,7 +261,8 @@ function pythonRewrite(stmt: string) {
       }
       result = `\`${inner}[${postSelector}]\``;
     }
-  } catch (e) {
+  } catch (e: unknown) {
+    assertIsError(e);
     Logger.error("In python func:", funcName, ", has error", e.message);
   }
 
@@ -391,6 +392,7 @@ function jsFuncEval(snip: string, vsContext: VSnipContext) {
         funcRlt = funcRlt[selector];
       }
     } catch (e) {
+      assertIsError(e);
       Logger.error("In js func", e.message);
       return snip;
     }
