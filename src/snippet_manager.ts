@@ -100,7 +100,7 @@ export class SnippetManager {
    */
   protected async refreshSnipFilePaths() {
     const fileEntries: SnipFileEntry[] = [];
-    await Promise.all(getSnipsDirs().map(async (snipDir) => {
+    getSnipsDirs().map(async (snipDir) => {
       for (const [name, type] of await vscode.workspace.fs.readDirectory(vscode.Uri.file(snipDir))) {
         if (type !== vscode.FileType.File) {
           continue;
@@ -119,7 +119,7 @@ export class SnippetManager {
           }
         );
       }
-    }));
+    });
     this.snipFileEntries = fileEntries;
   }
 
