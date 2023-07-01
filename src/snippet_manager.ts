@@ -68,7 +68,7 @@ export class SnippetManager {
     return new Promise<Snippet[]>((resolve, reject) => {
       const isAdded = this.snippetsIsAdded.get(language);
       if (isAdded === undefined) {
-        reject("The " + language + " does't add yet");
+        reject("The " + language + " doesn't add yet");
         return;
       }
       // 只有在当前语言全部添加完成后, 才返回
@@ -157,7 +157,7 @@ export class SnippetManager {
     snippetFilePaths.forEach(async (uri) => {
       const snipFile = uri.toString();
       const rawContent = await vscode.workspace.fs.readFile(uri);
-      const fileContent = String.fromCharCode(...rawContent);
+      const fileContent= Buffer.from(rawContent).toString('utf8');
 
       // 如果 snippet中有extends语句, 根据 snippetsFilePath 查找同目录的 parent .snippets 文件
       try {

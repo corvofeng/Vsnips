@@ -47,6 +47,10 @@ function longestMatchCharsFromStart(base: string, candidate: string) {
  * Returns: 真实的源码语言
  */
 function checkLanguageId(doc: vscode.TextDocument): string {
+  if (doc.languageId === 'latex') {
+    return "tex";
+  }
+
   if (doc.languageId !== "plaintext") {
     // 已经存在的语言不做处理
     return doc.languageId;

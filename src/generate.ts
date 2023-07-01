@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import { VSnipContext } from "./vsnip_context";
 import { snippetManager } from './snippet_manager';
 import { getTrigers, getDisplayStrategy, addAutoTriggeredSnips, getEnableAutoTrigger, getLabelPrefix, isInBrowser } from "./kv_store";
+import { checkLanguageId } from "./util";
 
 // function ultisnipsToJSON(ultisnips: string) {
 //   const snippets = parse(ultisnips);
@@ -27,10 +28,11 @@ export async function generate(context: vscode.ExtensionContext) {
     {
       async provideCompletionItems(document, position, token, context) {
         Logger.debug("Get completion item", document, position);
+        let langId = checkLanguageId(document);
 
-        const snippets = await snippetManager.getSnippets(document.languageId);
+        const snippets = await snippetManager.getSnippets(langId);
         if (!snippets.length) {
-          Logger.warn(`Can't find any snippets for ${document.languageId}`);
+          Logger.warn(`Can't find any snippets for ${langId}`);
           return [];
         }
 
