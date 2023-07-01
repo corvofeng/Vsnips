@@ -28,7 +28,7 @@ export async function generate(context: vscode.ExtensionContext) {
     {
       async provideCompletionItems(document, position, token, context) {
         Logger.debug("Get completion item", document, position);
-        let langId = checkLanguageId(document);
+        const langId = checkLanguageId(document);
 
         const snippets = await snippetManager.getSnippets(langId);
         if (!snippets.length) {
