@@ -22,7 +22,7 @@ Please: refer to the docs: [https://vsnips.corvo.fun/](https://vsnips.corvo.fun/
 
 * [中文文档](https://vsnips.corvo.fun/zh/intro/)
 
-* [国内访问文档, 七牛cdn加速](https://vsnips.rawforcorvofeng.cn/)
+<!-- * [国内访问文档, 七牛cdn加速](https://vsnips.rawforcorvofeng.cn/) -->
 
 Allows you to use Ultisnips in vscode.
 
