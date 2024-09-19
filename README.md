@@ -143,7 +143,7 @@ Which will refer to [autoDocstring][9].
 
 
 [1]: https://github.com/SirVer/ultisnips
-[2]: https://camo.githubusercontent.com/296aecf30e1607233814196db6bd3f5f47e70c73/68747470733a2f2f7261772e6769746875622e636f6d2f5369725665722f756c7469736e6970732f6d61737465722f646f632f64656d6f2e676966
+[2]: https://raw.github.com/SirVer/ultisnips/master/doc/demo.gif
 [3]: https://user-images.githubusercontent.com/12025071/62412148-14cad280-b631-11e9-8d9c-01a65a2550ef.gif
 [4]: https://code.visualstudio.com/docs/editor/userdefinedsnippets#_creating-your-own-snippets
 [5]: https://marketplace.visualstudio.com/items?itemName=hars.CppSnippets
